@@ -77,9 +77,11 @@ module.exports = async function handler(req, res) {
       let level = 0;
       if (lastUpdate !== null) {
         outageMinutes = Math.max(0, (now - lastUpdate) / 60000);
+        // Calculate outage escalation independently from temperature emergencies.
+        if (outageMinutes >= thresholds.escalateMinutes) level = 2;
+        else if (outageMinutes >= thresholds.notifyMinutes) level = 1;
         if (tempEmergency) status = "emergency";
-        else if (outageMinutes >= thresholds.escalateMinutes) { status = "offline"; level = 2; }
-        else if (outageMinutes >= thresholds.notifyMinutes) { status = "offline"; level = 1; }
+        else if (level === 2 || level === 1) status = "offline";
         else if (outageMinutes >= thresholds.warningMinutes) status = "network_unstable";
         else status = "online";
       }
@@ -103,6 +105,26 @@ module.exports = async function handler(req, res) {
         await eventRef.set({ eventId: eventRef.key, shipmentId, type: "TELEMETRY_RECOVERED", createdAt: now, outageMinutes: Math.round(previous.outageStartedAt ? (now - previous.outageStartedAt) / 60000 : outageMinutes), delivery: recoveryResults, status: recoveryResults.some(r=>r.status==="sent") ? "sent_or_partially_sent" : "not_delivered", acknowledged: false });
         notification = { eventId: eventRef.key, results: recoveryResults };
       }
+      // Send a separate, one-time notification when a confirmed temperature excursion begins.
+      if (tempEmergency && !previous.temperatureEmergency && !notification) {
+        const recipients = contactsFor(contactRecord, 2, 0);
+        const message = "ColdGuard CRITICAL TEMPERATURE ALERT: Shipment " + shipmentId + " last recorded " +
+          (temperature === null ? "an unavailable temperature" : temperature + "°C") +
+          ", outside its configured storage range " + tempMin + "°C to " + tempMax +
+          "°C. Last sensor update: " + (lastUpdate ? new Date(lastUpdate).toISOString() : "unavailable") +
+          ". Last known location: " + (coords ? coords.latitude + ", " + coords.longitude : "unavailable") +
+          ". Temperature and vaccine condition require human verification. Location: " +
+          (coords ? "https://maps.google.com/?q=" + coords.latitude + "," + coords.longitude : "unavailable");
+        const results = [];
+        for (const recipient of recipients) {
+          const result = await sendSms(recipient.phone, message);
+          results.push({ role: recipient.role, status: result.status, providerMessageId: result.providerMessageId || null, error: result.error || null });
+        }
+        const eventRef = db.ref("network_monitoring/events").push();
+        await eventRef.set({ eventId: eventRef.key, shipmentId, type: "CRITICAL_TEMPERATURE", createdAt: now, lastSensorUpdate: lastUpdate || null, lastKnownLocation: coords || null, lastTemperature: temperature, configuredRange: { min: tempMin, max: tempMax }, delivery: results, status: results.some(r => r.status === "sent") ? "sent_or_partially_sent" : "not_delivered", acknowledged: false });
+        notification = { eventId: eventRef.key, results };
+        counts.notifications += results.filter(r => r.status === "sent").length;
+      }
       const outageStartedAt = level > 0 ? (previousLevel > 0 ? (previous.outageStartedAt || lastUpdate) : lastUpdate) : null;
       updates["network_monitoring/vehicles/" + shipmentId] = {
         shipmentId, status, alertLevel: level, lastSensorUpdate: lastUpdate,
@@ -110,7 +132,7 @@ module.exports = async function handler(req, res) {
         lastTemperature: temperature !== null ? temperature : (previous.lastTemperature ?? null),
         outageMinutes: level > 0 || status === "network_unstable" ? Math.round(outageMinutes || 0) : 0,
         outageStartedAt, lastCheckedAt: now,
-        thresholds, temperatureVerifiedDuringOutage: false,
+        thresholds, temperatureEmergency: tempEmergency, temperatureVerifiedDuringOutage: false,
         lastNotificationAt: notification ? now : (previous.lastNotificationAt || null),
         lastEventId: notification?.eventId || previous.lastEventId || null,
         notificationStatus: notification ? (notification.results.some(r=>r.status==="sent") ? "sent_or_partially_sent" : "not_delivered") : (previous.notificationStatus || "not_sent"),
