@@ -57,7 +57,7 @@
       temperature: temperatureOf(r),
       source: source,
       raw: r
-    })).sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0);
+    })).sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0));
   }
   async function readPath(path) {
     if (!db) return null;
