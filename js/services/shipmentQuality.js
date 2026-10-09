@@ -11,7 +11,7 @@
     if (v === null || v === undefined || v === "") return null;
     let n;
     if (typeof v === "number") n = v;
-    else if (/^\\d{10,13}$/.test(String(v).trim())) n = Number(v);
+    else if (/^\d{10,13}$/.test(String(v).trim())) n = Number(v);
     else n = Date.parse(v);
     if (!Number.isFinite(n)) return null;
     return n < 1000000000000 ? n * 1000 : n;
