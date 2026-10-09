@@ -241,7 +241,8 @@
         distanceKm+=6371*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
       }
     }
-    return {points,gaps,first:points[0]||null,last:points[points.length-1]||null,durationMs:points.length>1?points[points.length-1].timestamp-points[0].timestamp:null,straightLineKm:distanceKm,cadenceSec:cadence};
+    const weatherRecords=points.map((p)=>p.raw&&(p.raw.weather||p.raw.weatherConditions||p.raw.weather_condition)).filter(Boolean);
+    return {points,gaps,first:points[0]||null,last:points[points.length-1]||null,durationMs:points.length>1?points[points.length-1].timestamp-points[0].timestamp:null,straightLineKm:distanceKm,cadenceSec:cadence,weatherRecords};
   }
   function assessmentHtml(a) {
     const tone = a.status==="Within Recorded Limits"?"emerald":a.status==="Excursion Detected"?"red":a.status==="Review Required"?"amber":"slate";
