@@ -1,7 +1,7 @@
 const {
   getDatabase, getLastUpdate, getTemperature, getCoordinates, getThresholds,
   sendSms, outageMessage
-} = require("./_lib/networkMonitor");
+} = require("../lib/networkMonitor");
 
 function contactsFor(contactRecord, level, previousLevel = 0) {
   const c = contactRecord || {};
