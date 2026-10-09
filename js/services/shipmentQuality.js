@@ -57,7 +57,7 @@
       temperature: temperatureOf(r),
       source: source,
       raw: r
-    })).filter((r) => r.timestamp !== null).sort((a, b) => a.timestamp - b.timestamp);
+    })).sort((a, b) => (a.timestamp ?? 0) - (b.timestamp ?? 0);
   }
   async function readPath(path) {
     if (!db) return null;
@@ -136,11 +136,11 @@
   function analyze(shipment, evidence) {
     const min = num(shipment.minAllowedTemperature ?? shipment.minTemp ?? shipment.storageTemperatureMin);
     const max = num(shipment.maxAllowedTemperature ?? shipment.maxTemp ?? shipment.storageTemperatureMax);
-    const invalidReadings = evidence.readings.filter((r) => r.temperature === null).length;
-    const readings = evidence.readings.filter((r) => r.temperature !== null).sort((a,b) => a.timestamp-b.timestamp);
+    const invalidReadings = evidence.readings.filter((r) => r.timestamp === null || r.temperature === null).length;
+    const readings = evidence.readings.filter((r) => r.timestamp !== null && r.temperature !== null).sort((a,b) => a.timestamp-b.timestamp);
     const intervals = [];
     for (let i=1;i<readings.length;i++) intervals.push((readings[i].timestamp-readings[i-1].timestamp)/1000);
-    const medianIntervalSec = median(intervals);
+    const medianIntervalSec = intervals.length >= 2 ? median(intervals) : null;
     const expectedIntervalMs = medianIntervalSec && medianIntervalSec <= 86400 ? medianIntervalSec*1000 : null;
     const gaps = [];
     if (expectedIntervalMs) {
@@ -204,7 +204,7 @@
     if (validRange && readings.length && outOfRange.length) {
       status="Excursion Detected";
       explanation="One or more timestamped readings were outside the configured product limits. Qualified review is required.";
-    } else if (validRange && readings.length && outOfRange.length===0 && gaps.length===0) {
+    } else if (validRange && readings.length >= 3 && expectedIntervalMs && outOfRange.length===0 && gaps.length===0) {
       status="Within Recorded Limits";
       explanation="All available valid timestamped readings were within the configured limits. This is not a product release decision.";
     } else if (outOfRange.length || gaps.length || !validRange || readings.length<2) {
@@ -228,7 +228,7 @@
   function gpsAnalysis(points) {
     const gaps=[], times=points.map((p)=>p.timestamp);
     const deltas=[]; for(let i=1;i<times.length;i++) deltas.push((times[i]-times[i-1])/1000);
-    const cadence=median(deltas);
+    const cadence=deltas.length >= 2 ? median(deltas) : null;
     if(cadence) for(let i=1;i<points.length;i++) if(points[i].timestamp-points[i-1].timestamp>Math.max(cadence*2.5*1000,120000)) gaps.push({start:points[i-1].timestamp,end:points[i].timestamp,durationMs:points[i].timestamp-points[i-1].timestamp});
     let distanceKm=null;
     // Straight-line GPS displacement is deliberately not labelled road distance.
