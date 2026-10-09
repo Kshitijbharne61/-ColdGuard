@@ -101,7 +101,7 @@
         })).filter((p) => p.timestamp !== null && p.lat !== null && p.lng !== null && p.lat >= -90 && p.lat <= 90 && p.lng >= -180 && p.lng <= 180);
         if (valid.length) { gps.push.apply(gps, valid); sourcePaths.push(entry.label); }
       } else {
-        const parsed = normalizeReadings(entry.value, entry.label).filter((r) => r.temperature !== null);
+        const parsed = normalizeReadings(entry.value, entry.label);
         if (parsed.length) { readings.push.apply(readings, parsed); sourcePaths.push(entry.label); }
       }
     });
@@ -133,6 +133,7 @@
   function analyze(shipment, evidence) {
     const min = num(shipment.minAllowedTemperature ?? shipment.minTemp ?? shipment.storageTemperatureMin);
     const max = num(shipment.maxAllowedTemperature ?? shipment.maxTemp ?? shipment.storageTemperatureMax);
+    const invalidReadings = evidence.readings.filter((r) => r.temperature === null).length;
     const readings = evidence.readings.filter((r) => r.temperature !== null).sort((a,b) => a.timestamp-b.timestamp);
     const intervals = [];
     for (let i=1;i<readings.length;i++) intervals.push((readings[i].timestamp-readings[i-1].timestamp)/1000);
@@ -211,7 +212,7 @@
       ? excursions.reduce((s,e)=>s+e.durationMs,0) : null;
     const temperatures=readings.map((r)=>r.temperature);
     return {
-      min,max,validRange,readings,hours,gaps,excursions,outOfRange,
+      min,max,validRange,readings,invalidReadings,hours,gaps,excursions,outOfRange,
       minRecorded:temperatures.length?Math.min.apply(null,temperatures):null,
       maxRecorded:temperatures.length?Math.max.apply(null,temperatures):null,
       medianIntervalSec,expectedIntervalMs,first,last,
@@ -482,9 +483,9 @@
     doc.setFontSize(7);doc.setTextColor(100,116,139);doc.text("Coverage is estimated only when a sampling interval can be inferred from observed timestamps.",14,285);doc.text("Page "+doc.getNumberOfPages(),196,290,{align:"right"});
 
     doc.addPage();addPageHeading(doc,"Excursion & Sensor Analysis","Averages do not override excursion severity, duration, or data-quality limitations.");
-    y=37;y=line(doc,"Valid temperature readings",t.readings.length,y);y=line(doc,"Out-of-range readings",t.outOfRange.length,y);
+    y=37;y=line(doc,"Valid temperature readings",t.readings.length,y);y=line(doc,"Out-of-range readings",t.outOfRange.length,y);y=line(doc,"Invalid / unreadable timestamped records",t.invalidReadings,y);
     y=line(doc,"Lowest recorded temperature",fmtTemp(t.minRecorded),y);y=line(doc,"Highest recorded temperature",fmtTemp(t.maxRecorded),y);
-    y=line(doc,"Longest detected event",t.excursions.length?Math.max.apply(null,t.excursions.map(e=>e.end-e.start))/60000 .toFixed: "Not recorded",y);
+    y=line(doc,"Longest observed span",t.excursions.length?(Math.max.apply(null,t.excursions.map(e=>e.end-e.start))/60000).toFixed(1)+" minutes between first and last out-of-range sample":"Not recorded",y);
     y=line(doc,"Sampling interval",t.medianIntervalSec===null?"Not estimable":Math.round(t.medianIntervalSec)+" seconds (median observed)",y);
     y+=3;doc.setFont("helvetica","bold");doc.setFontSize(10);doc.setTextColor(15,23,42);doc.text("Excursion events",14,y);y+=7;
     if(!t.excursions.length){doc.setFont("helvetica","normal");doc.setFontSize(8);doc.text("No out-of-range readings found in available timestamped records.",14,y);y+=7;}
@@ -596,7 +597,7 @@
     const nav=document.querySelector("nav");
     if(nav && !$("nav-shipment-quality")) {
       const btn=document.createElement("button");
-      btn.id="nav-shipment-quality";btn.type="button";btn.className="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition";
+      btn.id="nav-shipment-quality";btn.type="button";btn.dataset.view="quality";btn.className="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition";
       btn.innerHTML='<span class="text-base">📄</span><span>Shipment Quality & Reports</span>';
       btn.onclick=()=>{app.currentView="quality";window.location.hash="quality";app.updateNavActiveState("quality");render($("main-content-view"));};
       nav.appendChild(btn);
