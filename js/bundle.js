@@ -3519,9 +3519,12 @@ class FirebaseAuthService {
 
   onAuthStateChanged(callback) {
     this.authStateListeners.push(callback);
-    // Trigger immediately with current status
-    if (this.isInitialized) {
+    // Always notify the UI immediately, even when the Firebase CDN/SDK failed to load.
+    // This keeps the login screen visible instead of leaving the page blank.
+    try {
       callback(this.currentUser);
+    } catch (e) {
+      console.error("Initial auth-state callback error:", e);
     }
   }
 
