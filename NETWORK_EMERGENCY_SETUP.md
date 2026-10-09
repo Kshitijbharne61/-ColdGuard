@@ -29,9 +29,12 @@ Add these records using a trusted administrator / Firebase Console. Use E.164 ph
 {
   "emergency_contacts": {
     "CG-VEHICLE-ID": {
+      "driverName": "Actual driver name",
       "driverPhone": "+91XXXXXXXXXX",
       "controlRoomPhone": "+91XXXXXXXXXX",
+      "emergencyName": "Actual emergency contact name",
       "emergencyPhone": "+91XXXXXXXXXX",
+      "agencyName": "Actual transport agency",
       "agencyPhone": "+91XXXXXXXXXX"
     },
     "default": {
