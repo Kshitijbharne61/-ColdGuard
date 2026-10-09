@@ -17,7 +17,7 @@ The scheduled endpoint is `/api/monitor-offline`. Minute-level scheduling is tri
 Deployment steps:
 1. In the repository root, run `cd functions && npm install && cd ..`.
 2. Store the Twilio account SID and auth token as Firebase secrets: `firebase functions:secrets:set TWILIO_ACCOUNT_SID` and `firebase functions:secrets:set TWILIO_AUTH_TOKEN`.
-3. Configure `TWILIO_FROM` or `TWILIO_MESSAGING_SERVICE_SID` as runtime environment values for the Functions deployment. Configure only an approved sender/service.
+3. Configure `TWILIO_FROM` or `TWILIO_MESSAGING_SERVICE_SID` in a local, uncommitted Firebase Functions environment file such as `functions/.env.coldguard-fdfc5`. Do not commit this file. Configure only an approved sender/service.
 4. Deploy the scheduled function: `firebase deploy --only functions:monitorColdGuardOffline`.
 5. Confirm the function's Cloud Scheduler job runs each minute and its logs show successful monitoring cycles.
 
