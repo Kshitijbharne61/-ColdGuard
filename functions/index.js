@@ -3,7 +3,7 @@ const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { defineSecret } = require("firebase-functions/params");
 const { monitorOffline } = require("./lib/monitor");
 
-admin.initializeApp();
+admin.initializeApp({ databaseURL: process.env.FIREBASE_DATABASE_URL || "https://coldguard-fdfc5-default-rtdb.asia-southeast1.firebasedatabase.app" });
 
 const twilioSid = defineSecret("TWILIO_ACCOUNT_SID");
 const twilioToken = defineSecret("TWILIO_AUTH_TOKEN");
