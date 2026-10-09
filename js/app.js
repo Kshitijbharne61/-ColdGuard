@@ -272,8 +272,6 @@ class ColdGuardApp {
         this.dbService.updateShipmentTelemetry(active.id, {
           temperature: active.currentTemperature,
           humidity: active.currentHumidity,
-          latitude: active.gpsLatitude,
-          longitude: active.gpsLongitude,
           batteryLevel: active.batteryLevel,
           viability: active.estimatedViabilityPercent,
           riskClassification: active.riskClassification,
@@ -296,16 +294,47 @@ class ColdGuardApp {
   }
 
   handleRemoteShipments(remoteShipments) {
-    if (!remoteShipments || remoteShipments.length === 0) return;
-    this.simulation.shipments = remoteShipments;
+    if (!Array.isArray(remoteShipments) || remoteShipments.length === 0) return;
+    // Merge sparse Firebase telemetry into the full local shipment model.
+    const localShipments = this.simulation.shipments || [];
+    const localById = new Map(localShipments.map(s => [String(s.id), s]));
+    const seen = new Set();
+    const mergedRemote = remoteShipments.map(remote => {
+      const location = remote.location || {};
+      const live = remote.telemetry?.live || {};
+      const id = String(remote.id || remote.shipmentId || "");
+      if (!id) return null;
+      seen.add(id);
+      const local = localById.get(id) || {};
+      const valid = value => value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
+      const latitude = location.hasFix === false ? local.gpsLatitude :
+        (valid(location.latitude) ? Number(location.latitude) :
+        (valid(remote.gpsLatitude) ? Number(remote.gpsLatitude) :
+        (valid(live.latitude) ? Number(live.latitude) : local.gpsLatitude)));
+      const longitude = location.hasFix === false ? local.gpsLongitude :
+        (valid(location.longitude) ? Number(location.longitude) :
+        (valid(remote.gpsLongitude) ? Number(remote.gpsLongitude) :
+        (valid(live.longitude) ? Number(live.longitude) : local.gpsLongitude)));
+      return {
+        ...local, ...remote, id,
+        gpsLatitude: latitude, gpsLongitude: longitude,
+        currentTemperature: remote.currentTemperature ?? live.temperature ?? local.currentTemperature,
+        currentHumidity: remote.currentHumidity ?? live.humidity ?? local.currentHumidity,
+        batteryLevel: remote.batteryLevel ?? live.batteryLevel ?? local.batteryLevel,
+        isLiveGps: location.isLiveGps === true || remote.isLiveGps === true,
+        gpsHasFix: location.hasFix !== false,
+        gpsStatus: location.status || (remote.isLiveGps ? "LOCKED" : local.gpsStatus),
+        gpsSpeedKmH: location.speedKmH ?? local.gpsSpeedKmH,
+        gpsSatellites: location.satellites ?? local.gpsSatellites,
+        gpsLastUpdated: location.lastUpdated ?? remote.lastSensorUpdate ?? local.gpsLastUpdated
+      };
+    }).filter(Boolean);
+    const untouchedLocal = localShipments.filter(s => !seen.has(String(s.id)));
+    this.simulation.shipments = [...mergedRemote, ...untouchedLocal];
     this.updateHeaderBadges();
-    if (this.currentView === "dashboard") {
-      this.updateDashboardKpis();
-    } else if (this.currentView === "shipments") {
-      this.renderShipmentsTable();
-    } else if (this.currentView === "details") {
-      this.updateDetailsTelemetry();
-    }
+    if (this.currentView === "dashboard") this.updateDashboardKpis();
+    else if (this.currentView === "shipments") this.renderShipmentsTable();
+    else if (this.currentView === "details") this.updateDetailsTelemetry();
   }
 
   handleRemoteAlerts(remoteAlerts) {
