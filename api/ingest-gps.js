@@ -1,151 +1,163 @@
 // api/ingest-gps.js
-// Vercel Serverless Function — Secure GPS Telemetry Ingestion for ColdGuard
-// Runs on Vercel's 100% Free Tier (No Google Cloud Blaze plan required)
+// Secure Vercel serverless endpoint for ColdGuard GPS telemetry.
+// Configure FIREBASE_SERVICE_ACCOUNT_JSON and (optionally) FIREBASE_DATABASE_URL
+// in the Vercel project environment. Never commit a service-account key.
 
-const crypto = require('crypto');
+const crypto = require("crypto");
+const admin = require("firebase-admin");
 
-const RTDB_BASE_URL = "https://coldguard-fdfc5-default-rtdb.asia-southeast1.firebasedatabase.app";
+const DATABASE_URL =
+  process.env.FIREBASE_DATABASE_URL ||
+  "https://coldguard-fdfc5-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+function getDatabase() {
+  if (!admin.apps.length) {
+    const rawServiceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+    if (!rawServiceAccount) {
+      throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_JSON environment variable.");
+    }
+    const serviceAccount = JSON.parse(rawServiceAccount);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: DATABASE_URL
+    });
+  }
+  return admin.database();
+}
+
+function safeTokenMatches(token, expectedHash) {
+  if (!token || !expectedHash || typeof expectedHash !== "string") return false;
+  const providedHash = crypto.createHash("sha256").update(token).digest("hex");
+  const expected = Buffer.from(expectedHash, "hex");
+  const provided = Buffer.from(providedHash, "hex");
+  return expected.length === provided.length &&
+    expected.length > 0 &&
+    crypto.timingSafeEqual(expected, provided);
+}
 
 module.exports = async (req, res) => {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-coldguard-device-id, x-coldguard-device-token');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, x-coldguard-device-id, x-coldguard-device-token"
+  );
 
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
+  if (req.method === "OPTIONS") return res.status(204).end();
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method Not Allowed. Use POST." });
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed. Use POST.' });
-  }
-
-  const deviceId = req.headers['x-coldguard-device-id'] || req.body?.deviceId;
-  const deviceToken = req.headers['x-coldguard-device-token'] || req.body?.deviceToken;
-
+  const body = req.body && typeof req.body === "object" ? req.body : {};
+  const deviceId = req.headers["x-coldguard-device-id"] || body.deviceId;
+  const deviceToken = req.headers["x-coldguard-device-token"] || body.deviceToken;
   if (!deviceId || !deviceToken) {
-    return res.status(401).json({ error: 'Unauthorized: Missing device ID or token credentials.' });
+    return res.status(401).json({ error: "Missing device ID or device token." });
   }
 
   try {
-    // 1. Verify Device Identity against Firebase RTDB
-    const deviceRes = await fetch(`${RTDB_BASE_URL}/devices/${deviceId}.json`);
-    const deviceData = await deviceRes.json();
+    const db = getDatabase();
+    const deviceSnapshot = await db.ref(`devices/${deviceId}`).once("value");
+    const deviceData = deviceSnapshot.val();
 
     if (!deviceData || !deviceData.deviceSecretHash) {
-      return res.status(403).json({ error: 'Forbidden: Device is not provisioned in ColdGuard.' });
+      return res.status(403).json({ error: "Device is not provisioned in ColdGuard." });
+    }
+    if (!safeTokenMatches(deviceToken, deviceData.deviceSecretHash)) {
+      return res.status(403).json({ error: "Invalid device authentication token." });
     }
 
-    const providedHash = crypto.createHash('sha256').update(deviceToken).digest('hex');
-    const expectedBuf = Buffer.from(deviceData.deviceSecretHash, 'hex');
-    const providedBuf = Buffer.from(providedHash, 'hex');
-
-    if (expectedBuf.length !== providedBuf.length || !crypto.timingSafeEqual(expectedBuf, providedBuf)) {
-      return res.status(403).json({ error: 'Forbidden: Invalid device authentication token.' });
+    const shipmentId = body.shipmentId || deviceData.assignedShipmentId;
+    if (!shipmentId || /[.#$\[\]\/]/.test(shipmentId)) {
+      return res.status(422).json({ error: "A valid shipmentId is required." });
     }
 
-    // 2. Validate GPS Payload
-    const shipmentId = req.body?.shipmentId || deviceData.assignedShipmentId || "CG-9021-PFZ";
-    const hasFix = req.body?.hasFix === true || req.body?.hasFix === "true";
     const now = Date.now();
+    const hasFix = body.hasFix === true || body.hasFix === "true";
+    const locationRef = db.ref(`shipments/${shipmentId}/location`);
 
-    // Handle "No Satellite Fix" (e.g. indoors or signal lost)
     if (!hasFix) {
-      const noFixPayload = {
+      await locationRef.update({
         isLiveGps: true,
         hasFix: false,
         status: "NO_FIX",
-        message: "GPS signal unavailable (Searching for satellites)",
+        message: "GPS signal unavailable (searching for satellites)",
         lastUpdated: now
-      };
-
-      await fetch(`${RTDB_BASE_URL}/shipments/${shipmentId}/location.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(noFixPayload)
       });
-
       return res.status(200).json({
         success: true,
         shipmentId,
         hasFix: false,
-        message: "GPS searching for satellite fix. Signal currently unavailable."
+        message: "GPS searching for satellite fix."
       });
     }
 
-    // Validate Numerical Coordinates
-    const lat = Number(req.body?.latitude);
-    const lng = Number(req.body?.longitude);
-    const speedKmH = Number(req.body?.speedKmH) || 0;
-    const satellites = Number(req.body?.satellites) || 0;
-    const altitudeM = Number(req.body?.altitudeM) || 0;
+    const latitude = Number(body.latitude);
+    const longitude = Number(body.longitude);
+    const speedKmH = body.speedKmH == null ? 0 : Number(body.speedKmH);
+    const satellites = body.satellites == null ? 0 : Number(body.satellites);
+    const altitudeM = body.altitudeM == null ? 0 : Number(body.altitudeM);
 
-    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-      return res.status(422).json({ error: 'Unprocessable: Invalid latitude or longitude coordinates.' });
+    if (
+      !Number.isFinite(latitude) || latitude < -90 || latitude > 90 ||
+      !Number.isFinite(longitude) || longitude < -180 || longitude > 180 ||
+      !Number.isFinite(speedKmH) || speedKmH < 0 ||
+      !Number.isFinite(satellites) || satellites < 0 ||
+      !Number.isFinite(altitudeM)
+    ) {
+      return res.status(422).json({ error: "Invalid GPS coordinates or telemetry values." });
     }
 
-    // 3. Save Latest Location to /shipments/{shipmentId}/location
-    const locationPayload = {
-      latitude: lat,
-      longitude: lng,
+    const location = {
+      latitude,
+      longitude,
       speedKmH: Math.round(speedKmH * 10) / 10,
-      satellites,
+      satellites: Math.round(satellites),
       altitudeM: Math.round(altitudeM * 10) / 10,
       isLiveGps: true,
       hasFix: true,
       status: "LOCKED",
-      gpsTimestamp: req.body?.gpsTimestamp || now,
+      gpsTimestamp: Number(body.gpsTimestamp) || now,
       lastUpdated: now
     };
 
-    const updateLocationPromise = fetch(`${RTDB_BASE_URL}/shipments/${shipmentId}/location.json`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(locationPayload)
-    });
+    const updates = {};
+    updates[`shipments/${shipmentId}/location`] = location;
+    updates[`shipments/${shipmentId}/gpsLatitude`] = latitude;
+    updates[`shipments/${shipmentId}/gpsLongitude`] = longitude;
+    updates[`shipments/${shipmentId}/lastSensorUpdate`] = new Date(now).toISOString();
+    updates[`shipments/${shipmentId}/currentLocation`] =
+      `Live GPS: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} (Speed: ${location.speedKmH.toFixed(1)} km/h)`;
+    updates[`shipments/${shipmentId}/telemetry/live/latitude`] = latitude;
+    updates[`shipments/${shipmentId}/telemetry/live/longitude`] = longitude;
+    updates[`shipments/${shipmentId}/telemetry/live/gpsTimestamp`] = now;
 
-    // 4. Record to GPS Route History Breadcrumbs /gps_history/{shipmentId}
-    const historyPayload = {
-      latitude: lat,
-      longitude: lng,
-      speedKmH: Math.round(speedKmH * 10) / 10,
-      satellites,
+    const historyRef = db.ref(`gps_history/${shipmentId}`).push();
+    updates[`gps_history/${shipmentId}/${historyRef.key}`] = {
+      latitude,
+      longitude,
+      speedKmH: location.speedKmH,
+      satellites: location.satellites,
       timestamp: now
     };
 
-    const appendHistoryPromise = fetch(`${RTDB_BASE_URL}/gps_history/${shipmentId}.json`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(historyPayload)
-    });
-
-    // 5. Update Shipment Root Coordinates for Fast Querying
-    const updateShipmentRootPromise = fetch(`${RTDB_BASE_URL}/shipments/${shipmentId}.json`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        gpsLatitude: lat,
-        gpsLongitude: lng,
-        lastSensorUpdate: new Date(now).toISOString(),
-        currentLocation: `Live GPS: ${lat.toFixed(4)}°N, ${lng.toFixed(4)}°E (Speed: ${speedKmH.toFixed(1)} km/h)`
-      })
-    });
-
-    await Promise.all([updateLocationPromise, appendHistoryPromise, updateShipmentRootPromise]);
+    await db.ref().update(updates);
 
     return res.status(200).json({
       success: true,
       shipmentId,
-      latitude: lat,
-      longitude: lng,
-      speedKmH,
-      satellites,
+      latitude,
+      longitude,
+      speedKmH: location.speedKmH,
+      satellites: location.satellites,
       status: "LOCKED",
       timestamp: now
     });
-
   } catch (err) {
-    console.error('Error processing GPS ingestion:', err);
-    return res.status(500).json({ error: 'Internal Server Error', message: err.message });
+    console.error("Error processing GPS ingestion:", err);
+    return res.status(500).json({
+      error: "GPS ingestion failed.",
+      message: err.message
+    });
   }
 };
