@@ -3,22 +3,28 @@ const {
   sendSms, outageMessage
 } = require("./_lib/networkMonitor");
 
-function contactsFor(contactRecord, level) {
+function contactsFor(contactRecord, level, previousLevel = 0) {
   const c = contactRecord || {};
   const values = [];
-  if (level >= 1) {
+  // Level 1: driver and control room. Level 2: only newly escalated recipients.
+  if (level >= 1 && previousLevel < 1) {
     if (c.driverPhone) values.push({ role: "driver", phone: c.driverPhone });
     if (c.controlRoomPhone || c.agencyPhone) values.push({ role: "control_room", phone: c.controlRoomPhone || c.agencyPhone });
   }
-  if (level >= 2) {
+  if (level >= 2 && previousLevel < 2) {
     if (c.emergencyPhone) values.push({ role: "emergency_contact", phone: c.emergencyPhone });
     if (c.agencyPhone && c.controlRoomPhone && c.agencyPhone !== c.controlRoomPhone) values.push({ role: "agency", phone: c.agencyPhone });
+    // If monitoring first runs after escalation threshold, notify the baseline contacts too.
+    if (previousLevel === 0) {
+      if (c.driverPhone) values.push({ role: "driver", phone: c.driverPhone });
+      if (c.controlRoomPhone || c.agencyPhone) values.push({ role: "control_room", phone: c.controlRoomPhone || c.agencyPhone });
+    }
   }
   return values.filter((v, i, arr) => arr.findIndex(x => x.phone === v.phone) === i);
 }
 
-async function deliverLevel(db, shipmentId, shipment, contactRecord, level, lastUpdate, outageMinutes, coords, temperature) {
-  const recipients = contactsFor(contactRecord, level);
+async function deliverLevel(db, shipmentId, shipment, contactRecord, level, previousLevel, lastUpdate, outageMinutes, coords, temperature) {
+  const recipients = contactsFor(contactRecord, level, previousLevel);
   const body = outageMessage({ shipmentId, shipment, lastUpdate, outageMinutes, coords, temperature });
   const results = [];
   for (const recipient of recipients) {
@@ -83,7 +89,7 @@ module.exports = async function handler(req, res) {
       let notification = null;
       const contactRecord = contacts[shipmentId] || contacts.default || {};
       if (level > previousLevel && level > 0) {
-        notification = await deliverLevel(db, shipmentId, shipment, contactRecord, level, lastUpdate, outageMinutes, coords, temperature);
+        notification = await deliverLevel(db, shipmentId, shipment, contactRecord, level, previousLevel, lastUpdate, outageMinutes, coords, temperature);
         counts.notifications += notification.results.filter(r => r.status === "sent").length;
       } else if (lastUpdate !== null && outageMinutes < thresholds.warningMinutes && wasOutage) {
         const recoveryRecipients = contactsFor(contactRecord, 1);
