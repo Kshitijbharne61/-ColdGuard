@@ -1,29 +1,28 @@
+const admin = require("firebase-admin");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { defineSecret } = require("firebase-functions/params");
+const { monitorOffline } = require("./lib/monitor");
 
-const coldGuardCronSecret = defineSecret("COLDGUARD_CRON_SECRET");
-const MONITOR_URL = "https://12-kshitijbharne.vercel.app/api/monitor-offline";
+admin.initializeApp();
 
-// Runs independently of the driver's browser. Requires Firebase Blaze billing
-// because scheduled Cloud Functions use Cloud Scheduler.
+const twilioSid = defineSecret("TWILIO_ACCOUNT_SID");
+const twilioToken = defineSecret("TWILIO_AUTH_TOKEN");
+
+// Sender can be configured as non-secret environment values in the Functions runtime.
+// For India, configure an approved sender or messaging service with the provider's DLT requirements.
 exports.monitorColdGuardOffline = onSchedule({
   schedule: "every 1 minutes",
   timeZone: "Asia/Kolkata",
   region: "asia-south1",
-  secrets: [coldGuardCronSecret],
+  secrets: [twilioSid, twilioToken],
   timeoutSeconds: 120,
   memory: "256MiB"
 }, async () => {
-  const response = await fetch(MONITOR_URL, {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + coldGuardCronSecret.value(),
-      Accept: "application/json"
-    }
+  const result = await monitorOffline(admin.database(), {
+    sid: twilioSid.value(),
+    token: twilioToken.value(),
+    from: process.env.TWILIO_FROM || "",
+    serviceSid: process.env.TWILIO_MESSAGING_SERVICE_SID || ""
   });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok || body.ok !== true) {
-    throw new Error("ColdGuard monitor returned HTTP " + response.status + ": " + (body.error || "unknown error"));
-  }
-  console.log("ColdGuard monitor completed", JSON.stringify(body.counts || {}));
+  console.log("ColdGuard offline monitor completed", JSON.stringify(result));
 });
