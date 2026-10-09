@@ -277,9 +277,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Ultra-Low Freezer (-90°C to -60°C)",
     priority: "Urgent",
 
-    originFacility: "Kalamazoo Bio-Production Plant (MI)",
-    currentLocation: "I-76 Mile Marker 142 near Breezewood, PA",
-    destinationFacility: "Children's Hospital of Philadelphia - Central Pharmacy",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "REEFER-TRUCK-884",
     carrierIdentifier: "CryoTrans Express (Driver: J. Gallagher)",
     departureTime: "2026-10-09T08:30:00Z",
@@ -295,8 +295,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 48.2,
     minAllowedHumidity: 20.0,
     maxAllowedHumidity: 80.0,
-    gpsLatitude: 40.0152,
-    gpsLongitude: -78.2384,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 78,
@@ -324,10 +325,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-02",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 40.4406, lng: -79.9959, name: "Pittsburgh Hub" },
-      { lat: 40.0152, lng: -78.2384, name: "Current GPS (I-76 Breezewood)" },
-      { lat: 40.2732, lng: -76.8867, name: "Harrisburg Transfer Point" },
-      { lat: 39.9526, lng: -75.1652, name: "CHOP Philadelphia" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
       { time: "08:30", severity: "safe", desc: "Shipment dispatched from Kalamazoo Hub. Seal verified." },
@@ -354,9 +355,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "High",
 
-    originFacility: "Gaithersburg Distribution Core (MD)",
-    currentLocation: "US-15 Northbound near Gettysburg, PA",
-    destinationFacility: "UPMC Presbyterian Hospital Vaccine Center",
+    originFacility: "Pune Regional Vaccine Depot, Pune",
+    currentLocation: "Demo GPS near Ahmednagar, Maharashtra",
+    destinationFacility: "Nagpur Regional Medical Depot, Nagpur",
     transportVehicleId: "VAN-COLD-309",
     carrierIdentifier: "MediRoute Logistics (Driver: K. Sharma)",
     departureTime: "2026-10-09T11:00:00Z",
@@ -372,8 +373,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 59.8,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 39.8283,
-    gpsLongitude: -77.2311,
+    gpsLatitude: 19.0948,
+    gpsLongitude: 74.7480,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 89,
@@ -401,9 +403,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-03",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 39.1434, lng: -77.2014, name: "Gaithersburg, MD" },
-      { lat: 39.8283, lng: -77.2311, name: "Current GPS (US-15 Gettysburg)" },
-      { lat: 40.4406, lng: -79.9959, name: "UPMC Presbyterian" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Regional Vaccine Depot" },
+      { lat: 19.0948, lng: 74.7480, name: "Demo GPS near Ahmednagar" },
+      { lat: 20.9374, lng: 77.7796, name: "Amravati Transfer Hub" },
+      { lat: 21.1458, lng: 79.0882, name: "Nagpur Regional Medical Depot" }
     ],
     timeline: [
       { time: "11:00", severity: "safe", desc: "Dispatched with validated thermal shipper and calibrated sensor." },
@@ -427,9 +430,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Standard Frozen (-25°C to -15°C)",
     priority: "Normal",
 
-    originFacility: "Norwood Technical Operations (MA)",
-    currentLocation: "I-80 Westbound near Bellefonte, PA",
-    destinationFacility: "Cleveland Clinic Main Campus Pharmacy",
+    originFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
+    currentLocation: "Demo GPS near Surat, Gujarat",
+    destinationFacility: "Ahmedabad Vaccine Logistics Hub, Ahmedabad",
     transportVehicleId: "REEFER-UNIT-104",
     carrierIdentifier: "ColdLine Logistics (Driver: M. Kowalski)",
     departureTime: "2026-10-09T06:00:00Z",
@@ -445,8 +448,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 42.1,
     minAllowedHumidity: 30.0,
     maxAllowedHumidity: 75.0,
-    gpsLatitude: 40.9134,
-    gpsLongitude: -77.7783,
+    gpsLatitude: 21.1702,
+    gpsLongitude: 72.8311,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 94,
@@ -474,9 +478,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-05",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 42.1887, lng: -71.1964, name: "Norwood, MA" },
-      { lat: 40.9134, lng: -77.7783, name: "Current GPS (I-80 Bellefonte)" },
-      { lat: 41.4993, lng: -81.6944, name: "Cleveland Clinic" }
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" },
+      { lat: 21.1702, lng: 72.8311, name: "Demo GPS near Surat" },
+      { lat: 22.3072, lng: 73.1812, name: "Vadodara Transfer Hub" },
+      { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
       { time: "06:00", severity: "safe", desc: "Batch verified at Norwood facility. Core temp -22.1°C." },
@@ -499,9 +504,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Normal",
 
-    originFacility: "Wavre Vaccine Center (US Hub Philadelphia)",
-    currentLocation: "PA Turnpike near Carlisle, PA",
-    destinationFacility: "Penn State Health Milton S. Hershey Medical Center",
+    originFacility: "Delhi Central Vaccine Depot, Delhi",
+    currentLocation: "Demo GPS near Gurugram, Haryana",
+    destinationFacility: "Jaipur Regional Vaccine Centre, Jaipur",
     transportVehicleId: "VAN-EXPRESS-19",
     carrierIdentifier: "MediVan Courier (Driver: R. Patel)",
     departureTime: "2026-10-09T13:00:00Z",
@@ -517,8 +522,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 78.4, // HUMIDITY EXCURSION! (Limit: 35% - 65%)
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.2014,
-    gpsLongitude: -77.1889,
+    gpsLatitude: 28.4595,
+    gpsLongitude: 77.0266,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 82,
@@ -546,9 +552,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-02",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 39.9526, lng: -75.1652, name: "Philadelphia Depot" },
-      { lat: 40.2014, lng: -77.1889, name: "Current GPS (Carlisle, PA)" },
-      { lat: 40.2859, lng: -76.6506, name: "Hershey Med Center" }
+      { lat: 28.6139, lng: 77.2090, name: "Delhi Central Vaccine Depot" },
+      { lat: 28.4595, lng: 77.0266, name: "Demo GPS near Gurugram" },
+      { lat: 28.1990, lng: 76.6190, name: "Rewari Checkpoint" },
+      { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
       { time: "13:00", severity: "safe", desc: "Dispatched from Philadelphia. Humidity 52% RH." },
@@ -571,9 +578,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "High",
 
-    originFacility: "West Point Manufacturing Facility (PA)",
-    currentLocation: "Off Route: Secondary Route 22 near Lewistown, PA",
-    destinationFacility: "Allegheny General Hospital - Central Distribution",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "REEFER-TRUCK-512",
     carrierIdentifier: "FastCold Transport (Driver: D. Bradley)",
     departureTime: "2026-10-09T09:15:00Z",
@@ -589,8 +596,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 48.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.5992,
-    gpsLongitude: -77.5714,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     lastSensorUpdate: new Date(Date.now() - 4 * 60 * 1000).toISOString(), // 4 mins ago (stale warning)
     sensorConnectivity: "Stale Telemetry",
     batteryLevel: 41,
@@ -618,9 +626,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-01",
     routeDeviationDetected: true,
     routeWaypoints: [
-      { lat: 40.2104, lng: -75.3121, name: "West Point, PA" },
-      { lat: 40.5992, lng: -77.5714, name: "Current GPS (Off Route Rt 22)" },
-      { lat: 40.4578, lng: -80.0028, name: "Allegheny General Hospital" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
       { time: "09:15", severity: "safe", desc: "Departed West Point facility on I-76 West planned route." },
@@ -643,9 +652,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Ultra-Cold (-80°C to -60°C)",
     priority: "Urgent",
 
-    originFacility: "CDC Strategic Stockpile Depot Atlanta (GA)",
-    currentLocation: "I-71 Northbound near Cincinnati, OH",
-    destinationFacility: "Ohio State University Wexner Medical Center",
+    originFacility: "Pune Regional Vaccine Depot, Pune",
+    currentLocation: "Demo GPS near Ahmednagar, Maharashtra",
+    destinationFacility: "Nagpur Regional Medical Depot, Nagpur",
     transportVehicleId: "SECURE-HAUL-09",
     carrierIdentifier: "BioDefense Courier (Escort Team Alpha)",
     departureTime: "2026-10-09T05:00:00Z",
@@ -661,8 +670,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 24.3,
     minAllowedHumidity: 15.0,
     maxAllowedHumidity: 70.0,
-    gpsLatitude: 39.1031,
-    gpsLongitude: -84.5120,
+    gpsLatitude: 19.0948,
+    gpsLongitude: 74.7480,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 98,
@@ -690,9 +700,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-04",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 33.7490, lng: -84.3880, name: "Atlanta SNS Depot" },
-      { lat: 39.1031, lng: -84.5120, name: "Current GPS (Cincinnati, OH)" },
-      { lat: 39.9992, lng: -83.0152, name: "OSU Wexner Med Center" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Regional Vaccine Depot" },
+      { lat: 19.0948, lng: 74.7480, name: "Demo GPS near Ahmednagar" },
+      { lat: 20.9374, lng: 77.7796, name: "Amravati Transfer Hub" },
+      { lat: 21.1458, lng: 79.0882, name: "Nagpur Regional Medical Depot" }
     ],
     timeline: [
       { time: "05:00", severity: "safe", desc: "Biosecurity seal initialized. Active cryo engine locked at -75.0°C." },
@@ -714,9 +725,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C) - DO NOT FREEZE",
     priority: "Normal",
 
-    originFacility: "Newark International Biologics Terminal (NJ)",
-    currentLocation: "I-78 Westbound near Allentown, PA",
-    destinationFacility: "Geisinger Medical Center Danville (PA)",
+    originFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
+    currentLocation: "Demo GPS near Surat, Gujarat",
+    destinationFacility: "Ahmedabad Vaccine Logistics Hub, Ahmedabad",
     transportVehicleId: "REEFER-TRUCK-220",
     carrierIdentifier: "TransCold Pharma (Driver: H. Weber)",
     departureTime: "2026-10-09T10:45:00Z",
@@ -732,8 +743,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 55.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.6084,
-    gpsLongitude: -75.4902,
+    gpsLatitude: 21.1702,
+    gpsLongitude: 72.8311,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 67,
@@ -761,9 +773,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-03",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 40.6895, lng: -74.1745, name: "Newark Air Terminal" },
-      { lat: 40.6084, lng: -75.4902, name: "Current GPS (Allentown, PA)" },
-      { lat: 40.9634, lng: -76.6191, name: "Geisinger Med Center" }
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" },
+      { lat: 21.1702, lng: 72.8311, name: "Demo GPS near Surat" },
+      { lat: 22.3072, lng: 73.1812, name: "Vadodara Transfer Hub" },
+      { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
       { time: "10:45", severity: "safe", desc: "Shipment accepted from air freight. Core temp +4.5°C." },
@@ -786,9 +799,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Frozen (-25°C to -15°C)",
     priority: "High",
 
-    originFacility: "Durham Vaccine Production Center (NC)",
-    currentLocation: "I-81 Northbound near Winchester, VA",
-    destinationFacility: "Johns Hopkins Hospital Outpatient Center",
+    originFacility: "Delhi Central Vaccine Depot, Delhi",
+    currentLocation: "Demo GPS near Gurugram, Haryana",
+    destinationFacility: "Jaipur Regional Vaccine Centre, Jaipur",
     transportVehicleId: "VAN-COLD-411",
     carrierIdentifier: "Atlantic Pharma Express (Driver: L. Gomez)",
     departureTime: "2026-10-09T07:15:00Z",
@@ -803,8 +816,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 38.5,
     minAllowedHumidity: 30.0,
     maxAllowedHumidity: 75.0,
-    gpsLatitude: 39.1857,
-    gpsLongitude: -78.1633,
+    gpsLatitude: 28.4595,
+    gpsLongitude: 77.0266,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 92,
@@ -831,9 +845,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-02",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 35.9940, lng: -78.8986, name: "Durham, NC" },
-      { lat: 39.1857, lng: -78.1633, name: "Current GPS (Winchester, VA)" },
-      { lat: 39.2965, lng: -76.5927, name: "Johns Hopkins Baltimore" }
+      { lat: 28.6139, lng: 77.2090, name: "Delhi Central Vaccine Depot" },
+      { lat: 28.4595, lng: 77.0266, name: "Demo GPS near Gurugram" },
+      { lat: 28.1990, lng: 76.6190, name: "Rewari Checkpoint" },
+      { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
       { time: "07:15", severity: "safe", desc: "Pre-conditioned cold pack verification passed." },
@@ -855,9 +870,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Normal",
 
-    originFacility: "Elkton Operations Center (VA)",
-    currentLocation: "I-95 Northbound near Wilmington, DE",
-    destinationFacility: "New York-Presbyterian Hospital Central Storage",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "REEFER-TRUCK-601",
     carrierIdentifier: "Northeast MedTrans (Driver: B. Thornton)",
     departureTime: "2026-10-09T09:00:00Z",
@@ -872,8 +887,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 46.2,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 39.7447,
-    gpsLongitude: -75.5484,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 88,
@@ -900,9 +916,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-06",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 38.4079, lng: -78.6256, name: "Elkton, VA" },
-      { lat: 39.7447, lng: -75.5484, name: "Current GPS (Wilmington, DE)" },
-      { lat: 40.7128, lng: -74.0060, name: "NY-Presbyterian Hospital" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
       { time: "09:00", severity: "safe", desc: "Batch loaded and sealed in temperature-controlled trailer." },
@@ -924,9 +941,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Urgent",
 
-    originFacility: "Morrisville Packaging Logistics (NC)",
-    currentLocation: "I-77 North near Charleston, WV",
-    destinationFacility: "Cleveland MetroHealth Medical Center",
+    originFacility: "Pune Regional Vaccine Depot, Pune",
+    currentLocation: "Demo GPS near Ahmednagar, Maharashtra",
+    destinationFacility: "Nagpur Regional Medical Depot, Nagpur",
     transportVehicleId: "EXPEDITE-SPRINTER-12",
     carrierIdentifier: "Apex Critical Logistics (Driver: A. Brooks)",
     departureTime: "2026-10-09T08:00:00Z",
@@ -941,8 +958,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 51.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 38.3498,
-    gpsLongitude: -81.6326,
+    gpsLatitude: 19.0948,
+    gpsLongitude: 74.7480,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Low Battery",
     batteryLevel: 9, // SENSOR BATTERY WARNING!
@@ -969,9 +987,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-05",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 35.8235, lng: -78.8256, name: "Morrisville, NC" },
-      { lat: 38.3498, lng: -81.6326, name: "Current GPS (Charleston, WV)" },
-      { lat: 41.4687, lng: -81.6912, name: "Cleveland MetroHealth" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Regional Vaccine Depot" },
+      { lat: 19.0948, lng: 74.7480, name: "Demo GPS near Ahmednagar" },
+      { lat: 20.9374, lng: 77.7796, name: "Amravati Transfer Hub" },
+      { lat: 21.1458, lng: 79.0882, name: "Nagpur Regional Medical Depot" }
     ],
     timeline: [
       { time: "08:00", severity: "safe", desc: "High priority rabies vaccine package handed over to dedicated courier." },
@@ -993,9 +1012,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Normal",
 
-    originFacility: "King of Prussia Cold Depot (PA)",
-    currentLocation: "Delivered to Dock Bay 3",
-    destinationFacility: "Temple University Hospital Pharmacy",
+    originFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
+    currentLocation: "Demo GPS near Surat, Gujarat",
+    destinationFacility: "Ahmedabad Vaccine Logistics Hub, Ahmedabad",
     transportVehicleId: "REEFER-TRUCK-109",
     carrierIdentifier: "MediRoute Express",
     departureTime: "2026-10-09T06:00:00Z",
@@ -1010,8 +1029,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 44.5,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.0041,
-    gpsLongitude: -75.1556,
+    gpsLatitude: 21.1702,
+    gpsLongitude: 72.8311,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Dock Synced",
     batteryLevel: 91,
@@ -1038,8 +1058,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-06",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 40.0901, lng: -75.3854, name: "King of Prussia Depot" },
-      { lat: 40.0041, lng: -75.1556, name: "Temple University Hospital" }
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" },
+      { lat: 21.1702, lng: 72.8311, name: "Demo GPS near Surat" },
+      { lat: 22.3072, lng: 73.1812, name: "Vadodara Transfer Hub" },
+      { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
       { time: "06:00", severity: "safe", desc: "Dispatched from King of Prussia warehouse." },
@@ -1061,9 +1083,9 @@ export const INITIAL_SHIPMENTS = [
     storageRequirement: "Ultra-Low Freezer (-90°C to -60°C)",
     priority: "Urgent",
 
-    originFacility: "St. Louis Distribution Hub (MO)",
-    currentLocation: "Rerouted to Apex Cryo-Depot (Arrival in 12m)",
-    destinationFacility: "Apex Biologics Regional Cryo-Depot (Reroute Facility)",
+    originFacility: "Delhi Central Vaccine Depot, Delhi",
+    currentLocation: "Demo GPS near Gurugram, Haryana",
+    destinationFacility: "Jaipur Regional Vaccine Centre, Jaipur",
     transportVehicleId: "CRYO-SPRINTER-04",
     carrierIdentifier: "CryoTrans Priority (Driver: T. Reynolds)",
     departureTime: "2026-10-09T04:30:00Z",
@@ -1078,8 +1100,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 41.0,
     minAllowedHumidity: 20.0,
     maxAllowedHumidity: 80.0,
-    gpsLatitude: 40.4121,
-    gpsLongitude: -80.0412,
+    gpsLatitude: 28.4595,
+    gpsLongitude: 77.0266,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 62,
@@ -1106,9 +1129,10 @@ export const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-01",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 38.6270, lng: -90.1994, name: "St. Louis Hub" },
-      { lat: 40.4121, lng: -80.0412, name: "Current GPS (Pittsburgh outskirts)" },
-      { lat: 40.4406, lng: -79.9959, name: "Apex Cryo Depot (Reroute destination)" }
+      { lat: 28.6139, lng: 77.2090, name: "Delhi Central Vaccine Depot" },
+      { lat: 28.4595, lng: 77.0266, name: "Demo GPS near Gurugram" },
+      { lat: 28.1990, lng: 76.6190, name: "Rewari Checkpoint" },
+      { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
       { time: "04:30", severity: "safe", desc: "Dispatched from St. Louis Hub." },
@@ -1131,9 +1155,9 @@ export const INITIAL_SHIPMENTS = [
     packagingType: "Qualified Insulated Vaccine Carrier with Conditioned Cool Packs",
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "High",
-    originFacility: "Pune Vaccine Cold-Chain Hub, Pune, Maharashtra",
-    currentLocation: "Demo GPS position near Lonavala, Maharashtra",
-    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai, Maharashtra",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "MH-12-CG-1301",
     carrierIdentifier: "ColdGuard India Demo Fleet",
     departureTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
@@ -1147,8 +1171,9 @@ export const INITIAL_SHIPMENTS = [
     currentHumidity: 52.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 18.7500,
-    gpsLongitude: 73.4050,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     location: {
       latitude: 18.7500,
       longitude: 73.4050,
@@ -1181,7 +1206,8 @@ export const INITIAL_SHIPMENTS = [
     routeDeviationDetected: false,
     routeWaypoints: [
       { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
-      { lat: 18.7500, lng: 73.4050, name: "Current Demo GPS (near Lonavala)" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
       { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
