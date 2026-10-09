@@ -12,7 +12,14 @@ Set these in the Vercel project (Project → Settings → Environment Variables)
 - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and either `TWILIO_FROM` or `TWILIO_MESSAGING_SERVICE_SID`.
 - Optional thresholds: `OFFLINE_WARNING_MINUTES=2`, `OFFLINE_NOTIFY_MINUTES=5`, `OFFLINE_ESCALATE_MINUTES=10`.
 
-The scheduled endpoint is `/api/monitor-offline`, configured to run once per minute. Confirm that the Vercel plan supports the configured cron frequency and that the deployment shows a successful cron execution. If the plan blocks this frequency, deploy the same monitoring logic as a Firebase scheduled Cloud Function or Cloud Run job.
+The scheduled endpoint is `/api/monitor-offline`. Minute-level scheduling is triggered by `functions/index.js` using Firebase Cloud Scheduler, because this Vercel project is on the Hobby plan and Vercel rejected a once-per-minute cron configuration. Scheduled Cloud Functions require the Firebase Blaze billing plan.
+
+Deployment steps:
+1. Set `CRON_SECRET` in Vercel Environment Variables to a long random secret.
+2. In the repository root, run `cd functions && npm install && cd ..`.
+3. Set the same secret in Firebase: `firebase functions:secrets:set COLDGUARD_CRON_SECRET`.
+4. Deploy the scheduled function: `firebase deploy --only functions:monitorColdGuardOffline`.
+5. Confirm the function's Cloud Scheduler job runs each minute and its logs show successful responses. The monitor endpoint returns 401 until both secret values match.
 
 ## Emergency contacts in Realtime Database
 
