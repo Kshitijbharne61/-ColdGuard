@@ -57,7 +57,7 @@
     if (record && stale) alerts.push({ tone:"warning", text:"Sensor update is older than 2 minutes or has no timestamp. Check device connectivity and clock synchronization." });
     if (tempOutside) alerts.push({ tone:"critical", text:"Temperature is outside this shipment's configured storage limits ("+tempMin+"°C to "+tempMax+"°C)." });
     const checkpoints = (state.app?.checkpoints || []).filter(c => num(c.lat) !== null && num(c.lng) !== null && num(c.lat) >= -90 && num(c.lat) <= 90 && num(c.lng) >= -180 && num(c.lng) <= 180);
-    const options = checkpoints.map((c,i) => '<option value="'+esc(c.id || i)+'">'+esc(c.name || c.city || ("Destination "+(i+1)))+'</option>').join("");
+    const options = checkpoints.map((c,i) => '<option value="'+esc(c.id || i)+'" '+(String(c.id || i)===String(state.selectedDestinationId || checkpoints[0]?.id || 0)?"selected":"")+'>'+esc(c.name || c.city || ("Destination "+(i+1)))+'</option>').join("");
     const shipmentOptions = state.records.map(r => '<option value="'+esc(r.id || r.shipmentId)+'" '+(String(r.id || r.shipmentId)===String(record?.id || record?.shipmentId)?"selected":"")+'>'+esc((r.id || r.shipmentId)+" — "+(r.vaccineName || "Vaccine shipment"))+'</option>').join("");
     return `
       <section id="coldguard-live-route-panel" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -134,21 +134,28 @@
     el.innerHTML=alerts.length?alerts.map(a=>'<div class="rounded-lg p-3 text-sm '+(a[0]==="critical"?"bg-red-50 text-red-800":"bg-amber-50 text-amber-800")+'">'+esc(a[1])+'</div>').join(""):'<div class="rounded-lg p-3 text-sm bg-emerald-50 text-emerald-800">No current sensor-based alert detected. Road safety is not certified by this forecast.</div>';
   }
 
+  function renderWeather(data) {
+    const el=document.getElementById("coldguard-current-weather");
+    if(!el||!data?.current)return;
+    const c=data.current, hourly=data.hourly||{}, nowIdx=Math.max(0,(hourly.time||[]).findIndex(t=>new Date(t).getTime()>=Date.now()));
+    const rainProb=hourly.precipitation_probability?.[nowIdx];
+    el.innerHTML='<div class="grid grid-cols-2 gap-2"><div><div class="text-xs text-slate-500">Air temperature</div><b>'+esc(c.temperature_2m)+'°C</b></div><div><div class="text-xs text-slate-500">Rain probability</div><b>'+(rainProb===undefined?"—":esc(rainProb+"%"))+'</b></div><div><div class="text-xs text-slate-500">Precipitation</div><b>'+esc(c.precipitation??"—")+' mm</b></div><div><div class="text-xs text-slate-500">Wind</div><b>'+esc(c.wind_speed_10m??"—")+' km/h</b></div><div><div class="text-xs text-slate-500">Humidity</div><b>'+esc(c.relative_humidity_2m??"—")+'%</b></div><div><div class="text-xs text-slate-500">Forecast time</div><b class="text-xs">'+esc(c.time||"—")+'</b></div></div><div class="text-[10px] text-slate-500 mt-2">Provider: Open-Meteo. No authoritative severe-weather or flood alert feed configured.</div>';
+    const upd=document.getElementById("coldguard-weather-updated");if(upd)upd.textContent="Weather fetched "+new Date(data.fetchedAt).toLocaleTimeString();
+  }
+
   async function loadWeather(force=false) {
     const record=selectedRecord(), gps=coordsOf(record), el=document.getElementById("coldguard-current-weather");
     if(!el)return;
     if(!gps){el.textContent="Weather unavailable: waiting for live GPS coordinates from Firebase.";return;}
-    if(!force&&Date.now()-state.lastWeatherAt<WEATHER_REFRESH_MS)return;
+    if(!force&&Date.now()-state.lastWeatherAt<WEATHER_REFRESH_MS){if(state.lastWeatherData)renderWeather(state.lastWeatherData);return;}
     el.textContent="Loading genuine Open-Meteo forecast…";
     try {
       const response=await fetch("/api/weather?lat="+encodeURIComponent(gps.lat)+"&lon="+encodeURIComponent(gps.lon),{headers:{Accept:"application/json"}});
       const data=await response.json();
       if(!response.ok)throw new Error(data.error||"Weather provider error");
+      state.lastWeatherData=data;state.lastWeatherAt=Date.now();renderWeather(data);
       const c=data.current, hourly=data.hourly||{}, nowIdx=Math.max(0,(hourly.time||[]).findIndex(t=>new Date(t).getTime()>=Date.now()));
       const rainProb=hourly.precipitation_probability?.[nowIdx];
-      el.innerHTML='<div class="grid grid-cols-2 gap-2"><div><div class="text-xs text-slate-500">Air temperature</div><b>'+esc(c.temperature_2m)+'°C</b></div><div><div class="text-xs text-slate-500">Rain probability</div><b>'+ (rainProb===undefined?"—":esc(rainProb+"%"))+'</b></div><div><div class="text-xs text-slate-500">Precipitation</div><b>'+esc(c.precipitation??"—")+' mm</b></div><div><div class="text-xs text-slate-500">Wind</div><b>'+esc(c.wind_speed_10m??"—")+' km/h</b></div><div><div class="text-xs text-slate-500">Humidity</div><b>'+esc(c.relative_humidity_2m??"—")+'%</b></div><div><div class="text-xs text-slate-500">Forecast time</div><b class="text-xs">'+esc(c.time||"—")+'</b></div></div><div class="text-[10px] text-slate-500 mt-2">Provider: Open-Meteo. No authoritative severe-weather or flood alert feed configured.</div>';
-      state.lastWeatherAt=Date.now();
-      const upd=document.getElementById("coldguard-weather-updated");if(upd)upd.textContent="Weather fetched "+new Date(data.fetchedAt).toLocaleTimeString();
       const p=num(rainProb), mm=num(c.precipitation);
       const warnings=[];
       if((p!==null&&p>=60)||(mm!==null&&mm>=5))warnings.push(["warning","Rainfall risk detected near the current GPS position. Forecast alone does not establish road flooding."]);
