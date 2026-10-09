@@ -263,24 +263,7 @@ class ColdGuardApp {
   onSimulationTick(shipments) {
     this.updateHeaderBadges();
 
-    // Periodic synchronization to Firebase Realtime Database
-    const now = Date.now();
-    if (this.dbService && this.dbService.isConnected && (now - this.lastRtdbSyncTime > 4000)) {
-      this.lastRtdbSyncTime = now;
-      const active = shipments.find(s => s.id === this.selectedShipmentId) || shipments[0];
-      if (active) {
-        this.dbService.updateShipmentTelemetry(active.id, {
-          temperature: active.currentTemperature,
-          humidity: active.currentHumidity,
-          batteryLevel: active.batteryLevel,
-          viability: active.estimatedViabilityPercent,
-          riskClassification: active.riskClassification,
-          excursionStatus: active.excursionStatus
-        });
-      }
-    }
-
-    if (this.currentView === "dashboard") {
+    // Simulation is display-only; only actual device/backend integrations may write live telemetry.\n\n    if (this.currentView === "dashboard") {
       this.updateDashboardKpis();
     } else if (this.currentView === "shipments") {
       this.renderShipmentsTable();
@@ -2194,20 +2177,7 @@ class ColdGuardApp {
         details: `Rerouted shipment ${shipmentId} to certified cold-storage hub: ${checkpoint.name} (${checkpoint.city}). Distance: ${checkpoint.distanceKm}km.`,
         targetCheckpoint: checkpoint.name
       });
-      const s = this.simulation.shipments.find(item => item.id === shipmentId);
-      if (s) {
-        this.dbService.updateShipmentTelemetry(shipmentId, {
-          temperature: s.currentTemperature,
-          humidity: s.currentHumidity,
-          latitude: s.gpsLatitude,
-          longitude: s.gpsLongitude,
-          batteryLevel: s.batteryLevel,
-          viability: s.estimatedViabilityPercent,
-          riskClassification: s.riskClassification,
-          excursionStatus: "Rerouted"
-        });
-      }
-    }
+      // Do not write simulated sensor values to the live telemetry path.\n    }
 
     if (this.currentView === "details") {
       this.renderDetailsView(document.getElementById("main-content-view"));
