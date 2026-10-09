@@ -6,7 +6,7 @@
 // "Protect Every Dose. Predict Every Excursion."
 // ============================================================================
 
-const VACCINE_PROFILES = {
+export const VACCINE_PROFILES = {
   mrna_ultra_cold: {
     categoryName: "mRNA Ultra-Cold",
     shortCode: "mRNA-ULT",
@@ -65,14 +65,14 @@ const VACCINE_PROFILES = {
   }
 };
 
-const CHECKPOINTS = [
+export const CHECKPOINTS = [
   {
     id: "CP-01",
-    name: "Apex Biologics Regional Cryo-Depot",
-    type: "Tier-1 Ultra-Cold Logistics Center",
-    lat: 40.4406,
-    lng: -79.9959, // Pittsburgh, PA
-    city: "Pittsburgh, PA",
+    name: "Pune Vaccine Cold-Chain Hub",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 18.5204,
+    lng: 73.8567, // Pittsburgh, PA
+    city: "Pune, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 185000,
@@ -88,11 +88,11 @@ const CHECKPOINTS = [
   },
   {
     id: "CP-02",
-    name: "Keystone Pharmaceutical Distribution Vault",
-    type: "Pharma-Grade 3PL Certified Cold Vault",
-    lat: 40.2732,
-    lng: -76.8867, // Harrisburg, PA
-    city: "Harrisburg, PA",
+    name: "Mumbai Vaccine Distribution Centre",
+    type: "Metro Vaccine Distribution Centre",
+    lat: 19.076,
+    lng: 72.8777, // Harrisburg, PA
+    city: "Mumbai, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 240000,
@@ -108,11 +108,11 @@ const CHECKPOINTS = [
   },
   {
     id: "CP-03",
-    name: "Mercy Healthcare Emergency Medical Vault",
-    type: "Regional Hospital Level-1 Vaccine Pharmacy",
-    lat: 40.0379,
-    lng: -76.3055, // Lancaster, PA
-    city: "Lancaster, PA",
+    name: "Nagpur Regional Medical Depot",
+    type: "Regional Medical Cold-Storage Hub",
+    lat: 21.1458,
+    lng: 79.0882, // Lancaster, PA
+    city: "Nagpur, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 42000,
@@ -128,11 +128,11 @@ const CHECKPOINTS = [
   },
   {
     id: "CP-04",
-    name: "Buckeye Central Life Sciences Depot",
-    type: "State Strategic National Stockpile Hub",
-    lat: 39.9612,
-    lng: -82.9988, // Columbus, OH
-    city: "Columbus, OH",
+    name: "New Delhi Vaccine Logistics Hub",
+    type: "National Vaccine Logistics Hub",
+    lat: 28.6139,
+    lng: 77.209, // Columbus, OH
+    city: "New Delhi, Delhi",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 420000,
@@ -148,11 +148,11 @@ const CHECKPOINTS = [
   },
   {
     id: "CP-05",
-    name: "Great Lakes BioVault & Cryo-Logistics",
-    type: "Certified Regional Cryogenic Repository",
-    lat: 41.4993,
-    lng: -81.6944, // Cleveland, OH
-    city: "Cleveland, OH",
+    name: "Hyderabad Cold-Chain Centre",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 17.385,
+    lng: 78.4867, // Cleveland, OH
+    city: "Hyderabad, Telangana",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 165000,
@@ -168,11 +168,11 @@ const CHECKPOINTS = [
   },
   {
     id: "CP-06",
-    name: "Philadelphia Metropolitan Vaccine Bank",
-    type: "Metro Central Biologics Distribution Center",
-    lat: 39.9526,
-    lng: -75.1652, // Philadelphia, PA
-    city: "Philadelphia, PA",
+    name: "Bengaluru Vaccine Depot",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 12.9719,
+    lng: 77.5937, // Philadelphia, PA
+    city: "Bengaluru, Karnataka",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 310000,
@@ -188,11 +188,11 @@ const CHECKPOINTS = [
   },
   {
     id: "CP-07",
-    name: "Crossroads Midwest Pharma Storage",
-    type: "Interstate Strategic Cold Storage Facility",
-    lat: 39.7684,
-    lng: -86.1581, // Indianapolis, IN
-    city: "Indianapolis, IN",
+    name: "Chennai Medical Distribution Hub",
+    type: "Metro Medical Distribution Centre",
+    lat: 13.0827,
+    lng: 80.2707, // Indianapolis, IN
+    city: "Chennai, Tamil Nadu",
     coldStorageAvailable: true,
     storageTiers: ["Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 95000,
@@ -208,11 +208,11 @@ const CHECKPOINTS = [
   },
   {
     id: "CP-08",
-    name: "Allegheny Valley Healthcare Vaccine Vault",
-    type: "Consortium Health System Cold Center",
-    lat: 40.5845,
-    lng: -79.7428, // Natrona Heights / New Kensington, PA
-    city: "Allegheny Valley, PA",
+    name: "Ahmedabad Vaccine Storage Hub",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 23.0225,
+    lng: 72.5714, // Natrona Heights / New Kensington, PA
+    city: "Ahmedabad, Gujarat",
     coldStorageAvailable: true,
     storageTiers: ["Standard (2-8°C)"],
     availableCapacityDoses: 35000,
@@ -266,7 +266,7 @@ function generateSensorHistory(baseTemp, minAllowed, maxAllowed, baseHumidity, i
   return history;
 }
 
-const INITIAL_SHIPMENTS = [
+export const INITIAL_SHIPMENTS = [
   {
     // 1. Critical Excursion in Progress
     id: "CG-9021-PFZ",
@@ -1120,10 +1120,82 @@ const INITIAL_SHIPMENTS = [
       { time: "17:22", severity: "safe", desc: "Emergency reroute executed to Apex Cryo-Depot (CP-01)." }
     ],
     history: generateSensorHistory(-58.9, -90.0, -60.0, 41.0, true, 26)
+  },
+
+  {
+    // 13. India Demo Shipment — sample data, not live sensor telemetry
+    id: "CG-IN-1301-COV",
+    vaccineName: "Covishield (ChAdOx1-S) — India Demo",
+    vaccineType: "Viral Vector Suspension",
+    vaccineCategory: "standard_cold_chain",
+    manufacturer: "Serum Institute of India (sample shipment record)",
+    batchNumber: "DEMO-IN-2026-1301",
+    doses: 12000,
+    packagingType: "Qualified Insulated Vaccine Carrier with Conditioned Cool Packs",
+    storageRequirement: "Refrigerated (+2°C to +8°C)",
+    priority: "High",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune, Maharashtra",
+    currentLocation: "Demo GPS position near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai, Maharashtra",
+    transportVehicleId: "MH-12-CG-1301",
+    carrierIdentifier: "ColdGuard India Demo Fleet",
+    departureTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    expectedDeliveryTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    status: "In Transit — Demo",
+    eta: "Demo ETA: approximately 2 hours",
+    routeDistanceRemainingKm: 82,
+    currentTemperature: 5.1,
+    minAllowedTemperature: 2.0,
+    maxAllowedTemperature: 8.0,
+    currentHumidity: 52.0,
+    minAllowedHumidity: 35.0,
+    maxAllowedHumidity: 65.0,
+    gpsLatitude: 18.7500,
+    gpsLongitude: 73.4050,
+    location: {
+      latitude: 18.7500,
+      longitude: 73.4050,
+      hasFix: true,
+      isLiveGps: false,
+      lastUpdated: new Date().toISOString()
+    },
+    lastSensorUpdate: new Date().toISOString(),
+    sensorConnectivity: "Demo Data",
+    batteryLevel: 96,
+    dataTransmissionStatus: "Sample / simulated telemetry",
+    sensorHealth: "Demo record — connect hardware for live readings",
+    sensorDataAgeSeconds: 0,
+    excursionStatus: "Normal Operation",
+    excursionSeverity: "None",
+    excursionStartTime: null,
+    excursionDurationMinutes: 0,
+    temperatureDeviation: 0,
+    cumulativeThermalExposure: 0.02,
+    peakTemperature: 5.4,
+    minimumRecordedTemperature: 4.8,
+    consecutiveOutOfRangeReadings: 0,
+    detectionConfidencePercent: 96.0,
+    estimatedViabilityPercent: 99.4,
+    predictedSpoilageRiskPercent: 0.6,
+    riskClassification: "Low",
+    predictedDelay: "On Time — demo estimate",
+    recommendedNextAction: "Continue monitoring; verify live sensor telemetry before operational use.",
+    nearestCheckpointId: "CP-02",
+    routeDeviationDetected: false,
+    routeWaypoints: [
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7500, lng: 73.4050, name: "Current Demo GPS (near Lonavala)" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
+    ],
+    timeline: [
+      { time: "Demo", severity: "safe", desc: "Sample vaccine shipment created for Indian map demonstration." },
+      { time: "Demo", severity: "safe", desc: "Coordinates are illustrative; this is not a live truck position." }
+    ],
+    history: generateSensorHistory(5.1, 2.0, 8.0, 52.0, false, 25)
   }
 ];
 
-const WHO_AUDIT_STANDARDS = {
+export const WHO_AUDIT_STANDARDS = {
   standardName: "WHO Technical Report Series No. 961, Annex 9 / PQS E006",
   complianceStatement: "Model guideline for the storage and transport of time- and temperature-sensitive pharmaceutical products (TTSPPs).",
   guidelineLimits: {
@@ -1132,7 +1204,6 @@ const WHO_AUDIT_STANDARDS = {
     standardRefrigerated: "Continuous recording every 5 minutes. Alarm triggered if > +8°C or < +2°C for > 20 minutes."
   }
 };
-
 
 // --- FILE: js/engine/excursionEngine.js ---
 // ============================================================================
@@ -2013,7 +2084,7 @@ class SimulationEngine {
 // Leaflet Map with Custom High-Resolution Markers & Schematic Fallback
 // ============================================================================
 
-class RouteMapView {
+export class RouteMapView {
   constructor(containerId, options = {}) {
     this.containerId = containerId;
     this.options = options;
@@ -2036,7 +2107,7 @@ class RouteMapView {
         this.map = window.L.map(this.containerId, {
           zoomControl: true,
           attributionControl: false
-        }).setView([40.2, -77.5], 7);
+        }).setView([22.5, 79.0], 5);
 
         // Clean OpenStreetMap tiles with custom styling class
         window.L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -2084,11 +2155,33 @@ class RouteMapView {
   renderLeaflet(shipment, checkpoints) {
     if (!this.map) return;
 
+    // ColdGuard India demo map: keep the live view focused on Indian coordinates.
+    // Latitude/longitude bounds cover India's mainland and island territories.
+    const isIndianCoordinate = (lat, lng) => {
+      const latitude = Number(lat);
+      const longitude = Number(lng);
+      return Number.isFinite(latitude) && Number.isFinite(longitude)
+        && latitude >= 6 && latitude <= 38
+        && longitude >= 68 && longitude <= 98;
+    };
+    checkpoints = (checkpoints || []).filter(cp => isIndianCoordinate(cp.lat, cp.lng));
+
     // Clear previous markers & polylines
-    this.layers.forEach(l => this.map.removeLayer(l));
+    this.layers.forEach(l => {
+      if (l && typeof l.remove === "function") l.remove();
+      else this.map.removeLayer(l);
+    });
     this.layers = [];
 
     const bounds = [];
+    const liveLocation = shipment.location || {};
+    const explicitNoFix = liveLocation.isLiveGps === true && liveLocation.hasFix === false;
+    const gpsLatitude = explicitNoFix ? null : Number(liveLocation.latitude ?? shipment.gpsLatitude);
+    const gpsLongitude = explicitNoFix ? null : Number(liveLocation.longitude ?? shipment.gpsLongitude);
+    const hasValidGps = Number.isFinite(gpsLatitude) && Number.isFinite(gpsLongitude)
+      && gpsLatitude >= -90 && gpsLatitude <= 90
+      && gpsLongitude >= -180 && gpsLongitude <= 180
+      && isIndianCoordinate(gpsLatitude, gpsLongitude);
     const isCritical = shipment.excursionSeverity === "Critical" || shipment.riskClassification === "Critical";
     const isWarning = shipment.excursionSeverity === "Warning" || shipment.riskClassification === "High Risk";
     const statusColor = isCritical ? "#EF4444" : (isWarning ? "#F59E0B" : "#10B981");
@@ -2143,7 +2236,8 @@ class RouteMapView {
     });
 
     // 2. Plot Route Waypoints & Lines
-    if (shipment.routeWaypoints && shipment.routeWaypoints.length >= 2) {
+    if (shipment.routeWaypoints && shipment.routeWaypoints.length >= 2
+      && shipment.routeWaypoints.every(w => isIndianCoordinate(w.lat, w.lng))) {
       const latlngs = shipment.routeWaypoints.map(w => [w.lat, w.lng]);
 
       // Planned route line
@@ -2190,11 +2284,11 @@ class RouteMapView {
       latlngs.forEach(ll => bounds.push(ll));
     }
 
-    // 3. Line from current position to nearest checkpoint
+    // 3. Line from current position to nearest checkpoint (requires a valid GPS fix)
     const nearest = checkpoints.find(c => c.id === shipment.nearestCheckpointId);
-    if (nearest) {
+    if (nearest && hasValidGps) {
       const diversionLine = window.L.polyline([
-        [shipment.gpsLatitude, shipment.gpsLongitude],
+        [gpsLatitude, gpsLongitude],
         [nearest.lat, nearest.lng]
       ], {
         color: "#6366F1",
@@ -2205,7 +2299,9 @@ class RouteMapView {
       this.layers.push(diversionLine);
     }
 
-    // 4. Current Moving Shipment Position Marker
+    // 4. Current position marker. Don't show stale/demo coordinates if the device
+    // explicitly reports that it has no satellite fix.
+    if (hasValidGps) {
     const vehicleIcon = window.L.divIcon({
       className: "custom-vehicle-marker",
       html: `
@@ -2222,24 +2318,39 @@ class RouteMapView {
       iconAnchor: [18, 18]
     });
 
-    const vehicleMarker = window.L.marker([shipment.gpsLatitude, shipment.gpsLongitude], { icon: vehicleIcon }).addTo(this.map);
+    const vehicleMarker = window.L.marker([gpsLatitude, gpsLongitude], { icon: vehicleIcon }).addTo(this.map);
+    const gpsTime = liveLocation.lastUpdated ? new Date(liveLocation.lastUpdated).toLocaleString() : "Not reported";
     vehicleMarker.bindPopup(`
       <div class="p-2 text-slate-800 font-sans max-w-xs">
         <div class="flex items-center gap-1.5 font-bold text-sm text-slate-900">
           <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${statusColor}"></span>
-          ${shipment.id} — ${shipment.vaccineName}
+          ${shipment.id} — ${shipment.vaccineName || "Shipment"}
         </div>
-        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation}</div>
+        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation || "Live sensor location"}</div>
+        <div class="mt-2 text-xs font-mono">${gpsLatitude.toFixed(6)}, ${gpsLongitude.toFixed(6)}</div>
         <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-xs">
-          <div><span class="text-slate-400">Current Temp:</span> <b class="font-mono ${isCritical ? 'text-red-600' : 'text-slate-800'}">${shipment.currentTemperature}°C</b></div>
-          <div><span class="text-slate-400">Viability:</span> <b>${shipment.estimatedViabilityPercent}%</b></div>
-          <div><span class="text-slate-400">Remaining:</span> <b>${shipment.routeDistanceRemainingKm} km</b></div>
-          <div><span class="text-slate-400">Status:</span> <b>${shipment.status}</b></div>
+          <div><span class="text-slate-400">Current Temp:</span> <b class="font-mono ${isCritical ? 'text-red-600' : 'text-slate-800'}">${shipment.currentTemperature ?? "—"}°C</b></div>
+          <div><span class="text-slate-400">Viability:</span> <b>${shipment.estimatedViabilityPercent ?? "—"}%</b></div>
+          <div><span class="text-slate-400">GPS speed:</span> <b>${liveLocation.speedKmH ?? "—"} km/h</b></div>
+          <div><span class="text-slate-400">Satellites:</span> <b>${liveLocation.satellites ?? "—"}</b></div>
+          <div><span class="text-slate-400">GPS updated:</span> <b>${gpsTime}</b></div>
+          <div><span class="text-slate-400">Status:</span> <b>${shipment.status || "Tracking"}</b></div>
         </div>
       </div>
     `);
     this.layers.push(vehicleMarker);
-    bounds.push([shipment.gpsLatitude, shipment.gpsLongitude]);
+    bounds.push([gpsLatitude, gpsLongitude]);
+    } else {
+      const gpsNotice = window.L.control({ position: "topright" });
+      gpsNotice.onAdd = () => {
+        const div = window.L.DomUtil.create("div", "leaflet-bar");
+        div.style.cssText = "background:#fff;padding:8px 10px;border-radius:8px;font-size:11px;color:#b45309;max-width:220px;box-shadow:0 1px 5px #0002";
+        div.textContent = "GPS fix unavailable — waiting for sensor coordinates";
+        return div;
+      };
+      gpsNotice.addTo(this.map);
+      this.layers.push(gpsNotice);
+    }
 
     // Fit map bounds smoothly
     if (bounds.length > 0) {
@@ -2336,7 +2447,6 @@ class RouteMapView {
     ctx.fillText(`${shipment.id} (${shipment.currentTemperature}°C)`, vx - 40, vy + 24);
   }
 }
-
 
 // --- FILE: js/components/charts.js ---
 // ============================================================================
@@ -3972,21 +4082,22 @@ class AuthUiManager {
 // "Protect Every Dose. Predict Every Excursion."
 // ============================================================================
 
-
-
-
-
-
-
-
-
+import { VACCINE_PROFILES, CHECKPOINTS, INITIAL_SHIPMENTS } from "./data/mockData.js";
+import { SimulationEngine } from "./engine/simulationEngine.js";
+import { RouteMapView } from "./components/mapView.js";
+import { TelemetryCharts } from "./components/charts.js";
+import { ModalManager } from "./components/modals.js";
+import { ViabilityModel } from "./engine/viabilityModel.js";
+import { FirebaseAuthService } from "./auth/firebaseAuth.js";
+import { FirebaseDatabaseService } from "./database/firebaseDatabase.js";
+import { AuthUiManager } from "./auth/authUi.js";
 
 class ColdGuardApp {
   constructor() {
     this.vaccineProfiles = JSON.parse(JSON.stringify(VACCINE_PROFILES));
     this.checkpoints = CHECKPOINTS;
     this.currentView = "dashboard"; // "dashboard" | "shipments" | "details" | "excursion_engine" | "viability_lab" | "checkpoints"
-    this.selectedShipmentId = "CG-9021-PFZ"; // default critical shipment
+    this.selectedShipmentId = "CG-IN-1301-COV"; // default India demo vaccine shipment
     this.soundAlertsEnabled = false;
 
     // Filters for Shipment table
@@ -4240,8 +4351,6 @@ class ColdGuardApp {
         this.dbService.updateShipmentTelemetry(active.id, {
           temperature: active.currentTemperature,
           humidity: active.currentHumidity,
-          latitude: active.gpsLatitude,
-          longitude: active.gpsLongitude,
           batteryLevel: active.batteryLevel,
           viability: active.estimatedViabilityPercent,
           riskClassification: active.riskClassification,
@@ -4264,16 +4373,47 @@ class ColdGuardApp {
   }
 
   handleRemoteShipments(remoteShipments) {
-    if (!remoteShipments || remoteShipments.length === 0) return;
-    this.simulation.shipments = remoteShipments;
+    if (!Array.isArray(remoteShipments) || remoteShipments.length === 0) return;
+    // Merge sparse Firebase telemetry into the full local shipment model.
+    const localShipments = this.simulation.shipments || [];
+    const localById = new Map(localShipments.map(s => [String(s.id), s]));
+    const seen = new Set();
+    const mergedRemote = remoteShipments.map(remote => {
+      const location = remote.location || {};
+      const live = remote.telemetry?.live || {};
+      const id = String(remote.id || remote.shipmentId || "");
+      if (!id) return null;
+      seen.add(id);
+      const local = localById.get(id) || {};
+      const valid = value => value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
+      const latitude = location.hasFix === false ? local.gpsLatitude :
+        (valid(location.latitude) ? Number(location.latitude) :
+        (valid(remote.gpsLatitude) ? Number(remote.gpsLatitude) :
+        (valid(live.latitude) ? Number(live.latitude) : local.gpsLatitude)));
+      const longitude = location.hasFix === false ? local.gpsLongitude :
+        (valid(location.longitude) ? Number(location.longitude) :
+        (valid(remote.gpsLongitude) ? Number(remote.gpsLongitude) :
+        (valid(live.longitude) ? Number(live.longitude) : local.gpsLongitude)));
+      return {
+        ...local, ...remote, id,
+        gpsLatitude: latitude, gpsLongitude: longitude,
+        currentTemperature: remote.currentTemperature ?? live.temperature ?? local.currentTemperature,
+        currentHumidity: remote.currentHumidity ?? live.humidity ?? local.currentHumidity,
+        batteryLevel: remote.batteryLevel ?? live.batteryLevel ?? local.batteryLevel,
+        isLiveGps: location.isLiveGps === true || remote.isLiveGps === true,
+        gpsHasFix: location.hasFix !== false,
+        gpsStatus: location.status || (remote.isLiveGps ? "LOCKED" : local.gpsStatus),
+        gpsSpeedKmH: location.speedKmH ?? local.gpsSpeedKmH,
+        gpsSatellites: location.satellites ?? local.gpsSatellites,
+        gpsLastUpdated: location.lastUpdated ?? remote.lastSensorUpdate ?? local.gpsLastUpdated
+      };
+    }).filter(Boolean);
+    const untouchedLocal = localShipments.filter(s => !seen.has(String(s.id)));
+    this.simulation.shipments = [...mergedRemote, ...untouchedLocal];
     this.updateHeaderBadges();
-    if (this.currentView === "dashboard") {
-      this.updateDashboardKpis();
-    } else if (this.currentView === "shipments") {
-      this.renderShipmentsTable();
-    } else if (this.currentView === "details") {
-      this.updateDetailsTelemetry();
-    }
+    if (this.currentView === "dashboard") this.updateDashboardKpis();
+    else if (this.currentView === "shipments") this.renderShipmentsTable();
+    else if (this.currentView === "details") this.updateDetailsTelemetry();
   }
 
   handleRemoteAlerts(remoteAlerts) {
