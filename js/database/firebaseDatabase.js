@@ -84,7 +84,23 @@ export class FirebaseDatabaseService {
     const onShipmentsValue = (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const list = Object.values(data);
+        const list = Object.entries(data).map(([shipmentId, record]) => {
+          const shipment = record || {};
+          const location = shipment.location || {};
+          const live = shipment.telemetry?.live || {};
+          return {
+            ...shipment,
+            id: shipment.id || shipment.shipmentId || shipmentId,
+            ...(location.hasFix !== false && location.latitude !== null && location.latitude !== undefined && Number.isFinite(Number(location.latitude))
+              ? { gpsLatitude: Number(location.latitude) } : {}),
+            ...(location.hasFix !== false && location.longitude !== null && location.longitude !== undefined && Number.isFinite(Number(location.longitude))
+              ? { gpsLongitude: Number(location.longitude) } : {}),
+            ...(live.latitude !== null && live.latitude !== undefined && Number.isFinite(Number(live.latitude))
+              ? { telemetryLatitude: Number(live.latitude) } : {}),
+            ...(live.longitude !== null && live.longitude !== undefined && Number.isFinite(Number(live.longitude))
+              ? { telemetryLongitude: Number(live.longitude) } : {})
+          };
+        });
         this.notifyListeners("shipments", list);
       }
     };
@@ -164,17 +180,24 @@ export class FirebaseDatabaseService {
       const now = Date.now();
       const updates = {};
       
-      // Update live node
-      updates[`shipments/${shipmentId}/telemetry/live`] = {
+      // Update environmental telemetry without fabricating GPS coordinates.
+      const livePayload = {
         temperature: reading.temperature,
         humidity: reading.humidity,
-        latitude: reading.latitude || reading.lat,
-        longitude: reading.longitude || reading.lng,
         batteryLevel: reading.batteryLevel,
         timestamp: now,
         severity: reading.severity || "SAFE",
         excursionStatus: reading.excursionStatus || "Nominal"
       };
+      const latitude = reading.latitude ?? reading.lat;
+      const longitude = reading.longitude ?? reading.lng;
+      if (latitude !== undefined && latitude !== null && Number.isFinite(Number(latitude))) {
+        livePayload.latitude = Number(latitude);
+      }
+      if (longitude !== undefined && longitude !== null && Number.isFinite(Number(longitude))) {
+        livePayload.longitude = Number(longitude);
+      }
+      updates[`shipments/${shipmentId}/telemetry/live`] = livePayload;
 
       // Update root summary fields for fast querying
       updates[`shipments/${shipmentId}/currentTemperature`] = reading.temperature;
