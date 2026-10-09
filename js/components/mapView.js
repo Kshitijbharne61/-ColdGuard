@@ -26,7 +26,7 @@ export class RouteMapView {
         this.map = window.L.map(this.containerId, {
           zoomControl: true,
           attributionControl: false
-        }).setView([40.2, -77.5], 7);
+        }).setView([22.5, 79.0], 5);
 
         // Clean OpenStreetMap tiles with custom styling class
         window.L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -74,6 +74,17 @@ export class RouteMapView {
   renderLeaflet(shipment, checkpoints) {
     if (!this.map) return;
 
+    // ColdGuard India demo map: keep the live view focused on Indian coordinates.
+    // Latitude/longitude bounds cover India's mainland and island territories.
+    const isIndianCoordinate = (lat, lng) => {
+      const latitude = Number(lat);
+      const longitude = Number(lng);
+      return Number.isFinite(latitude) && Number.isFinite(longitude)
+        && latitude >= 6 && latitude <= 38
+        && longitude >= 68 && longitude <= 98;
+    };
+    checkpoints = (checkpoints || []).filter(cp => isIndianCoordinate(cp.lat, cp.lng));
+
     // Clear previous markers & polylines
     this.layers.forEach(l => {
       if (l && typeof l.remove === "function") l.remove();
@@ -88,7 +99,8 @@ export class RouteMapView {
     const gpsLongitude = explicitNoFix ? null : Number(liveLocation.longitude ?? shipment.gpsLongitude);
     const hasValidGps = Number.isFinite(gpsLatitude) && Number.isFinite(gpsLongitude)
       && gpsLatitude >= -90 && gpsLatitude <= 90
-      && gpsLongitude >= -180 && gpsLongitude <= 180;
+      && gpsLongitude >= -180 && gpsLongitude <= 180
+      && isIndianCoordinate(gpsLatitude, gpsLongitude);
     const isCritical = shipment.excursionSeverity === "Critical" || shipment.riskClassification === "Critical";
     const isWarning = shipment.excursionSeverity === "Warning" || shipment.riskClassification === "High Risk";
     const statusColor = isCritical ? "#EF4444" : (isWarning ? "#F59E0B" : "#10B981");
@@ -143,7 +155,8 @@ export class RouteMapView {
     });
 
     // 2. Plot Route Waypoints & Lines
-    if (shipment.routeWaypoints && shipment.routeWaypoints.length >= 2) {
+    if (shipment.routeWaypoints && shipment.routeWaypoints.length >= 2
+      && shipment.routeWaypoints.every(w => isIndianCoordinate(w.lat, w.lng))) {
       const latlngs = shipment.routeWaypoints.map(w => [w.lat, w.lng]);
 
       // Planned route line
