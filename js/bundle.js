@@ -280,9 +280,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Ultra-Low Freezer (-90°C to -60°C)",
     priority: "Urgent",
 
-    originFacility: "Kalamazoo Bio-Production Plant (MI)",
-    currentLocation: "I-76 Mile Marker 142 near Breezewood, PA",
-    destinationFacility: "Children's Hospital of Philadelphia - Central Pharmacy",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "REEFER-TRUCK-884",
     carrierIdentifier: "CryoTrans Express (Driver: J. Gallagher)",
     departureTime: "2026-10-09T08:30:00Z",
@@ -298,8 +298,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 48.2,
     minAllowedHumidity: 20.0,
     maxAllowedHumidity: 80.0,
-    gpsLatitude: 40.0152,
-    gpsLongitude: -78.2384,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 78,
@@ -327,10 +328,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-02",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 40.4406, lng: -79.9959, name: "Pittsburgh Hub" },
-      { lat: 40.0152, lng: -78.2384, name: "Current GPS (I-76 Breezewood)" },
-      { lat: 40.2732, lng: -76.8867, name: "Harrisburg Transfer Point" },
-      { lat: 39.9526, lng: -75.1652, name: "CHOP Philadelphia" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
       { time: "08:30", severity: "safe", desc: "Shipment dispatched from Kalamazoo Hub. Seal verified." },
@@ -357,9 +358,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "High",
 
-    originFacility: "Gaithersburg Distribution Core (MD)",
-    currentLocation: "US-15 Northbound near Gettysburg, PA",
-    destinationFacility: "UPMC Presbyterian Hospital Vaccine Center",
+    originFacility: "Pune Regional Vaccine Depot, Pune",
+    currentLocation: "Demo GPS near Ahmednagar, Maharashtra",
+    destinationFacility: "Nagpur Regional Medical Depot, Nagpur",
     transportVehicleId: "VAN-COLD-309",
     carrierIdentifier: "MediRoute Logistics (Driver: K. Sharma)",
     departureTime: "2026-10-09T11:00:00Z",
@@ -375,8 +376,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 59.8,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 39.8283,
-    gpsLongitude: -77.2311,
+    gpsLatitude: 19.0948,
+    gpsLongitude: 74.7480,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 89,
@@ -404,9 +406,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-03",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 39.1434, lng: -77.2014, name: "Gaithersburg, MD" },
-      { lat: 39.8283, lng: -77.2311, name: "Current GPS (US-15 Gettysburg)" },
-      { lat: 40.4406, lng: -79.9959, name: "UPMC Presbyterian" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Regional Vaccine Depot" },
+      { lat: 19.0948, lng: 74.7480, name: "Demo GPS near Ahmednagar" },
+      { lat: 20.9374, lng: 77.7796, name: "Amravati Transfer Hub" },
+      { lat: 21.1458, lng: 79.0882, name: "Nagpur Regional Medical Depot" }
     ],
     timeline: [
       { time: "11:00", severity: "safe", desc: "Dispatched with validated thermal shipper and calibrated sensor." },
@@ -430,9 +433,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Standard Frozen (-25°C to -15°C)",
     priority: "Normal",
 
-    originFacility: "Norwood Technical Operations (MA)",
-    currentLocation: "I-80 Westbound near Bellefonte, PA",
-    destinationFacility: "Cleveland Clinic Main Campus Pharmacy",
+    originFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
+    currentLocation: "Demo GPS near Surat, Gujarat",
+    destinationFacility: "Ahmedabad Vaccine Logistics Hub, Ahmedabad",
     transportVehicleId: "REEFER-UNIT-104",
     carrierIdentifier: "ColdLine Logistics (Driver: M. Kowalski)",
     departureTime: "2026-10-09T06:00:00Z",
@@ -448,8 +451,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 42.1,
     minAllowedHumidity: 30.0,
     maxAllowedHumidity: 75.0,
-    gpsLatitude: 40.9134,
-    gpsLongitude: -77.7783,
+    gpsLatitude: 21.1702,
+    gpsLongitude: 72.8311,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 94,
@@ -477,9 +481,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-05",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 42.1887, lng: -71.1964, name: "Norwood, MA" },
-      { lat: 40.9134, lng: -77.7783, name: "Current GPS (I-80 Bellefonte)" },
-      { lat: 41.4993, lng: -81.6944, name: "Cleveland Clinic" }
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" },
+      { lat: 21.1702, lng: 72.8311, name: "Demo GPS near Surat" },
+      { lat: 22.3072, lng: 73.1812, name: "Vadodara Transfer Hub" },
+      { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
       { time: "06:00", severity: "safe", desc: "Batch verified at Norwood facility. Core temp -22.1°C." },
@@ -502,9 +507,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Normal",
 
-    originFacility: "Wavre Vaccine Center (US Hub Philadelphia)",
-    currentLocation: "PA Turnpike near Carlisle, PA",
-    destinationFacility: "Penn State Health Milton S. Hershey Medical Center",
+    originFacility: "Delhi Central Vaccine Depot, Delhi",
+    currentLocation: "Demo GPS near Gurugram, Haryana",
+    destinationFacility: "Jaipur Regional Vaccine Centre, Jaipur",
     transportVehicleId: "VAN-EXPRESS-19",
     carrierIdentifier: "MediVan Courier (Driver: R. Patel)",
     departureTime: "2026-10-09T13:00:00Z",
@@ -520,8 +525,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 78.4, // HUMIDITY EXCURSION! (Limit: 35% - 65%)
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.2014,
-    gpsLongitude: -77.1889,
+    gpsLatitude: 28.4595,
+    gpsLongitude: 77.0266,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 82,
@@ -549,9 +555,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-02",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 39.9526, lng: -75.1652, name: "Philadelphia Depot" },
-      { lat: 40.2014, lng: -77.1889, name: "Current GPS (Carlisle, PA)" },
-      { lat: 40.2859, lng: -76.6506, name: "Hershey Med Center" }
+      { lat: 28.6139, lng: 77.2090, name: "Delhi Central Vaccine Depot" },
+      { lat: 28.4595, lng: 77.0266, name: "Demo GPS near Gurugram" },
+      { lat: 28.1990, lng: 76.6190, name: "Rewari Checkpoint" },
+      { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
       { time: "13:00", severity: "safe", desc: "Dispatched from Philadelphia. Humidity 52% RH." },
@@ -574,9 +581,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "High",
 
-    originFacility: "West Point Manufacturing Facility (PA)",
-    currentLocation: "Off Route: Secondary Route 22 near Lewistown, PA",
-    destinationFacility: "Allegheny General Hospital - Central Distribution",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "REEFER-TRUCK-512",
     carrierIdentifier: "FastCold Transport (Driver: D. Bradley)",
     departureTime: "2026-10-09T09:15:00Z",
@@ -592,8 +599,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 48.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.5992,
-    gpsLongitude: -77.5714,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     lastSensorUpdate: new Date(Date.now() - 4 * 60 * 1000).toISOString(), // 4 mins ago (stale warning)
     sensorConnectivity: "Stale Telemetry",
     batteryLevel: 41,
@@ -621,9 +629,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-01",
     routeDeviationDetected: true,
     routeWaypoints: [
-      { lat: 40.2104, lng: -75.3121, name: "West Point, PA" },
-      { lat: 40.5992, lng: -77.5714, name: "Current GPS (Off Route Rt 22)" },
-      { lat: 40.4578, lng: -80.0028, name: "Allegheny General Hospital" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
       { time: "09:15", severity: "safe", desc: "Departed West Point facility on I-76 West planned route." },
@@ -646,9 +655,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Ultra-Cold (-80°C to -60°C)",
     priority: "Urgent",
 
-    originFacility: "CDC Strategic Stockpile Depot Atlanta (GA)",
-    currentLocation: "I-71 Northbound near Cincinnati, OH",
-    destinationFacility: "Ohio State University Wexner Medical Center",
+    originFacility: "Pune Regional Vaccine Depot, Pune",
+    currentLocation: "Demo GPS near Ahmednagar, Maharashtra",
+    destinationFacility: "Nagpur Regional Medical Depot, Nagpur",
     transportVehicleId: "SECURE-HAUL-09",
     carrierIdentifier: "BioDefense Courier (Escort Team Alpha)",
     departureTime: "2026-10-09T05:00:00Z",
@@ -664,8 +673,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 24.3,
     minAllowedHumidity: 15.0,
     maxAllowedHumidity: 70.0,
-    gpsLatitude: 39.1031,
-    gpsLongitude: -84.5120,
+    gpsLatitude: 19.0948,
+    gpsLongitude: 74.7480,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 98,
@@ -693,9 +703,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-04",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 33.7490, lng: -84.3880, name: "Atlanta SNS Depot" },
-      { lat: 39.1031, lng: -84.5120, name: "Current GPS (Cincinnati, OH)" },
-      { lat: 39.9992, lng: -83.0152, name: "OSU Wexner Med Center" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Regional Vaccine Depot" },
+      { lat: 19.0948, lng: 74.7480, name: "Demo GPS near Ahmednagar" },
+      { lat: 20.9374, lng: 77.7796, name: "Amravati Transfer Hub" },
+      { lat: 21.1458, lng: 79.0882, name: "Nagpur Regional Medical Depot" }
     ],
     timeline: [
       { time: "05:00", severity: "safe", desc: "Biosecurity seal initialized. Active cryo engine locked at -75.0°C." },
@@ -717,9 +728,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C) - DO NOT FREEZE",
     priority: "Normal",
 
-    originFacility: "Newark International Biologics Terminal (NJ)",
-    currentLocation: "I-78 Westbound near Allentown, PA",
-    destinationFacility: "Geisinger Medical Center Danville (PA)",
+    originFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
+    currentLocation: "Demo GPS near Surat, Gujarat",
+    destinationFacility: "Ahmedabad Vaccine Logistics Hub, Ahmedabad",
     transportVehicleId: "REEFER-TRUCK-220",
     carrierIdentifier: "TransCold Pharma (Driver: H. Weber)",
     departureTime: "2026-10-09T10:45:00Z",
@@ -735,8 +746,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 55.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.6084,
-    gpsLongitude: -75.4902,
+    gpsLatitude: 21.1702,
+    gpsLongitude: 72.8311,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 67,
@@ -764,9 +776,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-03",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 40.6895, lng: -74.1745, name: "Newark Air Terminal" },
-      { lat: 40.6084, lng: -75.4902, name: "Current GPS (Allentown, PA)" },
-      { lat: 40.9634, lng: -76.6191, name: "Geisinger Med Center" }
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" },
+      { lat: 21.1702, lng: 72.8311, name: "Demo GPS near Surat" },
+      { lat: 22.3072, lng: 73.1812, name: "Vadodara Transfer Hub" },
+      { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
       { time: "10:45", severity: "safe", desc: "Shipment accepted from air freight. Core temp +4.5°C." },
@@ -789,9 +802,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Frozen (-25°C to -15°C)",
     priority: "High",
 
-    originFacility: "Durham Vaccine Production Center (NC)",
-    currentLocation: "I-81 Northbound near Winchester, VA",
-    destinationFacility: "Johns Hopkins Hospital Outpatient Center",
+    originFacility: "Delhi Central Vaccine Depot, Delhi",
+    currentLocation: "Demo GPS near Gurugram, Haryana",
+    destinationFacility: "Jaipur Regional Vaccine Centre, Jaipur",
     transportVehicleId: "VAN-COLD-411",
     carrierIdentifier: "Atlantic Pharma Express (Driver: L. Gomez)",
     departureTime: "2026-10-09T07:15:00Z",
@@ -806,8 +819,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 38.5,
     minAllowedHumidity: 30.0,
     maxAllowedHumidity: 75.0,
-    gpsLatitude: 39.1857,
-    gpsLongitude: -78.1633,
+    gpsLatitude: 28.4595,
+    gpsLongitude: 77.0266,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 92,
@@ -834,9 +848,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-02",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 35.9940, lng: -78.8986, name: "Durham, NC" },
-      { lat: 39.1857, lng: -78.1633, name: "Current GPS (Winchester, VA)" },
-      { lat: 39.2965, lng: -76.5927, name: "Johns Hopkins Baltimore" }
+      { lat: 28.6139, lng: 77.2090, name: "Delhi Central Vaccine Depot" },
+      { lat: 28.4595, lng: 77.0266, name: "Demo GPS near Gurugram" },
+      { lat: 28.1990, lng: 76.6190, name: "Rewari Checkpoint" },
+      { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
       { time: "07:15", severity: "safe", desc: "Pre-conditioned cold pack verification passed." },
@@ -858,9 +873,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Normal",
 
-    originFacility: "Elkton Operations Center (VA)",
-    currentLocation: "I-95 Northbound near Wilmington, DE",
-    destinationFacility: "New York-Presbyterian Hospital Central Storage",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "REEFER-TRUCK-601",
     carrierIdentifier: "Northeast MedTrans (Driver: B. Thornton)",
     departureTime: "2026-10-09T09:00:00Z",
@@ -875,8 +890,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 46.2,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 39.7447,
-    gpsLongitude: -75.5484,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 88,
@@ -903,9 +919,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-06",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 38.4079, lng: -78.6256, name: "Elkton, VA" },
-      { lat: 39.7447, lng: -75.5484, name: "Current GPS (Wilmington, DE)" },
-      { lat: 40.7128, lng: -74.0060, name: "NY-Presbyterian Hospital" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
       { time: "09:00", severity: "safe", desc: "Batch loaded and sealed in temperature-controlled trailer." },
@@ -927,9 +944,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Urgent",
 
-    originFacility: "Morrisville Packaging Logistics (NC)",
-    currentLocation: "I-77 North near Charleston, WV",
-    destinationFacility: "Cleveland MetroHealth Medical Center",
+    originFacility: "Pune Regional Vaccine Depot, Pune",
+    currentLocation: "Demo GPS near Ahmednagar, Maharashtra",
+    destinationFacility: "Nagpur Regional Medical Depot, Nagpur",
     transportVehicleId: "EXPEDITE-SPRINTER-12",
     carrierIdentifier: "Apex Critical Logistics (Driver: A. Brooks)",
     departureTime: "2026-10-09T08:00:00Z",
@@ -944,8 +961,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 51.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 38.3498,
-    gpsLongitude: -81.6326,
+    gpsLatitude: 19.0948,
+    gpsLongitude: 74.7480,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Low Battery",
     batteryLevel: 9, // SENSOR BATTERY WARNING!
@@ -972,9 +990,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-05",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 35.8235, lng: -78.8256, name: "Morrisville, NC" },
-      { lat: 38.3498, lng: -81.6326, name: "Current GPS (Charleston, WV)" },
-      { lat: 41.4687, lng: -81.6912, name: "Cleveland MetroHealth" }
+      { lat: 18.5204, lng: 73.8567, name: "Pune Regional Vaccine Depot" },
+      { lat: 19.0948, lng: 74.7480, name: "Demo GPS near Ahmednagar" },
+      { lat: 20.9374, lng: 77.7796, name: "Amravati Transfer Hub" },
+      { lat: 21.1458, lng: 79.0882, name: "Nagpur Regional Medical Depot" }
     ],
     timeline: [
       { time: "08:00", severity: "safe", desc: "High priority rabies vaccine package handed over to dedicated courier." },
@@ -996,9 +1015,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "Normal",
 
-    originFacility: "King of Prussia Cold Depot (PA)",
-    currentLocation: "Delivered to Dock Bay 3",
-    destinationFacility: "Temple University Hospital Pharmacy",
+    originFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
+    currentLocation: "Demo GPS near Surat, Gujarat",
+    destinationFacility: "Ahmedabad Vaccine Logistics Hub, Ahmedabad",
     transportVehicleId: "REEFER-TRUCK-109",
     carrierIdentifier: "MediRoute Express",
     departureTime: "2026-10-09T06:00:00Z",
@@ -1013,8 +1032,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 44.5,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 40.0041,
-    gpsLongitude: -75.1556,
+    gpsLatitude: 21.1702,
+    gpsLongitude: 72.8311,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Dock Synced",
     batteryLevel: 91,
@@ -1041,8 +1061,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-06",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 40.0901, lng: -75.3854, name: "King of Prussia Depot" },
-      { lat: 40.0041, lng: -75.1556, name: "Temple University Hospital" }
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" },
+      { lat: 21.1702, lng: 72.8311, name: "Demo GPS near Surat" },
+      { lat: 22.3072, lng: 73.1812, name: "Vadodara Transfer Hub" },
+      { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
       { time: "06:00", severity: "safe", desc: "Dispatched from King of Prussia warehouse." },
@@ -1064,9 +1086,9 @@ const INITIAL_SHIPMENTS = [
     storageRequirement: "Ultra-Low Freezer (-90°C to -60°C)",
     priority: "Urgent",
 
-    originFacility: "St. Louis Distribution Hub (MO)",
-    currentLocation: "Rerouted to Apex Cryo-Depot (Arrival in 12m)",
-    destinationFacility: "Apex Biologics Regional Cryo-Depot (Reroute Facility)",
+    originFacility: "Delhi Central Vaccine Depot, Delhi",
+    currentLocation: "Demo GPS near Gurugram, Haryana",
+    destinationFacility: "Jaipur Regional Vaccine Centre, Jaipur",
     transportVehicleId: "CRYO-SPRINTER-04",
     carrierIdentifier: "CryoTrans Priority (Driver: T. Reynolds)",
     departureTime: "2026-10-09T04:30:00Z",
@@ -1081,8 +1103,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 41.0,
     minAllowedHumidity: 20.0,
     maxAllowedHumidity: 80.0,
-    gpsLatitude: 40.4121,
-    gpsLongitude: -80.0412,
+    gpsLatitude: 28.4595,
+    gpsLongitude: 77.0266,
+    gpsSource: "demo",
     lastSensorUpdate: new Date().toISOString(),
     sensorConnectivity: "Online",
     batteryLevel: 62,
@@ -1109,9 +1132,10 @@ const INITIAL_SHIPMENTS = [
     nearestCheckpointId: "CP-01",
     routeDeviationDetected: false,
     routeWaypoints: [
-      { lat: 38.6270, lng: -90.1994, name: "St. Louis Hub" },
-      { lat: 40.4121, lng: -80.0412, name: "Current GPS (Pittsburgh outskirts)" },
-      { lat: 40.4406, lng: -79.9959, name: "Apex Cryo Depot (Reroute destination)" }
+      { lat: 28.6139, lng: 77.2090, name: "Delhi Central Vaccine Depot" },
+      { lat: 28.4595, lng: 77.0266, name: "Demo GPS near Gurugram" },
+      { lat: 28.1990, lng: 76.6190, name: "Rewari Checkpoint" },
+      { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
       { time: "04:30", severity: "safe", desc: "Dispatched from St. Louis Hub." },
@@ -1134,9 +1158,9 @@ const INITIAL_SHIPMENTS = [
     packagingType: "Qualified Insulated Vaccine Carrier with Conditioned Cool Packs",
     storageRequirement: "Refrigerated (+2°C to +8°C)",
     priority: "High",
-    originFacility: "Pune Vaccine Cold-Chain Hub, Pune, Maharashtra",
-    currentLocation: "Demo GPS position near Lonavala, Maharashtra",
-    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai, Maharashtra",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune",
+    currentLocation: "Demo GPS near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai",
     transportVehicleId: "MH-12-CG-1301",
     carrierIdentifier: "ColdGuard India Demo Fleet",
     departureTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
@@ -1150,8 +1174,9 @@ const INITIAL_SHIPMENTS = [
     currentHumidity: 52.0,
     minAllowedHumidity: 35.0,
     maxAllowedHumidity: 65.0,
-    gpsLatitude: 18.7500,
-    gpsLongitude: 73.4050,
+    gpsLatitude: 18.7546,
+    gpsLongitude: 73.4062,
+    gpsSource: "demo",
     location: {
       latitude: 18.7500,
       longitude: 73.4050,
@@ -1184,7 +1209,8 @@ const INITIAL_SHIPMENTS = [
     routeDeviationDetected: false,
     routeWaypoints: [
       { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
-      { lat: 18.7500, lng: 73.4050, name: "Current Demo GPS (near Lonavala)" },
+      { lat: 18.7546, lng: 73.4062, name: "Demo GPS near Lonavala" },
+      { lat: 19.2183, lng: 72.9781, name: "Thane Transfer Checkpoint" },
       { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
@@ -1204,6 +1230,7 @@ const WHO_AUDIT_STANDARDS = {
     standardRefrigerated: "Continuous recording every 5 minutes. Alarm triggered if > +8°C or < +2°C for > 20 minutes."
   }
 };
+
 
 // --- FILE: js/engine/excursionEngine.js ---
 // ============================================================================
@@ -1253,10 +1280,10 @@ class ExcursionDetectionEngine {
         evaluator: this.checkHumidityExcursion.bind(this)
       },
       {
-        id: "RULE-07-SENSOR-OFFLINE",
-        name: "Sensor Transceiver Offline / Signal Drop",
-        conditionType: "sensor_offline",
-        evaluator: this.checkSensorOffline.bind(this)
+        id: "RULE-07-DEVICE-OFFLINE",
+        name: "Device Offline — Cause Not Confirmed",
+        conditionType: "device_offline",
+        evaluator: this.checkDeviceOffline.bind(this)
       },
       {
         id: "RULE-08-STALE-DATA",
@@ -1269,6 +1296,24 @@ class ExcursionDetectionEngine {
         name: "GPS Corridor Breach / Route Deviation",
         conditionType: "gps_anomaly",
         evaluator: this.checkGpsAnomaly.bind(this)
+      },
+      {
+        id: "RULE-10-DHT22-FAULT",
+        name: "DHT22 Sensor Hardware Malfunction",
+        conditionType: "sensor_hardware_fault",
+        evaluator: this.checkDht22SensorFault.bind(this)
+      },
+      {
+        id: "RULE-11-GPS-UNAVAILABLE",
+        name: "GPS Signal Unavailable",
+        conditionType: "gps_unavailable",
+        evaluator: this.checkGpsUnavailable.bind(this)
+      },
+      {
+        id: "RULE-12-GPS-STALE",
+        name: "GPS Signal Stale",
+        conditionType: "gps_stale",
+        evaluator: this.checkGpsStale.bind(this)
       }
     ];
   }
@@ -1321,39 +1366,51 @@ class ExcursionDetectionEngine {
     // Evaluate rules in priority order
     const triggeredRules = [];
 
-    // 1. Check Offline
-    const r7 = this.rules.find(r => r.id === "RULE-07-SENSOR-OFFLINE").evaluator(shipment, dataAge);
+    // 1. Check DHT22 Sensor Malfunction
+    const r10 = this.rules.find(r => r.id === "RULE-10-DHT22-FAULT").evaluator(shipment);
+    if (r10.triggered) triggeredRules.push(r10);
+
+    // 2. Check Device Offline (Do not confuse with hardware failure)
+    const r7 = this.rules.find(r => r.id === "RULE-07-DEVICE-OFFLINE").evaluator(shipment, dataAge);
     if (r7.triggered) triggeredRules.push(r7);
 
-    // 2. Check Stale
+    // 3. Check Stale Telemetry
     const r8 = this.rules.find(r => r.id === "RULE-08-STALE-DATA").evaluator(shipment, dataAge);
     if (r8.triggered) triggeredRules.push(r8);
 
-    // 3. Upper Excursion
+    // 4. Check GPS Unavailable
+    const r11 = this.rules.find(r => r.id === "RULE-11-GPS-UNAVAILABLE").evaluator(shipment);
+    if (r11.triggered) triggeredRules.push(r11);
+
+    // 5. Check GPS Stale
+    const r12 = this.rules.find(r => r.id === "RULE-12-GPS-STALE").evaluator(shipment);
+    if (r12.triggered) triggeredRules.push(r12);
+
+    // 6. Upper Excursion
     const r1 = this.rules.find(r => r.id === "RULE-01-CRIT-HIGH").evaluator(currentTemp, maxTemp, shipment);
     if (r1.triggered) triggeredRules.push(r1);
 
-    // 4. Lower Excursion (Freeze)
+    // 7. Lower Excursion (Freeze)
     const r2 = this.rules.find(r => r.id === "RULE-02-CRIT-LOW").evaluator(currentTemp, minTemp, shipment);
     if (r2.triggered) triggeredRules.push(r2);
 
-    // 5. Prolonged Excursion
+    // 8. Prolonged Excursion
     const r3 = this.rules.find(r => r.id === "RULE-03-PROLONGED").evaluator(shipment);
     if (r3.triggered) triggeredRules.push(r3);
 
-    // 6. Rapid Rate of Change
+    // 9. Rapid Rate of Change
     const r4 = this.rules.find(r => r.id === "RULE-04-RAPID-RATE").evaluator(history, currentTemp);
     if (r4.triggered) triggeredRules.push(r4);
 
-    // 7. Approaching Boundary
+    // 10. Approaching Boundary
     const r5 = this.rules.find(r => r.id === "RULE-05-APPROACHING").evaluator(currentTemp, minTemp, maxTemp, warningDelta);
     if (r5.triggered) triggeredRules.push(r5);
 
-    // 8. Humidity Excursion
+    // 11. Humidity Excursion
     const r6 = this.rules.find(r => r.id === "RULE-06-HUMIDITY").evaluator(currentHum, minHum, maxHum);
     if (r6.triggered) triggeredRules.push(r6);
 
-    // 9. GPS Anomaly
+    // 12. GPS Anomaly
     const r9 = this.rules.find(r => r.id === "RULE-09-GPS-ANOMALY").evaluator(shipment);
     if (r9.triggered) triggeredRules.push(r9);
 
@@ -1406,6 +1463,16 @@ class ExcursionDetectionEngine {
       excursion_status: primaryStatus,
       recommended_action: primaryAction,
       triggered_rules: triggeredRules,
+      detected_problems: triggeredRules.map(r => ({
+        problemId: r.ruleId,
+        problemType: r.statusLabel,
+        severity: r.severity,
+        shipmentId: shipment.id,
+        lastUpdated: shipment.lastSensorUpdate || new Date().toISOString(),
+        delta: r.delta || "Anomaly detected",
+        recommendedAction: r.recommendedAction,
+        readingResponsible: r.readingResponsible || "Sensor Telemetry"
+      })),
       is_excursion_active: highestSeverity === "Critical" || highestSeverity === "High Risk"
     };
   }
@@ -1543,18 +1610,82 @@ class ExcursionDetectionEngine {
     return { triggered: false };
   }
 
-  checkSensorOffline(shipment, dataAge) {
-    if (shipment.sensorConnectivity === "Offline" || dataAge > 300) {
+  checkDeviceOffline(shipment, dataAge) {
+    if (shipment.sensorConnectivity === "Offline" || dataAge > 300 || shipment.isDeviceOffline) {
       return {
-        ruleId: "RULE-07-SENSOR-OFFLINE",
-        ruleName: "Sensor Transceiver Offline",
+        ruleId: "RULE-07-DEVICE-OFFLINE",
+        ruleName: "Device Offline — Cause Not Confirmed",
         triggered: true,
         severity: "High Risk",
-        statusLabel: "Sensor Offline",
+        statusLabel: "Device offline — cause not confirmed",
         delta: `No telemetry received for ${Math.round(dataAge / 60)} minutes`,
-        readingResponsible: `Data Age: ${dataAge}s`,
-        confidence: 97.0,
-        recommendedAction: "Telemetry signal lost. Contact transport driver to verify vehicle power supply and cellular antenna positioning."
+        readingResponsible: `Data Age: ${dataAge}s (Gateway silent)`,
+        confidence: 96.0,
+        recommendedAction: "Device offline — cause not confirmed. Telemetry packets stopped. Do not assume hardware failure; verify vehicle auxiliary power, SIM cellular network coverage, or IoT gateway state."
+      };
+    }
+    return { triggered: false };
+  }
+
+  checkDht22SensorFault(shipment) {
+    const t = shipment.currentTemperature;
+    const h = shipment.currentHumidity;
+    const isTempCorrupted = t === null || t === undefined || isNaN(t) || t > 85.0 || t < -50.0;
+    const isHumCorrupted = h === null || h === undefined || isNaN(h) || h < 0 || h > 100.0;
+
+    if (shipment.isSensorFaulty || isTempCorrupted || isHumCorrupted) {
+      return {
+        ruleId: "RULE-10-DHT22-FAULT",
+        ruleName: "DHT22 Sensor Hardware Malfunction",
+        triggered: true,
+        severity: "Critical",
+        statusLabel: "DHT22 Sensor Hardware Malfunction",
+        delta: "Probe reading invalid or out-of-bounds",
+        readingResponsible: `Read: Temp ${t}°C, Hum ${h}% (Expected -50°C to +85°C)`,
+        confidence: 99.5,
+        recommendedAction: "DHT22 sensor hardware malfunction detected. Sensor returned invalid or NaN telemetry. Inspect GPIO probe wiring, 10k pull-up resistor, and probe physical connection."
+      };
+    }
+    return { triggered: false };
+  }
+
+  checkGpsUnavailable(shipment) {
+    const loc = shipment.location || {};
+    const noFix = loc.hasFix === false || loc.status === "NO_FIX" || shipment.gpsFixStatus === "NO_FIX" || shipment.isGpsUnavailable;
+
+    if (noFix) {
+      return {
+        ruleId: "RULE-11-GPS-UNAVAILABLE",
+        ruleName: "GPS Signal Unavailable",
+        triggered: true,
+        severity: "Warning",
+        statusLabel: "GPS signal unavailable",
+        delta: "0 satellites locked / Fix lost",
+        readingResponsible: "NEO-6M receiver searching for satellites",
+        confidence: 98.0,
+        recommendedAction: "GPS signal unavailable. Satellite lock lost. Vehicle may be in a tunnel, underpass, mountain pass, or covered loading bay. Displaying last known verified location."
+      };
+    }
+    return { triggered: false };
+  }
+
+  checkGpsStale(shipment) {
+    const loc = shipment.location || {};
+    const now = Date.now();
+    const lastGpsTime = loc.lastUpdated || (loc.gpsTimestamp ? Number(loc.gpsTimestamp) : null);
+    const ageSeconds = lastGpsTime ? Math.round((now - lastGpsTime) / 1000) : 0;
+
+    if (ageSeconds > 90 || shipment.isGpsStale) {
+      return {
+        ruleId: "RULE-12-GPS-STALE",
+        ruleName: "GPS Signal Stale",
+        triggered: true,
+        severity: "Warning",
+        statusLabel: "GPS signal stale",
+        delta: `Position age is ${ageSeconds > 0 ? ageSeconds : 120}s (>90s freshness limit)`,
+        readingResponsible: `Last update: ${new Date(lastGpsTime || now - 120000).toLocaleTimeString()}`,
+        confidence: 93.0,
+        recommendedAction: "GPS signal stale. Position has not refreshed for over 90 seconds. Displaying last known coordinates clearly labeled as outdated."
       };
     }
     return { triggered: false };
@@ -2094,6 +2225,10 @@ class RouteMapView {
     this.allCheckpoints = [];
     this.onSelectCheckpoint = options.onSelectCheckpoint || null;
     this.isLeafletLoaded = typeof window.L !== "undefined";
+    this.containerElement = null;
+    this.shipmentChanged = false;
+    this.fitRouteRequested = false;
+    this.resizeObserver = null;
 
     this.init();
   }
@@ -2101,12 +2236,14 @@ class RouteMapView {
   init() {
     const el = document.getElementById(this.containerId);
     if (!el) return;
+    this.containerElement = el;
 
     if (this.isLeafletLoaded && window.L) {
       try {
-        this.map = window.L.map(this.containerId, {
-          zoomControl: true,
-          attributionControl: false
+        this.map = window.L.map(el, {
+          zoomControl: false,
+          attributionControl: false,
+          preferCanvas: true
         }).setView([22.5, 79.0], 5);
 
         // Clean OpenStreetMap tiles with custom styling class
@@ -2116,10 +2253,15 @@ class RouteMapView {
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(this.map);
 
-        // Window resize handler
-        setTimeout(() => {
-          if (this.map) this.map.invalidateSize();
-        }, 200);
+        this.addTrackingControls();
+        const invalidate = () => { if (this.map) this.map.invalidateSize({ pan: false }); };
+        window.addEventListener("resize", invalidate);
+        this._resizeHandler = invalidate;
+        if (typeof ResizeObserver !== "undefined") {
+          this.resizeObserver = new ResizeObserver(invalidate);
+          this.resizeObserver.observe(el);
+        }
+        setTimeout(invalidate, 200);
       } catch (err) {
         console.warn("Leaflet tile init error, falling back to schematic canvas", err);
         this.initSchematicFallback(el);
@@ -2127,6 +2269,56 @@ class RouteMapView {
     } else {
       this.initSchematicFallback(el);
     }
+  }
+
+  addTrackingControls() {
+    if (!this.map || !window.L) return;
+    const control = window.L.control({ position: "topleft" });
+    control.onAdd = () => {
+      const wrap = window.L.DomUtil.create("div", "leaflet-bar coldguard-map-controls");
+      wrap.style.cssText = "display:flex;flex-direction:column;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px #0002";
+      wrap.innerHTML = [['cg-zoom-in','+','Zoom in'],['cg-zoom-out','−','Zoom out'],['cg-recenter','◎','Recenter'],['cg-fit-route','↔','Fit route']].map(([id,label,title]) => '<button type="button" id="'+id+'" title="'+title+'" aria-label="'+title+'" style="width:36px;height:34px;border:0;border-bottom:1px solid #e2e8f0;background:white;color:#0f172a;font-size:18px;font-weight:700;cursor:pointer">'+label+'</button>').join('');
+      window.L.DomEvent.disableClickPropagation(wrap);
+      window.L.DomEvent.disableScrollPropagation(wrap);
+      window.L.DomEvent.on(wrap.querySelector("#cg-zoom-in"), "click", () => this.map && this.map.zoomIn());
+      window.L.DomEvent.on(wrap.querySelector("#cg-zoom-out"), "click", () => this.map && this.map.zoomOut());
+      window.L.DomEvent.on(wrap.querySelector("#cg-recenter"), "click", () => this.recenter());
+      window.L.DomEvent.on(wrap.querySelector("#cg-fit-route"), "click", () => this.fitRoute());
+      return wrap;
+    };
+    control.addTo(this.map);
+    this.trackingControl = control;
+  }
+
+  recenter() {
+    if (!this.map) return;
+    const s = this.currentShipment, loc = s && s.location || {};
+    const lat = Number(loc.latitude ?? (s && s.gpsLatitude));
+    const lng = Number(loc.longitude ?? (s && s.gpsLongitude));
+    if (!(loc.isLiveGps === true && loc.hasFix === false) && Number.isFinite(lat) && Number.isFinite(lng) && lat >= 6 && lat <= 38 && lng >= 68 && lng <= 98) {
+      this.map.setView([lat, lng], Math.max(this.map.getZoom(), 10), { animate: true });
+    } else this.map.setView([22.5, 79.0], 5, { animate: true });
+  }
+
+  fitRoute() {
+    if (!this.map || !window.L) return;
+    const s = this.currentShipment, points = [];
+    const valid = (lat,lng) => Number.isFinite(Number(lat)) && Number.isFinite(Number(lng)) && Number(lat) >= 6 && Number(lat) <= 38 && Number(lng) >= 68 && Number(lng) <= 98;
+    (s && Array.isArray(s.routeWaypoints) ? s.routeWaypoints : []).forEach(w => { if (w && valid(w.lat,w.lng)) points.push([Number(w.lat),Number(w.lng)]); });
+    const loc = s && s.location || {}, lat = Number(loc.latitude ?? (s && s.gpsLatitude)), lng = Number(loc.longitude ?? (s && s.gpsLongitude));
+    if (!(loc.isLiveGps === true && loc.hasFix === false) && valid(lat,lng)) points.push([lat,lng]);
+    if (points.length > 1) this.map.fitBounds(window.L.latLngBounds(points), { padding:[36,36], maxZoom:11, animate:true });
+    else if (points.length === 1) this.map.setView(points[0],10,{animate:true});
+    else this.map.setView([22.5,79.0],5,{animate:true});
+    this.fitRouteRequested = false;
+    this.shipmentChanged = false;
+  }
+
+  destroy() {
+    if (this.resizeObserver) { this.resizeObserver.disconnect(); this.resizeObserver = null; }
+    if (this._resizeHandler) window.removeEventListener("resize", this._resizeHandler);
+    if (this.map) { this.map.remove(); this.map = null; }
+    this.layers = [];
   }
 
   initSchematicFallback(container) {
@@ -2142,8 +2334,12 @@ class RouteMapView {
   }
 
   renderShipment(shipment, checkpoints) {
-    this.currentShipment = shipment;
+    const nextId = shipment && String(shipment.id || shipment.shipmentId || "");
+    const currentId = this.currentShipment && String(this.currentShipment.id || this.currentShipment.shipmentId || "");
+    this.shipmentChanged = !this.currentShipment || nextId !== currentId;
+    this.currentShipment = shipment || null;
     this.allCheckpoints = checkpoints || [];
+    if (!shipment) { if (this.map) this.map.setView([22.5,79.0],5); return; }
 
     if (this.map && window.L) {
       this.renderLeaflet(shipment, checkpoints);
@@ -2232,7 +2428,6 @@ class RouteMapView {
       });
 
       this.layers.push(marker);
-      bounds.push([cp.lat, cp.lng]);
     });
 
     // 2. Plot Route Waypoints & Lines
@@ -2326,7 +2521,7 @@ class RouteMapView {
           <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${statusColor}"></span>
           ${shipment.id} — ${shipment.vaccineName || "Shipment"}
         </div>
-        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation || "Live sensor location"}</div>
+        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation || "Reported location"} · ${(liveLocation.isLiveGps === true || shipment.gpsSource === "live") ? "LIVE GPS" : "DEMO GPS — not live"}</div>
         <div class="mt-2 text-xs font-mono">${gpsLatitude.toFixed(6)}, ${gpsLongitude.toFixed(6)}</div>
         <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-xs">
           <div><span class="text-slate-400">Current Temp:</span> <b class="font-mono ${isCritical ? 'text-red-600' : 'text-slate-800'}">${shipment.currentTemperature ?? "—"}°C</b></div>
@@ -2352,14 +2547,8 @@ class RouteMapView {
       this.layers.push(gpsNotice);
     }
 
-    // Fit map bounds smoothly
-    if (bounds.length > 0) {
-      try {
-        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
-      } catch (e) {
-        // Safe catch
-      }
-    }
+    // Do not reset view for every GPS/telemetry refresh.
+    if (this.shipmentChanged || this.fitRouteRequested) this.fitRoute();
   }
 
   renderCanvasSchematic(shipment, checkpoints) {
@@ -2447,6 +2636,7 @@ class RouteMapView {
     ctx.fillText(`${shipment.id} (${shipment.currentTemperature}°C)`, vx - 40, vy + 24);
   }
 }
+
 
 // --- FILE: js/components/charts.js ---
 // ============================================================================
@@ -3517,7 +3707,23 @@ class FirebaseDatabaseService {
     const onShipmentsValue = (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const list = Object.values(data);
+        const list = Object.entries(data).map(([shipmentId, record]) => {
+          const shipment = record || {};
+          const location = shipment.location || {};
+          const live = shipment.telemetry?.live || {};
+          return {
+            ...shipment,
+            id: shipment.id || shipment.shipmentId || shipmentId,
+            ...(location.hasFix !== false && location.latitude !== null && location.latitude !== undefined && Number.isFinite(Number(location.latitude))
+              ? { gpsLatitude: Number(location.latitude) } : {}),
+            ...(location.hasFix !== false && location.longitude !== null && location.longitude !== undefined && Number.isFinite(Number(location.longitude))
+              ? { gpsLongitude: Number(location.longitude) } : {}),
+            ...(live.latitude !== null && live.latitude !== undefined && Number.isFinite(Number(live.latitude))
+              ? { telemetryLatitude: Number(live.latitude) } : {}),
+            ...(live.longitude !== null && live.longitude !== undefined && Number.isFinite(Number(live.longitude))
+              ? { telemetryLongitude: Number(live.longitude) } : {})
+          };
+        });
         this.notifyListeners("shipments", list);
       }
     };
@@ -3597,17 +3803,24 @@ class FirebaseDatabaseService {
       const now = Date.now();
       const updates = {};
       
-      // Update live node
-      updates[`shipments/${shipmentId}/telemetry/live`] = {
+      // Update environmental telemetry without fabricating GPS coordinates.
+      const livePayload = {
         temperature: reading.temperature,
         humidity: reading.humidity,
-        latitude: reading.latitude || reading.lat,
-        longitude: reading.longitude || reading.lng,
         batteryLevel: reading.batteryLevel,
         timestamp: now,
         severity: reading.severity || "SAFE",
         excursionStatus: reading.excursionStatus || "Nominal"
       };
+      const latitude = reading.latitude ?? reading.lat;
+      const longitude = reading.longitude ?? reading.lng;
+      if (latitude !== undefined && latitude !== null && Number.isFinite(Number(latitude))) {
+        livePayload.latitude = Number(latitude);
+      }
+      if (longitude !== undefined && longitude !== null && Number.isFinite(Number(longitude))) {
+        livePayload.longitude = Number(longitude);
+      }
+      updates[`shipments/${shipmentId}/telemetry/live`] = livePayload;
 
       // Update root summary fields for fast querying
       updates[`shipments/${shipmentId}/currentTemperature`] = reading.temperature;
@@ -4090,6 +4303,7 @@ class AuthUiManager {
 
 
 
+
 class ColdGuardApp {
   constructor() {
     this.vaccineProfiles = JSON.parse(JSON.stringify(VACCINE_PROFILES));
@@ -4340,9 +4554,7 @@ class ColdGuardApp {
   onSimulationTick(shipments) {
     this.updateHeaderBadges();
 
-    // Simulation is display-only; only actual device/backend integrations may write live telemetry.
-
-    if (this.currentView === "dashboard") {
+    // Simulation is display-only; only actual device/backend integrations may write live telemetry.\n\n    if (this.currentView === "dashboard") {
       this.updateDashboardKpis();
     } else if (this.currentView === "shipments") {
       this.renderShipmentsTable();
@@ -5749,11 +5961,16 @@ class ColdGuardApp {
       this.charts.updateTelemetryChart(shipment);
       this.charts.updateViabilityProjectionChart(trajectoryData);
 
-      this.mapView = new RouteMapView("route-map-container", {
-        onSelectCheckpoint: (cp) => {
-          this.modals.openRerouteModal(shipment, cp);
-        }
-      });
+      const mapContainer = document.getElementById("route-map-container");
+      if (!this.mapView || this.mapView.containerElement !== mapContainer) {
+        if (this.mapView && typeof this.mapView.destroy === "function") this.mapView.destroy();
+        this.mapView = new RouteMapView("route-map-container", {
+          onSelectCheckpoint: (cp) => {
+            const selected = this.simulation.shipments.find(item => item.id === this.selectedShipmentId) || shipment;
+            this.modals.openRerouteModal(selected, cp);
+          }
+        });
+      }
       this.mapView.renderShipment(shipment, this.checkpoints);
     }, 50);
   }
@@ -6256,8 +6473,7 @@ class ColdGuardApp {
         details: `Rerouted shipment ${shipmentId} to certified cold-storage hub: ${checkpoint.name} (${checkpoint.city}). Distance: ${checkpoint.distanceKm}km.`,
         targetCheckpoint: checkpoint.name
       });
-      // Do not write simulated sensor values to the live telemetry path.
-    }
+      // Do not write simulated sensor values to the live telemetry path.\n    }
 
     if (this.currentView === "details") {
       this.renderDetailsView(document.getElementById("main-content-view"));
