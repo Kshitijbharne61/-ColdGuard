@@ -9,7 +9,10 @@
   const num = (v) => v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v)) ? Number(v) : null;
   const timeMs = (v) => {
     if (v === null || v === undefined || v === "") return null;
-    const n = typeof v === "number" ? v : Date.parse(v);
+    let n;
+    if (typeof v === "number") n = v;
+    else if (/^\\d{10,13}$/.test(String(v).trim())) n = Number(v);
+    else n = Date.parse(v);
     if (!Number.isFinite(n)) return null;
     return n < 1000000000000 ? n * 1000 : n;
   };
@@ -46,7 +49,7 @@
     return num(r.temperature ?? r.tempC ?? r.temp_c ?? r.temperatureC ?? r.temperature_c ?? r.currentTemperature ?? r.value);
   }
   function timestampOf(r) {
-    return timeMs(r.timestamp ?? r.timestampMs ?? r.timestamp_ms ?? r.recordedAt ?? r.recorded_at ?? r.createdAt ?? r.created_at ?? r.time ?? r.ts ?? r.dateTime ?? r.datetime);
+    return timeMs(r.timestamp ?? r.timestampMs ?? r.timestamp_ms ?? r.recordedAt ?? r.recorded_at ?? r.createdAt ?? r.created_at ?? r.time ?? r.ts ?? r.dateTime ?? r.datetime ?? r._recordKey);
   }
   function normalizeReadings(records, source) {
     return safeRecordArray(records).map((r) => ({
