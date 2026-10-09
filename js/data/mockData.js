@@ -65,11 +65,11 @@ export const VACCINE_PROFILES = {
 export const CHECKPOINTS = [
   {
     id: "CP-01",
-    name: "Apex Biologics Regional Cryo-Depot",
-    type: "Tier-1 Ultra-Cold Logistics Center",
-    lat: 40.4406,
-    lng: -79.9959, // Pittsburgh, PA
-    city: "Pittsburgh, PA",
+    name: "Pune Vaccine Cold-Chain Hub",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 18.5204,
+    lng: 73.8567, // Pittsburgh, PA
+    city: "Pune, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 185000,
@@ -85,11 +85,11 @@ export const CHECKPOINTS = [
   },
   {
     id: "CP-02",
-    name: "Keystone Pharmaceutical Distribution Vault",
-    type: "Pharma-Grade 3PL Certified Cold Vault",
-    lat: 40.2732,
-    lng: -76.8867, // Harrisburg, PA
-    city: "Harrisburg, PA",
+    name: "Mumbai Vaccine Distribution Centre",
+    type: "Metro Vaccine Distribution Centre",
+    lat: 19.076,
+    lng: 72.8777, // Harrisburg, PA
+    city: "Mumbai, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 240000,
@@ -105,11 +105,11 @@ export const CHECKPOINTS = [
   },
   {
     id: "CP-03",
-    name: "Mercy Healthcare Emergency Medical Vault",
-    type: "Regional Hospital Level-1 Vaccine Pharmacy",
-    lat: 40.0379,
-    lng: -76.3055, // Lancaster, PA
-    city: "Lancaster, PA",
+    name: "Nagpur Regional Medical Depot",
+    type: "Regional Medical Cold-Storage Hub",
+    lat: 21.1458,
+    lng: 79.0882, // Lancaster, PA
+    city: "Nagpur, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 42000,
@@ -125,11 +125,11 @@ export const CHECKPOINTS = [
   },
   {
     id: "CP-04",
-    name: "Buckeye Central Life Sciences Depot",
-    type: "State Strategic National Stockpile Hub",
-    lat: 39.9612,
-    lng: -82.9988, // Columbus, OH
-    city: "Columbus, OH",
+    name: "New Delhi Vaccine Logistics Hub",
+    type: "National Vaccine Logistics Hub",
+    lat: 28.6139,
+    lng: 77.209, // Columbus, OH
+    city: "New Delhi, Delhi",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 420000,
@@ -145,11 +145,11 @@ export const CHECKPOINTS = [
   },
   {
     id: "CP-05",
-    name: "Great Lakes BioVault & Cryo-Logistics",
-    type: "Certified Regional Cryogenic Repository",
-    lat: 41.4993,
-    lng: -81.6944, // Cleveland, OH
-    city: "Cleveland, OH",
+    name: "Hyderabad Cold-Chain Centre",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 17.385,
+    lng: 78.4867, // Cleveland, OH
+    city: "Hyderabad, Telangana",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 165000,
@@ -165,11 +165,11 @@ export const CHECKPOINTS = [
   },
   {
     id: "CP-06",
-    name: "Philadelphia Metropolitan Vaccine Bank",
-    type: "Metro Central Biologics Distribution Center",
-    lat: 39.9526,
-    lng: -75.1652, // Philadelphia, PA
-    city: "Philadelphia, PA",
+    name: "Bengaluru Vaccine Depot",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 12.9719,
+    lng: 77.5937, // Philadelphia, PA
+    city: "Bengaluru, Karnataka",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 310000,
@@ -185,11 +185,11 @@ export const CHECKPOINTS = [
   },
   {
     id: "CP-07",
-    name: "Crossroads Midwest Pharma Storage",
-    type: "Interstate Strategic Cold Storage Facility",
-    lat: 39.7684,
-    lng: -86.1581, // Indianapolis, IN
-    city: "Indianapolis, IN",
+    name: "Chennai Medical Distribution Hub",
+    type: "Metro Medical Distribution Centre",
+    lat: 13.0827,
+    lng: 80.2707, // Indianapolis, IN
+    city: "Chennai, Tamil Nadu",
     coldStorageAvailable: true,
     storageTiers: ["Frozen (-20°C)", "Standard (2-8°C)"],
     availableCapacityDoses: 95000,
@@ -205,11 +205,11 @@ export const CHECKPOINTS = [
   },
   {
     id: "CP-08",
-    name: "Allegheny Valley Healthcare Vaccine Vault",
-    type: "Consortium Health System Cold Center",
-    lat: 40.5845,
-    lng: -79.7428, // Natrona Heights / New Kensington, PA
-    city: "Allegheny Valley, PA",
+    name: "Ahmedabad Vaccine Storage Hub",
+    type: "Regional Vaccine Cold-Storage Hub",
+    lat: 23.0225,
+    lng: 72.5714, // Natrona Heights / New Kensington, PA
+    city: "Ahmedabad, Gujarat",
     coldStorageAvailable: true,
     storageTiers: ["Standard (2-8°C)"],
     availableCapacityDoses: 35000,
@@ -1117,6 +1117,78 @@ export const INITIAL_SHIPMENTS = [
       { time: "17:22", severity: "safe", desc: "Emergency reroute executed to Apex Cryo-Depot (CP-01)." }
     ],
     history: generateSensorHistory(-58.9, -90.0, -60.0, 41.0, true, 26)
+  },
+
+  {
+    // 13. India Demo Shipment — sample data, not live sensor telemetry
+    id: "CG-IN-1301-COV",
+    vaccineName: "Covishield (ChAdOx1-S) — India Demo",
+    vaccineType: "Viral Vector Suspension",
+    vaccineCategory: "standard_cold_chain",
+    manufacturer: "Serum Institute of India (sample shipment record)",
+    batchNumber: "DEMO-IN-2026-1301",
+    doses: 12000,
+    packagingType: "Qualified Insulated Vaccine Carrier with Conditioned Cool Packs",
+    storageRequirement: "Refrigerated (+2°C to +8°C)",
+    priority: "High",
+    originFacility: "Pune Vaccine Cold-Chain Hub, Pune, Maharashtra",
+    currentLocation: "Demo GPS position near Lonavala, Maharashtra",
+    destinationFacility: "Mumbai Vaccine Distribution Centre, Mumbai, Maharashtra",
+    transportVehicleId: "MH-12-CG-1301",
+    carrierIdentifier: "ColdGuard India Demo Fleet",
+    departureTime: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+    expectedDeliveryTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+    status: "In Transit — Demo",
+    eta: "Demo ETA: approximately 2 hours",
+    routeDistanceRemainingKm: 82,
+    currentTemperature: 5.1,
+    minAllowedTemperature: 2.0,
+    maxAllowedTemperature: 8.0,
+    currentHumidity: 52.0,
+    minAllowedHumidity: 35.0,
+    maxAllowedHumidity: 65.0,
+    gpsLatitude: 18.7500,
+    gpsLongitude: 73.4050,
+    location: {
+      latitude: 18.7500,
+      longitude: 73.4050,
+      hasFix: true,
+      isLiveGps: false,
+      lastUpdated: new Date().toISOString()
+    },
+    lastSensorUpdate: new Date().toISOString(),
+    sensorConnectivity: "Demo Data",
+    batteryLevel: 96,
+    dataTransmissionStatus: "Sample / simulated telemetry",
+    sensorHealth: "Demo record — connect hardware for live readings",
+    sensorDataAgeSeconds: 0,
+    excursionStatus: "Normal Operation",
+    excursionSeverity: "None",
+    excursionStartTime: null,
+    excursionDurationMinutes: 0,
+    temperatureDeviation: 0,
+    cumulativeThermalExposure: 0.02,
+    peakTemperature: 5.4,
+    minimumRecordedTemperature: 4.8,
+    consecutiveOutOfRangeReadings: 0,
+    detectionConfidencePercent: 96.0,
+    estimatedViabilityPercent: 99.4,
+    predictedSpoilageRiskPercent: 0.6,
+    riskClassification: "Low",
+    predictedDelay: "On Time — demo estimate",
+    recommendedNextAction: "Continue monitoring; verify live sensor telemetry before operational use.",
+    nearestCheckpointId: "CP-02",
+    routeDeviationDetected: false,
+    routeWaypoints: [
+      { lat: 18.5204, lng: 73.8567, name: "Pune Vaccine Cold-Chain Hub" },
+      { lat: 18.7500, lng: 73.4050, name: "Current Demo GPS (near Lonavala)" },
+      { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
+    ],
+    timeline: [
+      { time: "Demo", severity: "safe", desc: "Sample vaccine shipment created for Indian map demonstration." },
+      { time: "Demo", severity: "safe", desc: "Coordinates are illustrative; this is not a live truck position." }
+    ],
+    history: generateSensorHistory(5.1, 2.0, 8.0, 52.0, false, 25)
   }
 ];
 
