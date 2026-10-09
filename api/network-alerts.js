@@ -1,7 +1,7 @@
 const {
   getDatabase, requireUser, getLastUpdate, getTemperature, getCoordinates,
   getThresholds, sendSms, outageMessage, maskPhone
-} = require("./_lib/networkMonitor");
+} = require("../lib/networkMonitor");
 
 module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
