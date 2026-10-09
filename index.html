@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ColdGuard — Real-Time Vaccine Cold Chain Integrity Monitoring</title>
+  <meta name="description" content="Protect Every Dose. Predict Every Excursion. Real-time IoT vaccine cold chain monitoring, predictive viability estimation, and automated emergency rerouting dashboard.">
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0F172A',
+              blue: '#2563EB',
+              safe: '#10B981',
+              warning: '#F59E0B',
+              critical: '#EF4444',
+              secondary: '#64748B'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS & JS for Interactive Route Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Chart.js for Telemetry & Viability Graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase Web SDK (Compat mode: supports both file:// and http://) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased h-screen flex overflow-hidden">
+
+  <!-- AUTHENTICATION VIEW CONTAINER (Visible when not authenticated) -->
+  <div id="auth-view-container" class="w-full h-full flex flex-col justify-center overflow-y-auto"></div>
+
+  <!-- DASHBOARD APP CONTAINER (Guarded: visible only when authenticated) -->
+  <div id="dashboard-app-container" class="hidden h-screen w-screen flex overflow-hidden">
+
+  <!-- ========================================================================= -->
+  <!-- FIXED LEFT SIDEBAR NAVIGATION -->
+  <!-- ========================================================================= -->
+  <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 z-30 select-none">
+    <!-- Brand Header -->
+    <div class="p-5 border-b border-slate-800 flex items-center gap-3">
+      <!-- ColdGuard Compact Logo SVG (Shield + Snowflake + Thermometer) -->
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Shield outline -->
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <!-- Internal Thermometer / Snowflake Core -->
+          <path d="M12 8v5"/>
+          <circle cx="12" cy="15" r="1.5" fill="currentColor"/>
+          <path d="M9 10l6 0"/>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5">
+          <span class="font-extrabold text-base tracking-tight text-white">ColdGuard</span>
+          <span class="px-1.5 py-0.2 bg-blue-500/20 text-blue-400 font-mono text-[9px] font-bold rounded uppercase">IoT v2.4</span>
+        </div>
+        <div class="text-[10px] text-slate-400 tracking-tight leading-tight mt-0.5">Protect Every Dose.</div>
+      </div>
+    </div>
+
+    <!-- Navigation Menu Items -->
+    <nav class="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
+      <div class="px-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Logistics Command</div>
+
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-blue-600 text-white transition" data-view="dashboard">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        <span>Dashboard Overview</span>
+      </button>
+
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="shipments">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
+        <span>Shipment Fleet</span>
+      </button>
+
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="details">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        <span>Shipment Deep-Dive</span>
+      </button>
+
+      <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Analytics & Engines</div>
+
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="excursion_engine">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        <span>Excursion Engine</span>
+      </button>
+
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="viability_lab">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+        <span>Viability Estimator</span>
+      </button>
+
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="checkpoints">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+        <span>Checkpoint Hubs</span>
+      </button>
+    </nav>
+
+    <!-- Sidebar Bottom Status -->
+    <div class="p-4 border-t border-slate-800 bg-slate-950/60">
+      <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1.5">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Simulation Engine Active</span>
+        </span>
+        <span class="font-mono text-emerald-400 text-[10px]">3.0s tick</span>
+      </div>
+      <div class="text-[10px] text-slate-500 leading-tight">
+        WHO Technical Report Series 961 Annex 9 compliant telemetry model.
+      </div>
+
+      <!-- Authenticated User Card -->
+      <div id="sidebar-user-card" class="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 truncate">
+          <div id="sidebar-avatar" class="w-6 h-6 rounded-md bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center flex-shrink-0">
+            OP
+          </div>
+          <div class="truncate">
+            <div id="sidebar-user-name" class="font-bold text-slate-200 text-[11px] truncate">Operator</div>
+            <div id="sidebar-user-email" class="text-[10px] text-slate-400 truncate">operator@coldguard.org</div>
+          </div>
+        </div>
+        <button id="btn-logout-sidebar" class="text-slate-400 hover:text-red-400 p-1" title="Sign Out">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WORKSPACE CONTAINER -->
+  <!-- ========================================================================= -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+    <!-- TOP HEADER BAR -->
+    <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between gap-4 flex-shrink-0 z-20">
+      <!-- Search Box with '/' key shortcut -->
+      <div class="flex items-center gap-3 max-w-md w-full">
+        <div class="relative w-full">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input id="header-quick-search" type="text" placeholder="Quick search shipments, lots, vaccines... (Press '/')" class="w-full pl-9 pr-8 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition" />
+          <span class="absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-200 rounded">/</span>
+        </div>
+      </div>
+
+      <!-- Simulation Sandbox Controller Bar -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <!-- Scenario Injector Dropdown -->
+        <div class="hidden lg:flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs">
+          <span class="text-[10px] font-bold text-slate-500 uppercase px-1.5">Scenario:</span>
+          <select id="select-header-scenario" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-medium focus:ring-2 focus:ring-blue-500">
+            <option value="">⚡ Trigger Stress Test...</option>
+            <option value="reefer_failure">🔥 Reefer Compressor Failure</option>
+            <option value="dryice_depletion">❄️ Cryo Dry-Ice Depletion</option>
+            <option value="route_deviation">📍 Highway Route Detour</option>
+            <option value="battery_low">🪫 Telemetry Probe Low Battery (4%)</option>
+            <option value="humidity_spike">💧 Door Ajar Humidity Spike (88%)</option>
+            <option value="cold_recovery">✅ Restore Cold Chain (Nominal)</option>
+            <option value="reset_all">🔄 Reset Entire Fleet</option>
+          </select>
+        </div>
+
+        <!-- Simulation Speed Multipliers -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold text-slate-600">
+          <button class="sim-speed-btn px-2.5 py-1 rounded-lg bg-blue-600 text-white transition" data-speed="1">1x</button>
+          <button class="sim-speed-btn px-2.5 py-1 rounded-lg hover:text-slate-900 transition" data-speed="5">5x</button>
+          <button class="sim-speed-btn px-2.5 py-1 rounded-lg hover:text-slate-900 transition" data-speed="10">10x</button>
+        </div>
+
+        <!-- Play / Pause Simulation -->
+        <button id="btn-sim-play-pause" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-sm transition flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span class="hidden sm:inline">Pause</span>
+        </button>
+
+        <!-- Sound Alert Toggle -->
+        <button id="btn-toggle-sound" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition flex items-center gap-1 text-xs" title="Toggle Audio Chimes">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+          <span class="hidden md:inline font-medium">Alert Audio: Off</span>
+        </button>
+
+        <!-- Firebase RTDB Live Sync Pill -->
+        <div id="firebase-rtdb-status-pill" class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="font-mono text-[10px] font-semibold">RTDB Live</span>
+        </div>
+
+        <!-- Critical Excursion Badge -->
+        <div class="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+          <span class="text-xs text-slate-500 font-medium hidden sm:inline">Criticals:</span>
+          <span id="header-critical-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white animate-pulse">
+            1
+          </span>
+        </div>
+
+        <!-- Authenticated Operator Header Pill -->
+        <div id="header-user-profile" class="flex items-center gap-2 pl-3 border-l border-slate-200">
+          <div class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 p-1 pr-2.5 rounded-xl transition cursor-pointer" id="btn-user-dropdown-toggle">
+            <div id="header-user-avatar" class="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+              OP
+            </div>
+            <div class="text-left hidden md:block">
+              <div id="header-user-name" class="text-xs font-bold text-slate-800 leading-tight">Operator</div>
+              <div id="header-user-role" class="text-[10px] text-slate-500 leading-tight">Logistics</div>
+            </div>
+          </div>
+          <button id="btn-logout-header" class="p-1.5 hover:bg-red-50 hover:text-red-600 text-slate-500 rounded-lg transition text-xs font-semibold" title="Sign Out">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN SCROLLABLE VIEW CONTAINER -->
+    <main class="flex-1 overflow-y-auto p-6" id="main-content-view">
+      <!-- Dynamic View Component gets injected here -->
+    </main>
+
+  </div>
+  </div> <!-- Closes dashboard-app-container -->
+
+  <!-- MODALS CONTAINER (Emergency Reroute, Threshold Config, WHO Audit Manifest) -->
+  <div id="modal-container"></div>
+
+  <!-- APPLICATION BOOTSTRAP SCRIPT (Universal: runs on file:// and http://) -->
+  <script src="js/bundle.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+/* ============================================================================
+   ColdGuard - SaaS Theme Stylesheet
+   "Protect Every Dose. Predict Every Excursion."
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-primary-navy: #0F172A;
+  --color-primary-blue: #2563EB;
+  --color-bg: #F8FAFC;
+  --color-card-bg: #FFFFFF;
+  --color-border: #E2E8F0;
+  --color-safe: #10B981;
+  --color-warning: #F59E0B;
+  --color-critical: #EF4444;
+  --color-secondary-text: #64748B;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-primary-navy);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Leaflet Custom Marker & Popup Overrides */
+.leaflet-popup-content-wrapper {
+  border-radius: 14px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  border: 1px solid #E2E8F0;
+  padding: 0;
+}
+.leaflet-popup-content {
+  margin: 10px 14px;
+  line-height: 1.4;
+}
+.leaflet-container {
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* Clean Enterprise Map Tiles Styling */
+.map-tiles-clean {
+  filter: contrast(95%) brightness(102%) saturate(65%);
+}
+
+/* Print styles for WHO Audit Report */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #modal-container, #modal-container * {
+    visibility: visible;
+  }
+  #modal-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: white !important;
+  }
+  #btn-close-modal, #btn-cancel-modal, #btn-download-csv, button[onclick="window.print()"] {
+    display: none !important;
+  }
+}

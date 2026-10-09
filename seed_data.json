@@ -1,0 +1,5338 @@
+{
+  "thresholds": {
+    "mrna_ultra_cold": {
+      "categoryName": "mRNA Ultra-Cold",
+      "shortCode": "mRNA-ULT",
+      "minTemp": -90,
+      "maxTemp": -60,
+      "warningDelta": 5,
+      "minHumidity": 20,
+      "maxHumidity": 80,
+      "storageReq": "Ultra-Low Temperature (-80°C)",
+      "packaging": "Vacuum Insulated Panel (VIP) with Dry Ice",
+      "thermalDegradationFactor": 0.12,
+      "disclaimer": "Demo storage profile based on CDC & WHO ultra-cold mRNA storage guidelines.",
+      "color": "#6366F1"
+    },
+    "frozen": {
+      "categoryName": "Frozen (-20°C)",
+      "shortCode": "FRZ-20",
+      "minTemp": -25,
+      "maxTemp": -15,
+      "warningDelta": 2,
+      "minHumidity": 30,
+      "maxHumidity": 75,
+      "storageReq": "Standard Frozen (-20°C)",
+      "packaging": "Phase Change Material (PCM) Cryo-Shipper",
+      "thermalDegradationFactor": 0.08,
+      "disclaimer": "Demo storage profile for frozen biologics (-25°C to -15°C).",
+      "color": "#0EA5E9"
+    },
+    "standard_cold_chain": {
+      "categoryName": "Standard Cold Chain (2°C - 8°C)",
+      "shortCode": "STD-2-8",
+      "minTemp": 2,
+      "maxTemp": 8,
+      "warningDelta": 0.8,
+      "minHumidity": 35,
+      "maxHumidity": 65,
+      "storageReq": "Refrigerated (+2°C to +8°C)",
+      "packaging": "Qualified Passive Shipper with Frozen/Conditioned Gel Packs",
+      "thermalDegradationFactor": 0.05,
+      "disclaimer": "Demo storage profile for WHO PQS refrigerated vaccines.",
+      "color": "#10B981"
+    },
+    "active_cryo": {
+      "categoryName": "Active Powered Cryo-Transport",
+      "shortCode": "ACT-CRYO",
+      "minTemp": -85,
+      "maxTemp": -65,
+      "warningDelta": 4,
+      "minHumidity": 15,
+      "maxHumidity": 70,
+      "storageReq": "Mobile Active Stirling Cryo-Engine",
+      "packaging": "Stirling Ultracold Active Compressor Shipper",
+      "thermalDegradationFactor": 0.14,
+      "disclaimer": "Demo profile for viral vector and Ebola Ervebo ultra-cold protocol.",
+      "color": "#8B5CF6"
+    }
+  },
+  "checkpoints": {
+    "CP-01": {
+      "id": "CP-01",
+      "name": "Apex Biologics Regional Cryo-Depot",
+      "type": "Tier-1 Ultra-Cold Logistics Center",
+      "lat": 40.4406,
+      "lng": -79.9959,
+      "city": "Pittsburgh, PA",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Ultra-Cold (-80°C)",
+        "Frozen (-20°C)",
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 185000,
+      "totalCapacityDoses": 350000,
+      "supportedCategories": [
+        "mRNA Ultra-Cold",
+        "Frozen (-20°C)",
+        "Standard Cold Chain (2°C - 8°C)",
+        "Active Powered Cryo-Transport"
+      ],
+      "operatingStatus": "24/7 Operational",
+      "staffAvailability": "On-site Cold Chain Specialist (Dr. M. Vance, RPh)",
+      "emergencyPhone": "+1 (412) 555-0192",
+      "dockBayAvailable": "Bays 4 & 5 (Cryo-Transfer Equipped)",
+      "distanceKm": 28.4,
+      "travelTimeMinutes": 24,
+      "backupGenerators": "Triple redundant diesel + microgrid"
+    },
+    "CP-02": {
+      "id": "CP-02",
+      "name": "Keystone Pharmaceutical Distribution Vault",
+      "type": "Pharma-Grade 3PL Certified Cold Vault",
+      "lat": 40.2732,
+      "lng": -76.8867,
+      "city": "Harrisburg, PA",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Ultra-Cold (-80°C)",
+        "Frozen (-20°C)",
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 240000,
+      "totalCapacityDoses": 500000,
+      "supportedCategories": [
+        "mRNA Ultra-Cold",
+        "Frozen (-20°C)",
+        "Standard Cold Chain (2°C - 8°C)"
+      ],
+      "operatingStatus": "24/7 Operational",
+      "staffAvailability": "Duty Logistics Officer (S. Chen)",
+      "emergencyPhone": "+1 (717) 555-0348",
+      "dockBayAvailable": "Bay 2 (Active Nitrogen Purge)",
+      "distanceKm": 64.2,
+      "travelTimeMinutes": 48,
+      "backupGenerators": "Dual 500kVA generators"
+    },
+    "CP-03": {
+      "id": "CP-03",
+      "name": "Mercy Healthcare Emergency Medical Vault",
+      "type": "Regional Hospital Level-1 Vaccine Pharmacy",
+      "lat": 40.0379,
+      "lng": -76.3055,
+      "city": "Lancaster, PA",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Frozen (-20°C)",
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 42000,
+      "totalCapacityDoses": 80000,
+      "supportedCategories": [
+        "Frozen (-20°C)",
+        "Standard Cold Chain (2°C - 8°C)"
+      ],
+      "operatingStatus": "Operational (Standby Ready)",
+      "staffAvailability": "Clinical Pharmacist on call (E. Rostova)",
+      "emergencyPhone": "+1 (717) 555-0891",
+      "dockBayAvailable": "Emergency Pharmacy Receiving Dock",
+      "distanceKm": 18.1,
+      "travelTimeMinutes": 19,
+      "backupGenerators": "Hospital primary backup"
+    },
+    "CP-04": {
+      "id": "CP-04",
+      "name": "Buckeye Central Life Sciences Depot",
+      "type": "State Strategic National Stockpile Hub",
+      "lat": 39.9612,
+      "lng": -82.9988,
+      "city": "Columbus, OH",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Ultra-Cold (-80°C)",
+        "Frozen (-20°C)",
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 420000,
+      "totalCapacityDoses": 750000,
+      "supportedCategories": [
+        "mRNA Ultra-Cold",
+        "Frozen (-20°C)",
+        "Standard Cold Chain (2°C - 8°C)",
+        "Active Powered Cryo-Transport"
+      ],
+      "operatingStatus": "24/7 Operational",
+      "staffAvailability": "24/7 Biomedical Logistics Team",
+      "emergencyPhone": "+1 (614) 555-0723",
+      "dockBayAvailable": "Dock 1, 2, 3",
+      "distanceKm": 142.5,
+      "travelTimeMinutes": 98,
+      "backupGenerators": "Full facility N+2 redundancy"
+    },
+    "CP-05": {
+      "id": "CP-05",
+      "name": "Great Lakes BioVault & Cryo-Logistics",
+      "type": "Certified Regional Cryogenic Repository",
+      "lat": 41.4993,
+      "lng": -81.6944,
+      "city": "Cleveland, OH",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Ultra-Cold (-80°C)",
+        "Frozen (-20°C)",
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 165000,
+      "totalCapacityDoses": 300000,
+      "supportedCategories": [
+        "mRNA Ultra-Cold",
+        "Frozen (-20°C)",
+        "Standard Cold Chain (2°C - 8°C)"
+      ],
+      "operatingStatus": "24/7 Operational",
+      "staffAvailability": "Cold Chain Supervisor (T. Kowalski)",
+      "emergencyPhone": "+1 (216) 555-0419",
+      "dockBayAvailable": "Bay B (Climate Controlled)",
+      "distanceKm": 98.7,
+      "travelTimeMinutes": 72,
+      "backupGenerators": "Redundant power & LN2 bulk tanks"
+    },
+    "CP-06": {
+      "id": "CP-06",
+      "name": "Philadelphia Metropolitan Vaccine Bank",
+      "type": "Metro Central Biologics Distribution Center",
+      "lat": 39.9526,
+      "lng": -75.1652,
+      "city": "Philadelphia, PA",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Ultra-Cold (-80°C)",
+        "Frozen (-20°C)",
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 310000,
+      "totalCapacityDoses": 600000,
+      "supportedCategories": [
+        "mRNA Ultra-Cold",
+        "Frozen (-20°C)",
+        "Standard Cold Chain (2°C - 8°C)"
+      ],
+      "operatingStatus": "24/7 Operational",
+      "staffAvailability": "Lead Bio-Logistics Specialist (D. Morales)",
+      "emergencyPhone": "+1 (215) 555-0955",
+      "dockBayAvailable": "High-Capacity Cryo Bays 7-9",
+      "distanceKm": 112,
+      "travelTimeMinutes": 84,
+      "backupGenerators": "Industrial dual generator backup"
+    },
+    "CP-07": {
+      "id": "CP-07",
+      "name": "Crossroads Midwest Pharma Storage",
+      "type": "Interstate Strategic Cold Storage Facility",
+      "lat": 39.7684,
+      "lng": -86.1581,
+      "city": "Indianapolis, IN",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Frozen (-20°C)",
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 95000,
+      "totalCapacityDoses": 180000,
+      "supportedCategories": [
+        "Frozen (-20°C)",
+        "Standard Cold Chain (2°C - 8°C)"
+      ],
+      "operatingStatus": "Operational (Standby Ready)",
+      "staffAvailability": "On-call Cold Chain Tech",
+      "emergencyPhone": "+1 (317) 555-0631",
+      "dockBayAvailable": "Dock C",
+      "distanceKm": 188.3,
+      "travelTimeMinutes": 135,
+      "backupGenerators": "Generator backup installed"
+    },
+    "CP-08": {
+      "id": "CP-08",
+      "name": "Allegheny Valley Healthcare Vaccine Vault",
+      "type": "Consortium Health System Cold Center",
+      "lat": 40.5845,
+      "lng": -79.7428,
+      "city": "Allegheny Valley, PA",
+      "coldStorageAvailable": true,
+      "storageTiers": [
+        "Standard (2-8°C)"
+      ],
+      "availableCapacityDoses": 35000,
+      "totalCapacityDoses": 50000,
+      "supportedCategories": [
+        "Standard Cold Chain (2°C - 8°C)"
+      ],
+      "operatingStatus": "Limited Capacity",
+      "staffAvailability": "Duty Pharmacist",
+      "emergencyPhone": "+1 (724) 555-0274",
+      "dockBayAvailable": "Receiving Bay A",
+      "distanceKm": 42,
+      "travelTimeMinutes": 38,
+      "backupGenerators": "Standard emergency power"
+    }
+  },
+  "shipments": {
+    "CG-9021-PFZ": {
+      "id": "CG-9021-PFZ",
+      "vaccineName": "Comirnaty (COVID-19 BNT162b2)",
+      "vaccineType": "mRNA Suspension for Injection",
+      "vaccineCategory": "mrna_ultra_cold",
+      "manufacturer": "Pfizer-BioNTech Manufacturing GmbH",
+      "batchNumber": "PFZ-2026-X889",
+      "doses": 24000,
+      "packagingType": "Vacuum Insulated Shipper with Solid CO2",
+      "storageRequirement": "Ultra-Low Freezer (-90°C to -60°C)",
+      "priority": "Urgent",
+      "originFacility": "Kalamazoo Bio-Production Plant (MI)",
+      "currentLocation": "I-76 Mile Marker 142 near Breezewood, PA",
+      "destinationFacility": "Children's Hospital of Philadelphia - Central Pharmacy",
+      "transportVehicleId": "REEFER-TRUCK-884",
+      "carrierIdentifier": "CryoTrans Express (Driver: J. Gallagher)",
+      "departureTime": "2026-10-09T08:30:00Z",
+      "expectedDeliveryTime": "2026-10-09T21:45:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T22:30:00Z (45m delay)",
+      "routeDistanceRemainingKm": 182.4,
+      "currentTemperature": -52.4,
+      "minAllowedTemperature": -90,
+      "maxAllowedTemperature": -60,
+      "currentHumidity": 48.2,
+      "minAllowedHumidity": 20,
+      "maxAllowedHumidity": 80,
+      "gpsLatitude": 40.0152,
+      "gpsLongitude": -78.2384,
+      "lastSensorUpdate": "2026-10-09T13:53:32.828Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 78,
+      "dataTransmissionStatus": "Cellular LTE-M Active (4G-CatM1)",
+      "sensorHealth": "Operational (Calibration Valid)",
+      "sensorDataAgeSeconds": 12,
+      "excursionStatus": "Active Excursion",
+      "excursionSeverity": "Critical",
+      "excursionStartTime": "2026-10-09T13:19:32.828Z",
+      "excursionDurationMinutes": 34,
+      "temperatureDeviation": 7.6,
+      "cumulativeThermalExposure": 4.3,
+      "peakTemperature": -51.8,
+      "minimumRecordedTemperature": -78.4,
+      "consecutiveOutOfRangeReadings": 8,
+      "detectionConfidencePercent": 99.4,
+      "estimatedViabilityPercent": 88.5,
+      "predictedSpoilageRiskPercent": 32,
+      "riskClassification": "Critical",
+      "predictedDeliveryDelay": "+45 mins (thermal remediation stop needed)",
+      "recommendedNextAction": "Reroute immediately to nearest cryo-checkpoint for dry-ice re-icing.",
+      "nearestCheckpointId": "CP-02",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 40.4406,
+          "lng": -79.9959,
+          "name": "Pittsburgh Hub"
+        },
+        {
+          "lat": 40.0152,
+          "lng": -78.2384,
+          "name": "Current GPS (I-76 Breezewood)"
+        },
+        {
+          "lat": 40.2732,
+          "lng": -76.8867,
+          "name": "Harrisburg Transfer Point"
+        },
+        {
+          "lat": 39.9526,
+          "lng": -75.1652,
+          "name": "CHOP Philadelphia"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "08:30",
+          "severity": "safe",
+          "desc": "Shipment dispatched from Kalamazoo Hub. Seal verified."
+        },
+        {
+          "time": "10:15",
+          "severity": "safe",
+          "desc": "GPS logger locked. Initial core temp: -78.2°C. Sensor health 100%."
+        },
+        {
+          "time": "14:45",
+          "severity": "safe",
+          "desc": "Midpoint checkpoint cleared at Ohio border. Sub-zero telemetry nominal."
+        },
+        {
+          "time": "17:35",
+          "severity": "warning",
+          "desc": "Approaching threshold alert: temp rose to -61.2°C."
+        },
+        {
+          "time": "17:42",
+          "severity": "critical",
+          "desc": "CRITICAL EXCURSION DETECTED: core temp breached -60.0°C ceiling."
+        },
+        {
+          "time": "17:55",
+          "severity": "critical",
+          "desc": "Automated alert pushed to Fleet Operations & Receiving Pharmacist."
+        },
+        {
+          "time": "18:02",
+          "severity": "critical",
+          "desc": "Viability degraded to 88.5%. Nearest checkpoint identified: Keystone Vault."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:05:32.828Z",
+          "temperature": -74.62,
+          "humidity": 48.2,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:09:32.828Z",
+          "temperature": -74.69,
+          "humidity": 48.2,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:13:32.828Z",
+          "temperature": -75.05,
+          "humidity": 48.2,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:17:32.828Z",
+          "temperature": -75.36,
+          "humidity": 48.2,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.828Z",
+          "temperature": -75.34,
+          "humidity": 48.2,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.828Z",
+          "temperature": -75,
+          "humidity": 48.2,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.828Z",
+          "temperature": -74.67,
+          "humidity": 48.2,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.828Z",
+          "temperature": -74.63,
+          "humidity": 48.2,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.828Z",
+          "temperature": -74.94,
+          "humidity": 48.2,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.828Z",
+          "temperature": -75.3,
+          "humidity": 48.2,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.828Z",
+          "temperature": -75.38,
+          "humidity": 48.2,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.828Z",
+          "temperature": -75.12,
+          "humidity": 48.2,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.828Z",
+          "temperature": -74.74,
+          "humidity": 48.2,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.828Z",
+          "temperature": -74.6,
+          "humidity": 48.2,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.828Z",
+          "temperature": -74.83,
+          "humidity": 48.2,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.828Z",
+          "temperature": -75.21,
+          "humidity": 48.2,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.828Z",
+          "temperature": -75.4,
+          "humidity": 48.2,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.828Z",
+          "temperature": -75.22,
+          "humidity": 48.2,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.828Z",
+          "temperature": -74.84,
+          "humidity": 48.2,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.828Z",
+          "temperature": -74.6,
+          "humidity": 48.2,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.828Z",
+          "temperature": -59.55,
+          "humidity": 48.2,
+          "viability": 95.2
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.828Z",
+          "temperature": -59.1,
+          "humidity": 48.2,
+          "viability": 92.4
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.828Z",
+          "temperature": -58.65,
+          "humidity": 48.2,
+          "viability": 89.6
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.828Z",
+          "temperature": -58.2,
+          "humidity": 48.2,
+          "viability": 86.8
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.828Z",
+          "temperature": -57.75,
+          "humidity": 48.2,
+          "viability": 84
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.828Z",
+          "temperature": -57.3,
+          "humidity": 48.2,
+          "viability": 81.2
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.828Z",
+          "temperature": -56.85,
+          "humidity": 48.2,
+          "viability": 78.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.828Z",
+          "temperature": -56.4,
+          "humidity": 48.2,
+          "viability": 76
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": -52.4,
+          "humidity": 48.2,
+          "latitude": 40.0152,
+          "longitude": -78.2384,
+          "batteryLevel": 78,
+          "timestamp": 1791554012829,
+          "severity": "CRITICAL",
+          "excursionStatus": "Active Excursion"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.828Z",
+            "temperature": -75.36,
+            "humidity": 48.2,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.828Z",
+            "temperature": -75.34,
+            "humidity": 48.2,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.828Z",
+            "temperature": -75,
+            "humidity": 48.2,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.828Z",
+            "temperature": -74.67,
+            "humidity": 48.2,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.828Z",
+            "temperature": -74.63,
+            "humidity": 48.2,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.828Z",
+            "temperature": -74.94,
+            "humidity": 48.2,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.828Z",
+            "temperature": -75.3,
+            "humidity": 48.2,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.828Z",
+            "temperature": -75.38,
+            "humidity": 48.2,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.828Z",
+            "temperature": -75.12,
+            "humidity": 48.2,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.828Z",
+            "temperature": -74.74,
+            "humidity": 48.2,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.828Z",
+            "temperature": -74.6,
+            "humidity": 48.2,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.828Z",
+            "temperature": -74.83,
+            "humidity": 48.2,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.828Z",
+            "temperature": -75.21,
+            "humidity": 48.2,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.828Z",
+            "temperature": -75.4,
+            "humidity": 48.2,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.828Z",
+            "temperature": -75.22,
+            "humidity": 48.2,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.828Z",
+            "temperature": -74.84,
+            "humidity": 48.2,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.828Z",
+            "temperature": -74.6,
+            "humidity": 48.2,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.828Z",
+            "temperature": -59.55,
+            "humidity": 48.2,
+            "viability": 95.2
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.828Z",
+            "temperature": -59.1,
+            "humidity": 48.2,
+            "viability": 92.4
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.828Z",
+            "temperature": -58.65,
+            "humidity": 48.2,
+            "viability": 89.6
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.828Z",
+            "temperature": -58.2,
+            "humidity": 48.2,
+            "viability": 86.8
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.828Z",
+            "temperature": -57.75,
+            "humidity": 48.2,
+            "viability": 84
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.828Z",
+            "temperature": -57.3,
+            "humidity": 48.2,
+            "viability": 81.2
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.828Z",
+            "temperature": -56.85,
+            "humidity": 48.2,
+            "viability": 78.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.828Z",
+            "temperature": -56.4,
+            "humidity": 48.2,
+            "viability": 76
+          }
+        ]
+      }
+    },
+    "CG-8842-AZN": {
+      "id": "CG-8842-AZN",
+      "vaccineName": "Vaxzevria (ChAdOx1-S / Recombinant)",
+      "vaccineType": "Viral Vector Suspension",
+      "vaccineCategory": "standard_cold_chain",
+      "manufacturer": "AstraZeneca Biologics Ltd.",
+      "batchNumber": "AZ-LOT-7721",
+      "doses": 18500,
+      "packagingType": "Qualified Passive Shipper with PCM Coolant",
+      "storageRequirement": "Refrigerated (+2°C to +8°C)",
+      "priority": "High",
+      "originFacility": "Gaithersburg Distribution Core (MD)",
+      "currentLocation": "US-15 Northbound near Gettysburg, PA",
+      "destinationFacility": "UPMC Presbyterian Hospital Vaccine Center",
+      "transportVehicleId": "VAN-COLD-309",
+      "carrierIdentifier": "MediRoute Logistics (Driver: K. Sharma)",
+      "departureTime": "2026-10-09T11:00:00Z",
+      "expectedDeliveryTime": "2026-10-09T19:30:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T19:15:00Z",
+      "routeDistanceRemainingKm": 146,
+      "currentTemperature": 7.7,
+      "minAllowedTemperature": 2,
+      "maxAllowedTemperature": 8,
+      "currentHumidity": 59.8,
+      "minAllowedHumidity": 35,
+      "maxAllowedHumidity": 65,
+      "gpsLatitude": 39.8283,
+      "gpsLongitude": -77.2311,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 89,
+      "dataTransmissionStatus": "Cellular 4G LTE Active",
+      "sensorHealth": "Operational",
+      "sensorDataAgeSeconds": 8,
+      "excursionStatus": "Approaching Threshold",
+      "excursionSeverity": "High Risk",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": -0.3,
+      "cumulativeThermalExposure": 0.8,
+      "peakTemperature": 7.7,
+      "minimumRecordedTemperature": 3.4,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 96.2,
+      "estimatedViabilityPercent": 94.8,
+      "predictedSpoilageRiskPercent": 14.5,
+      "riskClassification": "High Risk",
+      "predictedDelay": "None currently",
+      "recommendedNextAction": "Check vehicle reefer temperature setpoint; alert driver to avoid door openings.",
+      "nearestCheckpointId": "CP-03",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 39.1434,
+          "lng": -77.2014,
+          "name": "Gaithersburg, MD"
+        },
+        {
+          "lat": 39.8283,
+          "lng": -77.2311,
+          "name": "Current GPS (US-15 Gettysburg)"
+        },
+        {
+          "lat": 40.4406,
+          "lng": -79.9959,
+          "name": "UPMC Presbyterian"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "11:00",
+          "severity": "safe",
+          "desc": "Dispatched with validated thermal shipper and calibrated sensor."
+        },
+        {
+          "time": "14:20",
+          "severity": "safe",
+          "desc": "Temperature steady at 4.2°C. Ambient temp 24.1°C."
+        },
+        {
+          "time": "17:10",
+          "severity": "warning",
+          "desc": "Thermal drift observed: 6.8°C -> 7.4°C in 30 minutes."
+        },
+        {
+          "time": "17:50",
+          "severity": "warning",
+          "desc": "Approaching threshold limit (+7.7°C). Warning notification dispatched."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": 6.62,
+          "humidity": 59,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": 6.35,
+          "humidity": 58.1,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": 6.17,
+          "humidity": 58.1,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": 6.19,
+          "humidity": 58.8,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": 6.4,
+          "humidity": 60,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": 6.67,
+          "humidity": 61.1,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": 6.84,
+          "humidity": 61.6,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": 6.8,
+          "humidity": 61.2,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": 6.58,
+          "humidity": 60.2,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": 6.31,
+          "humidity": 58.9,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": 6.16,
+          "humidity": 58.1,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": 6.21,
+          "humidity": 58.1,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": 6.44,
+          "humidity": 58.9,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": 6.7,
+          "humidity": 60.1,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": 6.85,
+          "humidity": 61.2,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": 6.78,
+          "humidity": 61.6,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": 6.54,
+          "humidity": 61.2,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": 6.28,
+          "humidity": 60.1,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": 6.15,
+          "humidity": 58.9,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": 6.24,
+          "humidity": 58.1,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": 6.48,
+          "humidity": 58.1,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": 6.74,
+          "humidity": 58.9,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": 6.85,
+          "humidity": 60.1,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": 6.75,
+          "humidity": 61.2,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": 6.5,
+          "humidity": 61.6,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": 7.7,
+          "humidity": 59.8,
+          "latitude": 39.8283,
+          "longitude": -77.2311,
+          "batteryLevel": 89,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Approaching Threshold"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": 6.62,
+            "humidity": 59,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": 6.35,
+            "humidity": 58.1,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": 6.17,
+            "humidity": 58.1,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": 6.19,
+            "humidity": 58.8,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": 6.4,
+            "humidity": 60,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": 6.67,
+            "humidity": 61.1,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": 6.84,
+            "humidity": 61.6,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": 6.8,
+            "humidity": 61.2,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": 6.58,
+            "humidity": 60.2,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": 6.31,
+            "humidity": 58.9,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": 6.16,
+            "humidity": 58.1,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": 6.21,
+            "humidity": 58.1,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": 6.44,
+            "humidity": 58.9,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": 6.7,
+            "humidity": 60.1,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": 6.85,
+            "humidity": 61.2,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": 6.78,
+            "humidity": 61.6,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": 6.54,
+            "humidity": 61.2,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": 6.28,
+            "humidity": 60.1,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": 6.15,
+            "humidity": 58.9,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": 6.24,
+            "humidity": 58.1,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": 6.48,
+            "humidity": 58.1,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": 6.74,
+            "humidity": 58.9,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": 6.85,
+            "humidity": 60.1,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": 6.75,
+            "humidity": 61.2,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": 6.5,
+            "humidity": 61.6,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-5510-MDN": {
+      "id": "CG-5510-MDN",
+      "vaccineName": "Spikevax (COVID-19 mRNA-1273)",
+      "vaccineType": "Lipid Nanoparticle Frozen mRNA",
+      "vaccineCategory": "frozen",
+      "manufacturer": "ModernaTX, Inc.",
+      "batchNumber": "MDN-2026-B441",
+      "doses": 15000,
+      "packagingType": "Phase Change Material (-20°C Cryo-Tote)",
+      "storageRequirement": "Standard Frozen (-25°C to -15°C)",
+      "priority": "Normal",
+      "originFacility": "Norwood Technical Operations (MA)",
+      "currentLocation": "I-80 Westbound near Bellefonte, PA",
+      "destinationFacility": "Cleveland Clinic Main Campus Pharmacy",
+      "transportVehicleId": "REEFER-UNIT-104",
+      "carrierIdentifier": "ColdLine Logistics (Driver: M. Kowalski)",
+      "departureTime": "2026-10-09T06:00:00Z",
+      "expectedDeliveryTime": "2026-10-09T20:00:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T19:40:00Z",
+      "routeDistanceRemainingKm": 215.3,
+      "currentTemperature": -21.2,
+      "minAllowedTemperature": -25,
+      "maxAllowedTemperature": -15,
+      "currentHumidity": 42.1,
+      "minAllowedHumidity": 30,
+      "maxAllowedHumidity": 75,
+      "gpsLatitude": 40.9134,
+      "gpsLongitude": -77.7783,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 94,
+      "dataTransmissionStatus": "Cellular 4G LTE Active",
+      "sensorHealth": "Optimal",
+      "sensorDataAgeSeconds": 5,
+      "excursionStatus": "Normal Operation",
+      "excursionSeverity": "None",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": 0,
+      "cumulativeThermalExposure": 0.1,
+      "peakTemperature": -19.8,
+      "minimumRecordedTemperature": -22.8,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 99.8,
+      "estimatedViabilityPercent": 98.9,
+      "predictedSpoilageRiskPercent": 0.8,
+      "riskClassification": "Low",
+      "predictedDelay": "On Time",
+      "recommendedNextAction": "Continue scheduled transit; telemetry fully compliant.",
+      "nearestCheckpointId": "CP-05",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 42.1887,
+          "lng": -71.1964,
+          "name": "Norwood, MA"
+        },
+        {
+          "lat": 40.9134,
+          "lng": -77.7783,
+          "name": "Current GPS (I-80 Bellefonte)"
+        },
+        {
+          "lat": 41.4993,
+          "lng": -81.6944,
+          "name": "Cleveland Clinic"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "06:00",
+          "severity": "safe",
+          "desc": "Batch verified at Norwood facility. Core temp -22.1°C."
+        },
+        {
+          "time": "11:30",
+          "severity": "safe",
+          "desc": "Entering Pennsylvania toll road. Logger battery 96%."
+        },
+        {
+          "time": "15:40",
+          "severity": "safe",
+          "desc": "Continuous sub-zero reading verified. Viability 99.1%."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": -21.08,
+          "humidity": 41.3,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": -21.35,
+          "humidity": 40.4,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": -21.53,
+          "humidity": 40.4,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": -21.51,
+          "humidity": 41.1,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": -21.3,
+          "humidity": 42.3,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": -21.03,
+          "humidity": 43.4,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": -20.86,
+          "humidity": 43.9,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": -20.9,
+          "humidity": 43.5,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": -21.12,
+          "humidity": 42.5,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": -21.39,
+          "humidity": 41.2,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": -21.54,
+          "humidity": 40.4,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": -21.49,
+          "humidity": 40.4,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": -21.26,
+          "humidity": 41.2,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": -21,
+          "humidity": 42.4,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": -20.85,
+          "humidity": 43.5,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": -20.92,
+          "humidity": 43.9,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": -21.16,
+          "humidity": 43.5,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": -21.42,
+          "humidity": 42.4,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": -21.55,
+          "humidity": 41.2,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": -21.46,
+          "humidity": 40.4,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": -21.22,
+          "humidity": 40.4,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": -20.96,
+          "humidity": 41.2,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": -20.85,
+          "humidity": 42.4,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": -20.95,
+          "humidity": 43.5,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": -21.2,
+          "humidity": 43.9,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": -21.2,
+          "humidity": 42.1,
+          "latitude": 40.9134,
+          "longitude": -77.7783,
+          "batteryLevel": 94,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Normal Operation"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": -21.08,
+            "humidity": 41.3,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": -21.35,
+            "humidity": 40.4,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": -21.53,
+            "humidity": 40.4,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": -21.51,
+            "humidity": 41.1,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": -21.3,
+            "humidity": 42.3,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": -21.03,
+            "humidity": 43.4,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": -20.86,
+            "humidity": 43.9,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": -20.9,
+            "humidity": 43.5,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": -21.12,
+            "humidity": 42.5,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": -21.39,
+            "humidity": 41.2,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": -21.54,
+            "humidity": 40.4,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": -21.49,
+            "humidity": 40.4,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": -21.26,
+            "humidity": 41.2,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": -21,
+            "humidity": 42.4,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": -20.85,
+            "humidity": 43.5,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": -20.92,
+            "humidity": 43.9,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": -21.16,
+            "humidity": 43.5,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": -21.42,
+            "humidity": 42.4,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": -21.55,
+            "humidity": 41.2,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": -21.46,
+            "humidity": 40.4,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": -21.22,
+            "humidity": 40.4,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": -20.96,
+            "humidity": 41.2,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": -20.85,
+            "humidity": 42.4,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": -20.95,
+            "humidity": 43.5,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": -21.2,
+            "humidity": 43.9,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-3304-ROT": {
+      "id": "CG-3304-ROT",
+      "vaccineName": "Rotarix (Rotavirus Vaccine Live Oral)",
+      "vaccineType": "Live Attenuated Human Rotavirus",
+      "vaccineCategory": "standard_cold_chain",
+      "manufacturer": "GlaxoSmithKline Biologicals",
+      "batchNumber": "GSK-ROTA-9903",
+      "doses": 12000,
+      "packagingType": "Validated Styrofoam Insulated Shipper",
+      "storageRequirement": "Refrigerated (+2°C to +8°C)",
+      "priority": "Normal",
+      "originFacility": "Wavre Vaccine Center (US Hub Philadelphia)",
+      "currentLocation": "PA Turnpike near Carlisle, PA",
+      "destinationFacility": "Penn State Health Milton S. Hershey Medical Center",
+      "transportVehicleId": "VAN-EXPRESS-19",
+      "carrierIdentifier": "MediVan Courier (Driver: R. Patel)",
+      "departureTime": "2026-10-09T13:00:00Z",
+      "expectedDeliveryTime": "2026-10-09T17:45:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T17:35:00Z",
+      "routeDistanceRemainingKm": 58,
+      "currentTemperature": 4.8,
+      "minAllowedTemperature": 2,
+      "maxAllowedTemperature": 8,
+      "currentHumidity": 78.4,
+      "minAllowedHumidity": 35,
+      "maxAllowedHumidity": 65,
+      "gpsLatitude": 40.2014,
+      "gpsLongitude": -77.1889,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 82,
+      "dataTransmissionStatus": "Cellular 4G LTE Active",
+      "sensorHealth": "Warning (High Humidity Sensor)",
+      "sensorDataAgeSeconds": 15,
+      "excursionStatus": "Humidity Anomaly",
+      "excursionSeverity": "Warning",
+      "excursionStartTime": "2026-10-09T13:35:32.829Z",
+      "excursionDurationMinutes": 18,
+      "temperatureDeviation": 0,
+      "cumulativeThermalExposure": 0.2,
+      "peakTemperature": 5.1,
+      "minimumRecordedTemperature": 4.2,
+      "consecutiveOutOfRangeReadings": 4,
+      "detectionConfidencePercent": 91.5,
+      "estimatedViabilityPercent": 96.2,
+      "predictedSpoilageRiskPercent": 6.8,
+      "riskClassification": "Moderate",
+      "predictedDelay": "None",
+      "recommendedNextAction": "Inspect packaging seal at next stop for moisture condensation or water ingress.",
+      "nearestCheckpointId": "CP-02",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 39.9526,
+          "lng": -75.1652,
+          "name": "Philadelphia Depot"
+        },
+        {
+          "lat": 40.2014,
+          "lng": -77.1889,
+          "name": "Current GPS (Carlisle, PA)"
+        },
+        {
+          "lat": 40.2859,
+          "lng": -76.6506,
+          "name": "Hershey Med Center"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "13:00",
+          "severity": "safe",
+          "desc": "Dispatched from Philadelphia. Humidity 52% RH."
+        },
+        {
+          "time": "16:20",
+          "severity": "warning",
+          "desc": "Humidity climbed past 65% limit to 78.4% RH. Condensation suspected."
+        },
+        {
+          "time": "16:30",
+          "severity": "warning",
+          "desc": "Secondary alert: Desiccant packet check requested."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": 4.92,
+          "humidity": 77.6,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": 4.65,
+          "humidity": 76.7,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": 4.47,
+          "humidity": 76.7,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": 4.49,
+          "humidity": 77.4,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": 4.7,
+          "humidity": 78.6,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": 4.97,
+          "humidity": 79.7,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": 5.14,
+          "humidity": 80.2,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": 5.1,
+          "humidity": 79.8,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": 4.88,
+          "humidity": 78.8,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": 4.61,
+          "humidity": 77.5,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": 4.46,
+          "humidity": 76.7,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": 4.51,
+          "humidity": 76.7,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": 4.74,
+          "humidity": 77.5,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": 5,
+          "humidity": 78.7,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": 5.15,
+          "humidity": 79.8,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": 5.08,
+          "humidity": 80.2,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": 4.84,
+          "humidity": 79.8,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": 4.58,
+          "humidity": 78.7,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": 4.45,
+          "humidity": 77.5,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": 4.54,
+          "humidity": 76.7,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": 4.78,
+          "humidity": 76.7,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": 5.04,
+          "humidity": 77.5,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": 5.15,
+          "humidity": 78.7,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": 5.05,
+          "humidity": 79.8,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": 4.8,
+          "humidity": 80.2,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": 4.8,
+          "humidity": 78.4,
+          "latitude": 40.2014,
+          "longitude": -77.1889,
+          "batteryLevel": 82,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Humidity Anomaly"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": 4.92,
+            "humidity": 77.6,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": 4.65,
+            "humidity": 76.7,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": 4.47,
+            "humidity": 76.7,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": 4.49,
+            "humidity": 77.4,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": 4.7,
+            "humidity": 78.6,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": 4.97,
+            "humidity": 79.7,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": 5.14,
+            "humidity": 80.2,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": 5.1,
+            "humidity": 79.8,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": 4.88,
+            "humidity": 78.8,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": 4.61,
+            "humidity": 77.5,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": 4.46,
+            "humidity": 76.7,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": 4.51,
+            "humidity": 76.7,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": 4.74,
+            "humidity": 77.5,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": 5,
+            "humidity": 78.7,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": 5.15,
+            "humidity": 79.8,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": 5.08,
+            "humidity": 80.2,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": 4.84,
+            "humidity": 79.8,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": 4.58,
+            "humidity": 78.7,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": 4.45,
+            "humidity": 77.5,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": 4.54,
+            "humidity": 76.7,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": 4.78,
+            "humidity": 76.7,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": 5.04,
+            "humidity": 77.5,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": 5.15,
+            "humidity": 78.7,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": 5.05,
+            "humidity": 79.8,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": 4.8,
+            "humidity": 80.2,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-7719-MMR": {
+      "id": "CG-7719-MMR",
+      "vaccineName": "M-M-R II (Measles, Mumps, Rubella Vaccine)",
+      "vaccineType": "Live Virus Vaccine Lyophilized",
+      "vaccineCategory": "standard_cold_chain",
+      "manufacturer": "Merck & Co., Inc.",
+      "batchNumber": "MRK-MMR-552",
+      "doses": 22000,
+      "packagingType": "Pallet Shipper with Thermal Blanketing",
+      "storageRequirement": "Refrigerated (+2°C to +8°C)",
+      "priority": "High",
+      "originFacility": "West Point Manufacturing Facility (PA)",
+      "currentLocation": "Off Route: Secondary Route 22 near Lewistown, PA",
+      "destinationFacility": "Allegheny General Hospital - Central Distribution",
+      "transportVehicleId": "REEFER-TRUCK-512",
+      "carrierIdentifier": "FastCold Transport (Driver: D. Bradley)",
+      "departureTime": "2026-10-09T09:15:00Z",
+      "expectedDeliveryTime": "2026-10-09T18:00:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T19:10:00Z (+70m detour)",
+      "routeDistanceRemainingKm": 132.8,
+      "currentTemperature": 6.9,
+      "minAllowedTemperature": 2,
+      "maxAllowedTemperature": 8,
+      "currentHumidity": 48,
+      "minAllowedHumidity": 35,
+      "maxAllowedHumidity": 65,
+      "gpsLatitude": 40.5992,
+      "gpsLongitude": -77.5714,
+      "lastSensorUpdate": "2026-10-09T13:49:32.829Z",
+      "sensorConnectivity": "Stale Telemetry",
+      "batteryLevel": 41,
+      "dataTransmissionStatus": "Cellular Weak Signal (-112 dBm)",
+      "sensorHealth": "Delayed Telemetry",
+      "sensorDataAgeSeconds": 240,
+      "excursionStatus": "Route Deviation",
+      "excursionSeverity": "High Risk",
+      "excursionStartTime": "2026-10-09T13:08:32.829Z",
+      "excursionDurationMinutes": 45,
+      "temperatureDeviation": -1.1,
+      "cumulativeThermalExposure": 0.9,
+      "peakTemperature": 7.1,
+      "minimumRecordedTemperature": 3.8,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 88,
+      "estimatedViabilityPercent": 93.4,
+      "predictedSpoilageRiskPercent": 12,
+      "riskClassification": "High Risk",
+      "predictedDelay": "+70 mins detour",
+      "recommendedNextAction": "Contact driver immediately regarding unexpected mountain detour; verify reefer auxiliary fuel.",
+      "nearestCheckpointId": "CP-01",
+      "routeDeviationDetected": true,
+      "routeWaypoints": [
+        {
+          "lat": 40.2104,
+          "lng": -75.3121,
+          "name": "West Point, PA"
+        },
+        {
+          "lat": 40.5992,
+          "lng": -77.5714,
+          "name": "Current GPS (Off Route Rt 22)"
+        },
+        {
+          "lat": 40.4578,
+          "lng": -80.0028,
+          "name": "Allegheny General Hospital"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "09:15",
+          "severity": "safe",
+          "desc": "Departed West Point facility on I-76 West planned route."
+        },
+        {
+          "time": "14:10",
+          "severity": "warning",
+          "desc": "GPS geofence alert: Vehicle deviated onto Route 22 North bypass."
+        },
+        {
+          "time": "16:05",
+          "severity": "warning",
+          "desc": "Cellular signal dropped; telemetry latency increased to 240 seconds."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": 6.32,
+          "humidity": 47.2,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": 6.05,
+          "humidity": 46.3,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": 5.87,
+          "humidity": 46.3,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": 5.89,
+          "humidity": 47,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": 6.1,
+          "humidity": 48.2,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": 6.37,
+          "humidity": 49.3,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": 6.54,
+          "humidity": 49.8,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": 6.5,
+          "humidity": 49.4,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": 6.28,
+          "humidity": 48.4,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": 6.01,
+          "humidity": 47.1,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": 5.86,
+          "humidity": 46.3,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": 5.91,
+          "humidity": 46.3,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": 6.14,
+          "humidity": 47.1,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": 6.4,
+          "humidity": 48.3,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": 6.55,
+          "humidity": 49.4,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": 6.48,
+          "humidity": 49.8,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": 6.24,
+          "humidity": 49.4,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": 5.98,
+          "humidity": 48.3,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": 5.85,
+          "humidity": 47.1,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": 5.94,
+          "humidity": 46.3,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": 6.18,
+          "humidity": 46.3,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": 6.44,
+          "humidity": 47.1,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": 6.55,
+          "humidity": 48.3,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": 6.45,
+          "humidity": 49.4,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": 6.2,
+          "humidity": 49.8,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": 6.9,
+          "humidity": 48,
+          "latitude": 40.5992,
+          "longitude": -77.5714,
+          "batteryLevel": 41,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Route Deviation"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": 6.32,
+            "humidity": 47.2,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": 6.05,
+            "humidity": 46.3,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": 5.87,
+            "humidity": 46.3,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": 5.89,
+            "humidity": 47,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": 6.1,
+            "humidity": 48.2,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": 6.37,
+            "humidity": 49.3,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": 6.54,
+            "humidity": 49.8,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": 6.5,
+            "humidity": 49.4,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": 6.28,
+            "humidity": 48.4,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": 6.01,
+            "humidity": 47.1,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": 5.86,
+            "humidity": 46.3,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": 5.91,
+            "humidity": 46.3,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": 6.14,
+            "humidity": 47.1,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": 6.4,
+            "humidity": 48.3,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": 6.55,
+            "humidity": 49.4,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": 6.48,
+            "humidity": 49.8,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": 6.24,
+            "humidity": 49.4,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": 5.98,
+            "humidity": 48.3,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": 5.85,
+            "humidity": 47.1,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": 5.94,
+            "humidity": 46.3,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": 6.18,
+            "humidity": 46.3,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": 6.44,
+            "humidity": 47.1,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": 6.55,
+            "humidity": 48.3,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": 6.45,
+            "humidity": 49.4,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": 6.2,
+            "humidity": 49.8,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-1088-ERV": {
+      "id": "CG-1088-ERV",
+      "vaccineName": "Ervebo (Ebola Zaire Live Recombinant)",
+      "vaccineType": "Recombinant Vesicular Stomatitis Virus",
+      "vaccineCategory": "active_cryo",
+      "manufacturer": "Merck Sharp & Dohme LLC",
+      "batchNumber": "ERV-2026-004",
+      "doses": 6000,
+      "packagingType": "Stirling Ultracold Active Powered Mobile Freezer",
+      "storageRequirement": "Ultra-Cold (-80°C to -60°C)",
+      "priority": "Urgent",
+      "originFacility": "CDC Strategic Stockpile Depot Atlanta (GA)",
+      "currentLocation": "I-71 Northbound near Cincinnati, OH",
+      "destinationFacility": "Ohio State University Wexner Medical Center",
+      "transportVehicleId": "SECURE-HAUL-09",
+      "carrierIdentifier": "BioDefense Courier (Escort Team Alpha)",
+      "departureTime": "2026-10-09T05:00:00Z",
+      "expectedDeliveryTime": "2026-10-09T18:30:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T18:15:00Z",
+      "routeDistanceRemainingKm": 110.2,
+      "currentTemperature": -74.8,
+      "minAllowedTemperature": -85,
+      "maxAllowedTemperature": -65,
+      "currentHumidity": 24.3,
+      "minAllowedHumidity": 15,
+      "maxAllowedHumidity": 70,
+      "gpsLatitude": 39.1031,
+      "gpsLongitude": -84.512,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 98,
+      "dataTransmissionStatus": "Dual Satellite & LTE Active",
+      "sensorHealth": "Optimal (NIST Calibrated)",
+      "sensorDataAgeSeconds": 4,
+      "excursionStatus": "Normal Operation",
+      "excursionSeverity": "None",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": 0,
+      "cumulativeThermalExposure": 0.05,
+      "peakTemperature": -73.2,
+      "minimumRecordedTemperature": -76.5,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 99.9,
+      "estimatedViabilityPercent": 99.7,
+      "predictedSpoilageRiskPercent": 0.2,
+      "riskClassification": "Low",
+      "predictedDelay": "On Time",
+      "recommendedNextAction": "Maintain secure transit protocol; telemetry pristine.",
+      "nearestCheckpointId": "CP-04",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 33.749,
+          "lng": -84.388,
+          "name": "Atlanta SNS Depot"
+        },
+        {
+          "lat": 39.1031,
+          "lng": -84.512,
+          "name": "Current GPS (Cincinnati, OH)"
+        },
+        {
+          "lat": 39.9992,
+          "lng": -83.0152,
+          "name": "OSU Wexner Med Center"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "05:00",
+          "severity": "safe",
+          "desc": "Biosecurity seal initialized. Active cryo engine locked at -75.0°C."
+        },
+        {
+          "time": "12:00",
+          "severity": "safe",
+          "desc": "Midpoint checkpoint cleared. Backup Stirling power cells 100%."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": -74.68,
+          "humidity": 23.5,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": -74.95,
+          "humidity": 22.6,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": -75.13,
+          "humidity": 22.6,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": -75.11,
+          "humidity": 23.3,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": -74.9,
+          "humidity": 24.5,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": -74.63,
+          "humidity": 25.6,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": -74.46,
+          "humidity": 26.1,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": -74.5,
+          "humidity": 25.7,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": -74.72,
+          "humidity": 24.7,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": -74.99,
+          "humidity": 23.4,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": -75.14,
+          "humidity": 22.6,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": -75.09,
+          "humidity": 22.6,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": -74.86,
+          "humidity": 23.4,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": -74.6,
+          "humidity": 24.6,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": -74.45,
+          "humidity": 25.7,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": -74.52,
+          "humidity": 26.1,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": -74.76,
+          "humidity": 25.7,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": -75.02,
+          "humidity": 24.6,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": -75.15,
+          "humidity": 23.4,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": -75.06,
+          "humidity": 22.6,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": -74.82,
+          "humidity": 22.6,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": -74.56,
+          "humidity": 23.4,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": -74.45,
+          "humidity": 24.6,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": -74.55,
+          "humidity": 25.7,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": -74.8,
+          "humidity": 26.1,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": -74.8,
+          "humidity": 24.3,
+          "latitude": 39.1031,
+          "longitude": -84.512,
+          "batteryLevel": 98,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Normal Operation"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": -74.68,
+            "humidity": 23.5,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": -74.95,
+            "humidity": 22.6,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": -75.13,
+            "humidity": 22.6,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": -75.11,
+            "humidity": 23.3,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": -74.9,
+            "humidity": 24.5,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": -74.63,
+            "humidity": 25.6,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": -74.46,
+            "humidity": 26.1,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": -74.5,
+            "humidity": 25.7,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": -74.72,
+            "humidity": 24.7,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": -74.99,
+            "humidity": 23.4,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": -75.14,
+            "humidity": 22.6,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": -75.09,
+            "humidity": 22.6,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": -74.86,
+            "humidity": 23.4,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": -74.6,
+            "humidity": 24.6,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": -74.45,
+            "humidity": 25.7,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": -74.52,
+            "humidity": 26.1,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": -74.76,
+            "humidity": 25.7,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": -75.02,
+            "humidity": 24.6,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": -75.15,
+            "humidity": 23.4,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": -75.06,
+            "humidity": 22.6,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": -74.82,
+            "humidity": 22.6,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": -74.56,
+            "humidity": 23.4,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": -74.45,
+            "humidity": 24.6,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": -74.55,
+            "humidity": 25.7,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": -74.8,
+            "humidity": 26.1,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-4419-BCG": {
+      "id": "CG-4419-BCG",
+      "vaccineName": "BCG Vaccine (Bacillus Calmette-Guérin Live)",
+      "vaccineType": "Live Attenuated Mycobacterium bovis",
+      "vaccineCategory": "standard_cold_chain",
+      "manufacturer": "Serum Institute of India / Sanofi Pasteur",
+      "batchNumber": "BCG-902-PA",
+      "doses": 30000,
+      "packagingType": "Insulated Polyurethane Shipper with Ice Packs",
+      "storageRequirement": "Refrigerated (+2°C to +8°C) - DO NOT FREEZE",
+      "priority": "Normal",
+      "originFacility": "Newark International Biologics Terminal (NJ)",
+      "currentLocation": "I-78 Westbound near Allentown, PA",
+      "destinationFacility": "Geisinger Medical Center Danville (PA)",
+      "transportVehicleId": "REEFER-TRUCK-220",
+      "carrierIdentifier": "TransCold Pharma (Driver: H. Weber)",
+      "departureTime": "2026-10-09T10:45:00Z",
+      "expectedDeliveryTime": "2026-10-09T17:15:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T17:05:00Z",
+      "routeDistanceRemainingKm": 88.5,
+      "currentTemperature": 2.1,
+      "minAllowedTemperature": 2,
+      "maxAllowedTemperature": 8,
+      "currentHumidity": 55,
+      "minAllowedHumidity": 35,
+      "maxAllowedHumidity": 65,
+      "gpsLatitude": 40.6084,
+      "gpsLongitude": -75.4902,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 67,
+      "dataTransmissionStatus": "Cellular 4G LTE Active",
+      "sensorHealth": "Operational",
+      "sensorDataAgeSeconds": 11,
+      "excursionStatus": "Approaching Threshold",
+      "excursionSeverity": "Warning",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": 0.1,
+      "cumulativeThermalExposure": 0.4,
+      "peakTemperature": 4.1,
+      "minimumRecordedTemperature": 2.1,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 95.1,
+      "estimatedViabilityPercent": 97.2,
+      "predictedSpoilageRiskPercent": 8.4,
+      "riskClassification": "Moderate",
+      "predictedDelay": "None",
+      "recommendedNextAction": "FREEZE RISK DETECTED: Direct contact with frozen icepacks suspected. Warm reefer blower by +1.5°C.",
+      "nearestCheckpointId": "CP-03",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 40.6895,
+          "lng": -74.1745,
+          "name": "Newark Air Terminal"
+        },
+        {
+          "lat": 40.6084,
+          "lng": -75.4902,
+          "name": "Current GPS (Allentown, PA)"
+        },
+        {
+          "lat": 40.9634,
+          "lng": -76.6191,
+          "name": "Geisinger Med Center"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "10:45",
+          "severity": "safe",
+          "desc": "Shipment accepted from air freight. Core temp +4.5°C."
+        },
+        {
+          "time": "15:20",
+          "severity": "warning",
+          "desc": "Temperature dropping rapidly towards lower boundary (2.1°C)."
+        },
+        {
+          "time": "15:28",
+          "severity": "warning",
+          "desc": "Freeze alert protocol triggered: live BCG vaccine highly sensitive to freezing."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": 2.52,
+          "humidity": 54.2,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": 2.25,
+          "humidity": 53.3,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": 2.07,
+          "humidity": 53.3,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": 2.09,
+          "humidity": 54,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": 2.3,
+          "humidity": 55.2,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": 2.57,
+          "humidity": 56.3,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": 2.74,
+          "humidity": 56.8,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": 2.7,
+          "humidity": 56.4,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": 2.48,
+          "humidity": 55.4,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": 2.21,
+          "humidity": 54.1,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": 2.06,
+          "humidity": 53.3,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": 2.11,
+          "humidity": 53.3,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": 2.34,
+          "humidity": 54.1,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": 2.6,
+          "humidity": 55.3,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": 2.75,
+          "humidity": 56.4,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": 2.68,
+          "humidity": 56.8,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": 2.44,
+          "humidity": 56.4,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": 2.18,
+          "humidity": 55.3,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": 2.05,
+          "humidity": 54.1,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": 2.14,
+          "humidity": 53.3,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": 2.38,
+          "humidity": 53.3,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": 2.64,
+          "humidity": 54.1,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": 2.75,
+          "humidity": 55.3,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": 2.65,
+          "humidity": 56.4,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": 2.4,
+          "humidity": 56.8,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": 2.1,
+          "humidity": 55,
+          "latitude": 40.6084,
+          "longitude": -75.4902,
+          "batteryLevel": 67,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Approaching Threshold"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": 2.52,
+            "humidity": 54.2,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": 2.25,
+            "humidity": 53.3,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": 2.07,
+            "humidity": 53.3,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": 2.09,
+            "humidity": 54,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": 2.3,
+            "humidity": 55.2,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": 2.57,
+            "humidity": 56.3,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": 2.74,
+            "humidity": 56.8,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": 2.7,
+            "humidity": 56.4,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": 2.48,
+            "humidity": 55.4,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": 2.21,
+            "humidity": 54.1,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": 2.06,
+            "humidity": 53.3,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": 2.11,
+            "humidity": 53.3,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": 2.34,
+            "humidity": 54.1,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": 2.6,
+            "humidity": 55.3,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": 2.75,
+            "humidity": 56.4,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": 2.68,
+            "humidity": 56.8,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": 2.44,
+            "humidity": 56.4,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": 2.18,
+            "humidity": 55.3,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": 2.05,
+            "humidity": 54.1,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": 2.14,
+            "humidity": 53.3,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": 2.38,
+            "humidity": 53.3,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": 2.64,
+            "humidity": 54.1,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": 2.75,
+            "humidity": 55.3,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": 2.65,
+            "humidity": 56.4,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": 2.4,
+            "humidity": 56.8,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-6631-VAR": {
+      "id": "CG-6631-VAR",
+      "vaccineName": "Varivax (Varicella Virus Live Vaccine)",
+      "vaccineType": "Lyophilized Oka/Merck Varicella Live",
+      "vaccineCategory": "frozen",
+      "manufacturer": "Merck & Co., Inc.",
+      "batchNumber": "VAR-2026-90",
+      "doses": 10000,
+      "packagingType": "Deep-Freeze Qualified Dry-Ice Container",
+      "storageRequirement": "Frozen (-25°C to -15°C)",
+      "priority": "High",
+      "originFacility": "Durham Vaccine Production Center (NC)",
+      "currentLocation": "I-81 Northbound near Winchester, VA",
+      "destinationFacility": "Johns Hopkins Hospital Outpatient Center",
+      "transportVehicleId": "VAN-COLD-411",
+      "carrierIdentifier": "Atlantic Pharma Express (Driver: L. Gomez)",
+      "departureTime": "2026-10-09T07:15:00Z",
+      "expectedDeliveryTime": "2026-10-09T16:00:00Z",
+      "status": "Approaching Destination",
+      "eta": "2026-10-09T15:45:00Z",
+      "routeDistanceRemainingKm": 65.1,
+      "currentTemperature": -22.4,
+      "minAllowedTemperature": -25,
+      "maxAllowedTemperature": -15,
+      "currentHumidity": 38.5,
+      "minAllowedHumidity": 30,
+      "maxAllowedHumidity": 75,
+      "gpsLatitude": 39.1857,
+      "gpsLongitude": -78.1633,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 92,
+      "dataTransmissionStatus": "Cellular 4G LTE Active",
+      "sensorHealth": "Optimal",
+      "sensorDataAgeSeconds": 6,
+      "excursionStatus": "Normal Operation",
+      "excursionSeverity": "None",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": 0,
+      "cumulativeThermalExposure": 0.05,
+      "peakTemperature": -20.5,
+      "minimumRecordedTemperature": -23.8,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 99.5,
+      "estimatedViabilityPercent": 99.4,
+      "predictedSpoilageRiskPercent": 0.4,
+      "riskClassification": "Low",
+      "predictedDelay": "On Time",
+      "recommendedNextAction": "Prepare receiving freezer at Johns Hopkins Hospital.",
+      "nearestCheckpointId": "CP-02",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 35.994,
+          "lng": -78.8986,
+          "name": "Durham, NC"
+        },
+        {
+          "lat": 39.1857,
+          "lng": -78.1633,
+          "name": "Current GPS (Winchester, VA)"
+        },
+        {
+          "lat": 39.2965,
+          "lng": -76.5927,
+          "name": "Johns Hopkins Baltimore"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "07:15",
+          "severity": "safe",
+          "desc": "Pre-conditioned cold pack verification passed."
+        },
+        {
+          "time": "12:00",
+          "severity": "safe",
+          "desc": "Virginia transit on schedule. Core temp -22.4°C."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": -22.28,
+          "humidity": 37.7,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": -22.55,
+          "humidity": 36.8,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": -22.73,
+          "humidity": 36.8,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": -22.71,
+          "humidity": 37.5,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": -22.5,
+          "humidity": 38.7,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": -22.23,
+          "humidity": 39.8,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": -22.06,
+          "humidity": 40.3,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": -22.1,
+          "humidity": 39.9,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": -22.32,
+          "humidity": 38.9,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": -22.59,
+          "humidity": 37.6,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": -22.74,
+          "humidity": 36.8,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": -22.69,
+          "humidity": 36.8,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": -22.46,
+          "humidity": 37.6,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": -22.2,
+          "humidity": 38.8,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": -22.05,
+          "humidity": 39.9,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": -22.12,
+          "humidity": 40.3,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": -22.36,
+          "humidity": 39.9,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": -22.62,
+          "humidity": 38.8,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": -22.75,
+          "humidity": 37.6,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": -22.66,
+          "humidity": 36.8,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": -22.42,
+          "humidity": 36.8,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": -22.16,
+          "humidity": 37.6,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": -22.05,
+          "humidity": 38.8,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": -22.15,
+          "humidity": 39.9,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": -22.4,
+          "humidity": 40.3,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": -22.4,
+          "humidity": 38.5,
+          "latitude": 39.1857,
+          "longitude": -78.1633,
+          "batteryLevel": 92,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Normal Operation"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": -22.28,
+            "humidity": 37.7,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": -22.55,
+            "humidity": 36.8,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": -22.73,
+            "humidity": 36.8,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": -22.71,
+            "humidity": 37.5,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": -22.5,
+            "humidity": 38.7,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": -22.23,
+            "humidity": 39.8,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": -22.06,
+            "humidity": 40.3,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": -22.1,
+            "humidity": 39.9,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": -22.32,
+            "humidity": 38.9,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": -22.59,
+            "humidity": 37.6,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": -22.74,
+            "humidity": 36.8,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": -22.69,
+            "humidity": 36.8,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": -22.46,
+            "humidity": 37.6,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": -22.2,
+            "humidity": 38.8,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": -22.05,
+            "humidity": 39.9,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": -22.12,
+            "humidity": 40.3,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": -22.36,
+            "humidity": 39.9,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": -22.62,
+            "humidity": 38.8,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": -22.75,
+            "humidity": 37.6,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": -22.66,
+            "humidity": 36.8,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": -22.42,
+            "humidity": 36.8,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": -22.16,
+            "humidity": 37.6,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": -22.05,
+            "humidity": 38.8,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": -22.15,
+            "humidity": 39.9,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": -22.4,
+            "humidity": 40.3,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-1205-HPV": {
+      "id": "CG-1205-HPV",
+      "vaccineName": "Gardasil 9 (Recombinant Human Papillomavirus)",
+      "vaccineType": "9-valent Purified Virus-Like Particles",
+      "vaccineCategory": "standard_cold_chain",
+      "manufacturer": "Merck Sharp & Dohme LLC",
+      "batchNumber": "G9-8812-US",
+      "doses": 25000,
+      "packagingType": "Pallet Shipper with Continuous Temperature Logger",
+      "storageRequirement": "Refrigerated (+2°C to +8°C)",
+      "priority": "Normal",
+      "originFacility": "Elkton Operations Center (VA)",
+      "currentLocation": "I-95 Northbound near Wilmington, DE",
+      "destinationFacility": "New York-Presbyterian Hospital Central Storage",
+      "transportVehicleId": "REEFER-TRUCK-601",
+      "carrierIdentifier": "Northeast MedTrans (Driver: B. Thornton)",
+      "departureTime": "2026-10-09T09:00:00Z",
+      "expectedDeliveryTime": "2026-10-09T18:00:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T17:40:00Z",
+      "routeDistanceRemainingKm": 165,
+      "currentTemperature": 4.5,
+      "minAllowedTemperature": 2,
+      "maxAllowedTemperature": 8,
+      "currentHumidity": 46.2,
+      "minAllowedHumidity": 35,
+      "maxAllowedHumidity": 65,
+      "gpsLatitude": 39.7447,
+      "gpsLongitude": -75.5484,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 88,
+      "dataTransmissionStatus": "Cellular 4G LTE Active",
+      "sensorHealth": "Optimal",
+      "sensorDataAgeSeconds": 9,
+      "excursionStatus": "Normal Operation",
+      "excursionSeverity": "None",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": 0,
+      "cumulativeThermalExposure": 0.1,
+      "peakTemperature": 5.2,
+      "minimumRecordedTemperature": 3.9,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 99.2,
+      "estimatedViabilityPercent": 99.1,
+      "predictedSpoilageRiskPercent": 0.6,
+      "riskClassification": "Low",
+      "predictedDelay": "On Time",
+      "recommendedNextAction": "Nominal transit progress; no intervention required.",
+      "nearestCheckpointId": "CP-06",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 38.4079,
+          "lng": -78.6256,
+          "name": "Elkton, VA"
+        },
+        {
+          "lat": 39.7447,
+          "lng": -75.5484,
+          "name": "Current GPS (Wilmington, DE)"
+        },
+        {
+          "lat": 40.7128,
+          "lng": -74.006,
+          "name": "NY-Presbyterian Hospital"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "09:00",
+          "severity": "safe",
+          "desc": "Batch loaded and sealed in temperature-controlled trailer."
+        },
+        {
+          "time": "14:15",
+          "severity": "safe",
+          "desc": "Toll plaza check: 4.5°C steady."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": 4.62,
+          "humidity": 45.4,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": 4.35,
+          "humidity": 44.5,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": 4.17,
+          "humidity": 44.5,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": 4.19,
+          "humidity": 45.2,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": 4.4,
+          "humidity": 46.4,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": 4.67,
+          "humidity": 47.5,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": 4.84,
+          "humidity": 48,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": 4.8,
+          "humidity": 47.6,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": 4.58,
+          "humidity": 46.6,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": 4.31,
+          "humidity": 45.3,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": 4.16,
+          "humidity": 44.5,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": 4.21,
+          "humidity": 44.5,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": 4.44,
+          "humidity": 45.3,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": 4.7,
+          "humidity": 46.5,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": 4.85,
+          "humidity": 47.6,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": 4.78,
+          "humidity": 48,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": 4.54,
+          "humidity": 47.6,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": 4.28,
+          "humidity": 46.5,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": 4.15,
+          "humidity": 45.3,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": 4.24,
+          "humidity": 44.5,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": 4.48,
+          "humidity": 44.5,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": 4.74,
+          "humidity": 45.3,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": 4.85,
+          "humidity": 46.5,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": 4.75,
+          "humidity": 47.6,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": 4.5,
+          "humidity": 48,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": 4.5,
+          "humidity": 46.2,
+          "latitude": 39.7447,
+          "longitude": -75.5484,
+          "batteryLevel": 88,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Normal Operation"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": 4.62,
+            "humidity": 45.4,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": 4.35,
+            "humidity": 44.5,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": 4.17,
+            "humidity": 44.5,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": 4.19,
+            "humidity": 45.2,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": 4.4,
+            "humidity": 46.4,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": 4.67,
+            "humidity": 47.5,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": 4.84,
+            "humidity": 48,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": 4.8,
+            "humidity": 47.6,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": 4.58,
+            "humidity": 46.6,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": 4.31,
+            "humidity": 45.3,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": 4.16,
+            "humidity": 44.5,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": 4.21,
+            "humidity": 44.5,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": 4.44,
+            "humidity": 45.3,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": 4.7,
+            "humidity": 46.5,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": 4.85,
+            "humidity": 47.6,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": 4.78,
+            "humidity": 48,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": 4.54,
+            "humidity": 47.6,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": 4.28,
+            "humidity": 46.5,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": 4.15,
+            "humidity": 45.3,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": 4.24,
+            "humidity": 44.5,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": 4.48,
+            "humidity": 44.5,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": 4.74,
+            "humidity": 45.3,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": 4.85,
+            "humidity": 46.5,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": 4.75,
+            "humidity": 47.6,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": 4.5,
+            "humidity": 48,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-2290-RAB": {
+      "id": "CG-2290-RAB",
+      "vaccineName": "RabAvert (Rabies Vaccine Human Pre/Post-exposure)",
+      "vaccineType": "Inactivated Purified Chick Embryo Cell",
+      "vaccineCategory": "standard_cold_chain",
+      "manufacturer": "Bavarian Nordic A/S",
+      "batchNumber": "BN-RAB-304",
+      "doses": 8000,
+      "packagingType": "Insulated Box with Dual Real-Time Telemetry",
+      "storageRequirement": "Refrigerated (+2°C to +8°C)",
+      "priority": "Urgent",
+      "originFacility": "Morrisville Packaging Logistics (NC)",
+      "currentLocation": "I-77 North near Charleston, WV",
+      "destinationFacility": "Cleveland MetroHealth Medical Center",
+      "transportVehicleId": "EXPEDITE-SPRINTER-12",
+      "carrierIdentifier": "Apex Critical Logistics (Driver: A. Brooks)",
+      "departureTime": "2026-10-09T08:00:00Z",
+      "expectedDeliveryTime": "2026-10-09T16:30:00Z",
+      "status": "In Transit",
+      "eta": "2026-10-09T16:15:00Z",
+      "routeDistanceRemainingKm": 195.4,
+      "currentTemperature": 5.2,
+      "minAllowedTemperature": 2,
+      "maxAllowedTemperature": 8,
+      "currentHumidity": 51,
+      "minAllowedHumidity": 35,
+      "maxAllowedHumidity": 65,
+      "gpsLatitude": 38.3498,
+      "gpsLongitude": -81.6326,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Low Battery",
+      "batteryLevel": 9,
+      "dataTransmissionStatus": "Cellular Power-Saving Mode",
+      "sensorHealth": "Battery Low (9% remaining)",
+      "sensorDataAgeSeconds": 19,
+      "excursionStatus": "Normal Operation",
+      "excursionSeverity": "Warning",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": 0,
+      "cumulativeThermalExposure": 0.15,
+      "peakTemperature": 5.6,
+      "minimumRecordedTemperature": 4.8,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 84,
+      "estimatedViabilityPercent": 98.7,
+      "predictedSpoilageRiskPercent": 1.2,
+      "riskClassification": "Moderate",
+      "predictedDelay": "On Time",
+      "recommendedNextAction": "Sensor logger battery critically low (<10%). Swap backup logger probe at next driver rest stop.",
+      "nearestCheckpointId": "CP-05",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 35.8235,
+          "lng": -78.8256,
+          "name": "Morrisville, NC"
+        },
+        {
+          "lat": 38.3498,
+          "lng": -81.6326,
+          "name": "Current GPS (Charleston, WV)"
+        },
+        {
+          "lat": 41.4687,
+          "lng": -81.6912,
+          "name": "Cleveland MetroHealth"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "08:00",
+          "severity": "safe",
+          "desc": "High priority rabies vaccine package handed over to dedicated courier."
+        },
+        {
+          "time": "13:40",
+          "severity": "warning",
+          "desc": "Telemetry logger reported rapid battery drain down to 9%."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": 5.32,
+          "humidity": 50.2,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": 5.05,
+          "humidity": 49.3,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": 4.87,
+          "humidity": 49.3,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": 4.89,
+          "humidity": 50,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": 5.1,
+          "humidity": 51.2,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": 5.37,
+          "humidity": 52.3,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": 5.54,
+          "humidity": 52.8,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": 5.5,
+          "humidity": 52.4,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": 5.28,
+          "humidity": 51.4,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": 5.01,
+          "humidity": 50.1,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": 4.86,
+          "humidity": 49.3,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": 4.91,
+          "humidity": 49.3,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": 5.14,
+          "humidity": 50.1,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": 5.4,
+          "humidity": 51.3,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": 5.55,
+          "humidity": 52.4,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": 5.48,
+          "humidity": 52.8,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": 5.24,
+          "humidity": 52.4,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": 4.98,
+          "humidity": 51.3,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": 4.85,
+          "humidity": 50.1,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": 4.94,
+          "humidity": 49.3,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": 5.18,
+          "humidity": 49.3,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": 5.44,
+          "humidity": 50.1,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": 5.55,
+          "humidity": 51.3,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": 5.45,
+          "humidity": 52.4,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": 5.2,
+          "humidity": 52.8,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": 5.2,
+          "humidity": 51,
+          "latitude": 38.3498,
+          "longitude": -81.6326,
+          "batteryLevel": 9,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Normal Operation"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": 5.32,
+            "humidity": 50.2,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": 5.05,
+            "humidity": 49.3,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": 4.87,
+            "humidity": 49.3,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": 4.89,
+            "humidity": 50,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": 5.1,
+            "humidity": 51.2,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": 5.37,
+            "humidity": 52.3,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": 5.54,
+            "humidity": 52.8,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": 5.5,
+            "humidity": 52.4,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": 5.28,
+            "humidity": 51.4,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": 5.01,
+            "humidity": 50.1,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": 4.86,
+            "humidity": 49.3,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": 4.91,
+            "humidity": 49.3,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": 5.14,
+            "humidity": 50.1,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": 5.4,
+            "humidity": 51.3,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": 5.55,
+            "humidity": 52.4,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": 5.48,
+            "humidity": 52.8,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": 5.24,
+            "humidity": 52.4,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": 4.98,
+            "humidity": 51.3,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": 4.85,
+            "humidity": 50.1,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": 4.94,
+            "humidity": 49.3,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": 5.18,
+            "humidity": 49.3,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": 5.44,
+            "humidity": 50.1,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": 5.55,
+            "humidity": 51.3,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": 5.45,
+            "humidity": 52.4,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": 5.2,
+            "humidity": 52.8,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-9801-HEP": {
+      "id": "CG-9801-HEP",
+      "vaccineName": "Engerix-B (Hepatitis B Vaccine Recombinant)",
+      "vaccineType": "Hepatitis B Surface Antigen (HBsAg)",
+      "vaccineCategory": "standard_cold_chain",
+      "manufacturer": "GlaxoSmithKline Biologicals",
+      "batchNumber": "GSK-HEP-411",
+      "doses": 40000,
+      "packagingType": "Heavy Thermal Pallet Shipper",
+      "storageRequirement": "Refrigerated (+2°C to +8°C)",
+      "priority": "Normal",
+      "originFacility": "King of Prussia Cold Depot (PA)",
+      "currentLocation": "Delivered to Dock Bay 3",
+      "destinationFacility": "Temple University Hospital Pharmacy",
+      "transportVehicleId": "REEFER-TRUCK-109",
+      "carrierIdentifier": "MediRoute Express",
+      "departureTime": "2026-10-09T06:00:00Z",
+      "expectedDeliveryTime": "2026-10-09T10:30:00Z",
+      "status": "Delivered",
+      "eta": "Delivered at 10:14:00Z",
+      "routeDistanceRemainingKm": 0,
+      "currentTemperature": 4.1,
+      "minAllowedTemperature": 2,
+      "maxAllowedTemperature": 8,
+      "currentHumidity": 44.5,
+      "minAllowedHumidity": 35,
+      "maxAllowedHumidity": 65,
+      "gpsLatitude": 40.0041,
+      "gpsLongitude": -75.1556,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Dock Synced",
+      "batteryLevel": 91,
+      "dataTransmissionStatus": "Dock WiFi Synchronized",
+      "sensorHealth": "Batch Certified Delivered",
+      "sensorDataAgeSeconds": 2,
+      "excursionStatus": "Normal Operation",
+      "excursionSeverity": "None",
+      "excursionStartTime": null,
+      "excursionDurationMinutes": 0,
+      "temperatureDeviation": 0,
+      "cumulativeThermalExposure": 0.02,
+      "peakTemperature": 4.8,
+      "minimumRecordedTemperature": 3.5,
+      "consecutiveOutOfRangeReadings": 0,
+      "detectionConfidencePercent": 100,
+      "estimatedViabilityPercent": 99.8,
+      "predictedSpoilageRiskPercent": 0,
+      "riskClassification": "Low",
+      "predictedDelay": "Delivered Ahead of Time",
+      "recommendedNextAction": "Shipment accepted and verified by Lead Hospital Pharmacist. Cold chain integrity intact.",
+      "nearestCheckpointId": "CP-06",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 40.0901,
+          "lng": -75.3854,
+          "name": "King of Prussia Depot"
+        },
+        {
+          "lat": 40.0041,
+          "lng": -75.1556,
+          "name": "Temple University Hospital"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "06:00",
+          "severity": "safe",
+          "desc": "Dispatched from King of Prussia warehouse."
+        },
+        {
+          "time": "10:14",
+          "severity": "safe",
+          "desc": "Dock delivery completed; physical temp assay passed at 4.1°C."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": 4.22,
+          "humidity": 43.7,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": 3.95,
+          "humidity": 42.8,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": 3.77,
+          "humidity": 42.8,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": 3.79,
+          "humidity": 43.5,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": 4,
+          "humidity": 44.7,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": 4.27,
+          "humidity": 45.8,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": 4.44,
+          "humidity": 46.3,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": 4.4,
+          "humidity": 45.9,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": 4.18,
+          "humidity": 44.9,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": 3.91,
+          "humidity": 43.6,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": 3.76,
+          "humidity": 42.8,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": 3.81,
+          "humidity": 42.8,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": 4.04,
+          "humidity": 43.6,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": 4.3,
+          "humidity": 44.8,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": 4.45,
+          "humidity": 45.9,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": 4.38,
+          "humidity": 46.3,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": 4.14,
+          "humidity": 45.9,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": 3.88,
+          "humidity": 44.8,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": 3.75,
+          "humidity": 43.6,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": 3.84,
+          "humidity": 42.8,
+          "viability": 97.7
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": 4.08,
+          "humidity": 42.8,
+          "viability": 97.6
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": 4.34,
+          "humidity": 43.6,
+          "viability": 97.5
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": 4.45,
+          "humidity": 44.8,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": 4.35,
+          "humidity": 45.9,
+          "viability": 97.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": 4.1,
+          "humidity": 46.3,
+          "viability": 97.3
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": 4.1,
+          "humidity": 44.5,
+          "latitude": 40.0041,
+          "longitude": -75.1556,
+          "batteryLevel": 91,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Normal Operation"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": 4.22,
+            "humidity": 43.7,
+            "viability": 99.2
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": 3.95,
+            "humidity": 42.8,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": 3.77,
+            "humidity": 42.8,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": 3.79,
+            "humidity": 43.5,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": 4,
+            "humidity": 44.7,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": 4.27,
+            "humidity": 45.8,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": 4.44,
+            "humidity": 46.3,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": 4.4,
+            "humidity": 45.9,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": 4.18,
+            "humidity": 44.9,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": 3.91,
+            "humidity": 43.6,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": 3.76,
+            "humidity": 42.8,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": 3.81,
+            "humidity": 42.8,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": 4.04,
+            "humidity": 43.6,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": 4.3,
+            "humidity": 44.8,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": 4.45,
+            "humidity": 45.9,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": 4.38,
+            "humidity": 46.3,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": 4.14,
+            "humidity": 45.9,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": 3.88,
+            "humidity": 44.8,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": 3.75,
+            "humidity": 43.6,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": 3.84,
+            "humidity": 42.8,
+            "viability": 97.7
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": 4.08,
+            "humidity": 42.8,
+            "viability": 97.6
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": 4.34,
+            "humidity": 43.6,
+            "viability": 97.5
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": 4.45,
+            "humidity": 44.8,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": 4.35,
+            "humidity": 45.9,
+            "viability": 97.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": 4.1,
+            "humidity": 46.3,
+            "viability": 97.3
+          }
+        ]
+      }
+    },
+    "CG-7102-PFZ": {
+      "id": "CG-7102-PFZ",
+      "vaccineName": "Comirnaty XBB.1.5 (mRNA Vaccine)",
+      "vaccineType": "mRNA Suspension Ultra-Cold",
+      "vaccineCategory": "mrna_ultra_cold",
+      "manufacturer": "Pfizer-BioNTech Manufacturing GmbH",
+      "batchNumber": "PFZ-XBB-2026",
+      "doses": 18000,
+      "packagingType": "Stirling Active Cryo-Tote",
+      "storageRequirement": "Ultra-Low Freezer (-90°C to -60°C)",
+      "priority": "Urgent",
+      "originFacility": "St. Louis Distribution Hub (MO)",
+      "currentLocation": "Rerouted to Apex Cryo-Depot (Arrival in 12m)",
+      "destinationFacility": "Apex Biologics Regional Cryo-Depot (Reroute Facility)",
+      "transportVehicleId": "CRYO-SPRINTER-04",
+      "carrierIdentifier": "CryoTrans Priority (Driver: T. Reynolds)",
+      "departureTime": "2026-10-09T04:30:00Z",
+      "expectedDeliveryTime": "2026-10-09T18:00:00Z",
+      "status": "Emergency Rerouting",
+      "eta": "2026-10-09T18:25:00Z",
+      "routeDistanceRemainingKm": 14.2,
+      "currentTemperature": -58.9,
+      "minAllowedTemperature": -90,
+      "maxAllowedTemperature": -60,
+      "currentHumidity": 41,
+      "minAllowedHumidity": 20,
+      "maxAllowedHumidity": 80,
+      "gpsLatitude": 40.4121,
+      "gpsLongitude": -80.0412,
+      "lastSensorUpdate": "2026-10-09T13:53:32.829Z",
+      "sensorConnectivity": "Online",
+      "batteryLevel": 62,
+      "dataTransmissionStatus": "Cellular 4G LTE Active",
+      "sensorHealth": "Operational",
+      "sensorDataAgeSeconds": 14,
+      "excursionStatus": "Active Excursion",
+      "excursionSeverity": "High Risk",
+      "excursionStartTime": "2026-10-09T13:31:32.829Z",
+      "excursionDurationMinutes": 22,
+      "temperatureDeviation": 1.1,
+      "cumulativeThermalExposure": 1.4,
+      "peakTemperature": -57.8,
+      "minimumRecordedTemperature": -74.2,
+      "consecutiveOutOfRangeReadings": 5,
+      "detectionConfidencePercent": 98.2,
+      "estimatedViabilityPercent": 91.2,
+      "predictedSpoilageRiskPercent": 18.5,
+      "riskClassification": "High Risk",
+      "predictedDelay": "Emergency diversion in progress",
+      "recommendedNextAction": "Emergency protocol active: vehicle docking in 12 mins for liquid nitrogen replenish.",
+      "nearestCheckpointId": "CP-01",
+      "routeDeviationDetected": false,
+      "routeWaypoints": [
+        {
+          "lat": 38.627,
+          "lng": -90.1994,
+          "name": "St. Louis Hub"
+        },
+        {
+          "lat": 40.4121,
+          "lng": -80.0412,
+          "name": "Current GPS (Pittsburgh outskirts)"
+        },
+        {
+          "lat": 40.4406,
+          "lng": -79.9959,
+          "name": "Apex Cryo Depot (Reroute destination)"
+        }
+      ],
+      "timeline": [
+        {
+          "time": "04:30",
+          "severity": "safe",
+          "desc": "Dispatched from St. Louis Hub."
+        },
+        {
+          "time": "16:40",
+          "severity": "warning",
+          "desc": "Cooling unit compressor pressure drop detected."
+        },
+        {
+          "time": "17:15",
+          "severity": "critical",
+          "desc": "Core temp rose above -60°C. ColdGuard auto-calculated nearest hub."
+        },
+        {
+          "time": "17:22",
+          "severity": "safe",
+          "desc": "Emergency reroute executed to Apex Cryo-Depot (CP-01)."
+        }
+      ],
+      "history": [
+        {
+          "timestamp": "2026-10-09T12:13:32.829Z",
+          "temperature": -75.05,
+          "humidity": 41,
+          "viability": 99.2
+        },
+        {
+          "timestamp": "2026-10-09T12:17:32.829Z",
+          "temperature": -75.36,
+          "humidity": 41,
+          "viability": 99.1
+        },
+        {
+          "timestamp": "2026-10-09T12:21:32.829Z",
+          "temperature": -75.34,
+          "humidity": 41,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:25:32.829Z",
+          "temperature": -75,
+          "humidity": 41,
+          "viability": 99
+        },
+        {
+          "timestamp": "2026-10-09T12:29:32.829Z",
+          "temperature": -74.67,
+          "humidity": 41,
+          "viability": 98.9
+        },
+        {
+          "timestamp": "2026-10-09T12:33:32.829Z",
+          "temperature": -74.63,
+          "humidity": 41,
+          "viability": 98.8
+        },
+        {
+          "timestamp": "2026-10-09T12:37:32.829Z",
+          "temperature": -74.94,
+          "humidity": 41,
+          "viability": 98.7
+        },
+        {
+          "timestamp": "2026-10-09T12:41:32.829Z",
+          "temperature": -75.3,
+          "humidity": 41,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:45:32.829Z",
+          "temperature": -75.38,
+          "humidity": 41,
+          "viability": 98.6
+        },
+        {
+          "timestamp": "2026-10-09T12:49:32.829Z",
+          "temperature": -75.12,
+          "humidity": 41,
+          "viability": 98.5
+        },
+        {
+          "timestamp": "2026-10-09T12:53:32.829Z",
+          "temperature": -74.74,
+          "humidity": 41,
+          "viability": 98.4
+        },
+        {
+          "timestamp": "2026-10-09T12:57:32.829Z",
+          "temperature": -74.6,
+          "humidity": 41,
+          "viability": 98.3
+        },
+        {
+          "timestamp": "2026-10-09T13:01:32.829Z",
+          "temperature": -74.83,
+          "humidity": 41,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:05:32.829Z",
+          "temperature": -75.21,
+          "humidity": 41,
+          "viability": 98.2
+        },
+        {
+          "timestamp": "2026-10-09T13:09:32.829Z",
+          "temperature": -75.4,
+          "humidity": 41,
+          "viability": 98.1
+        },
+        {
+          "timestamp": "2026-10-09T13:13:32.829Z",
+          "temperature": -75.22,
+          "humidity": 41,
+          "viability": 98
+        },
+        {
+          "timestamp": "2026-10-09T13:17:32.829Z",
+          "temperature": -74.84,
+          "humidity": 41,
+          "viability": 97.9
+        },
+        {
+          "timestamp": "2026-10-09T13:21:32.829Z",
+          "temperature": -74.6,
+          "humidity": 41,
+          "viability": 97.8
+        },
+        {
+          "timestamp": "2026-10-09T13:25:32.829Z",
+          "temperature": -59.55,
+          "humidity": 41,
+          "viability": 95.2
+        },
+        {
+          "timestamp": "2026-10-09T13:29:32.829Z",
+          "temperature": -59.1,
+          "humidity": 41,
+          "viability": 92.4
+        },
+        {
+          "timestamp": "2026-10-09T13:33:32.829Z",
+          "temperature": -58.65,
+          "humidity": 41,
+          "viability": 89.6
+        },
+        {
+          "timestamp": "2026-10-09T13:37:32.829Z",
+          "temperature": -58.2,
+          "humidity": 41,
+          "viability": 86.8
+        },
+        {
+          "timestamp": "2026-10-09T13:41:32.829Z",
+          "temperature": -57.75,
+          "humidity": 41,
+          "viability": 84
+        },
+        {
+          "timestamp": "2026-10-09T13:45:32.829Z",
+          "temperature": -57.3,
+          "humidity": 41,
+          "viability": 81.2
+        },
+        {
+          "timestamp": "2026-10-09T13:49:32.829Z",
+          "temperature": -56.85,
+          "humidity": 41,
+          "viability": 78.4
+        },
+        {
+          "timestamp": "2026-10-09T13:53:32.829Z",
+          "temperature": -56.4,
+          "humidity": 41,
+          "viability": 76
+        }
+      ],
+      "telemetry": {
+        "live": {
+          "temperature": -58.9,
+          "humidity": 41,
+          "latitude": 40.4121,
+          "longitude": -80.0412,
+          "batteryLevel": 62,
+          "timestamp": 1791554012829,
+          "severity": "SAFE",
+          "excursionStatus": "Active Excursion"
+        },
+        "history": [
+          {
+            "timestamp": "2026-10-09T12:17:32.829Z",
+            "temperature": -75.36,
+            "humidity": 41,
+            "viability": 99.1
+          },
+          {
+            "timestamp": "2026-10-09T12:21:32.829Z",
+            "temperature": -75.34,
+            "humidity": 41,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:25:32.829Z",
+            "temperature": -75,
+            "humidity": 41,
+            "viability": 99
+          },
+          {
+            "timestamp": "2026-10-09T12:29:32.829Z",
+            "temperature": -74.67,
+            "humidity": 41,
+            "viability": 98.9
+          },
+          {
+            "timestamp": "2026-10-09T12:33:32.829Z",
+            "temperature": -74.63,
+            "humidity": 41,
+            "viability": 98.8
+          },
+          {
+            "timestamp": "2026-10-09T12:37:32.829Z",
+            "temperature": -74.94,
+            "humidity": 41,
+            "viability": 98.7
+          },
+          {
+            "timestamp": "2026-10-09T12:41:32.829Z",
+            "temperature": -75.3,
+            "humidity": 41,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:45:32.829Z",
+            "temperature": -75.38,
+            "humidity": 41,
+            "viability": 98.6
+          },
+          {
+            "timestamp": "2026-10-09T12:49:32.829Z",
+            "temperature": -75.12,
+            "humidity": 41,
+            "viability": 98.5
+          },
+          {
+            "timestamp": "2026-10-09T12:53:32.829Z",
+            "temperature": -74.74,
+            "humidity": 41,
+            "viability": 98.4
+          },
+          {
+            "timestamp": "2026-10-09T12:57:32.829Z",
+            "temperature": -74.6,
+            "humidity": 41,
+            "viability": 98.3
+          },
+          {
+            "timestamp": "2026-10-09T13:01:32.829Z",
+            "temperature": -74.83,
+            "humidity": 41,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:05:32.829Z",
+            "temperature": -75.21,
+            "humidity": 41,
+            "viability": 98.2
+          },
+          {
+            "timestamp": "2026-10-09T13:09:32.829Z",
+            "temperature": -75.4,
+            "humidity": 41,
+            "viability": 98.1
+          },
+          {
+            "timestamp": "2026-10-09T13:13:32.829Z",
+            "temperature": -75.22,
+            "humidity": 41,
+            "viability": 98
+          },
+          {
+            "timestamp": "2026-10-09T13:17:32.829Z",
+            "temperature": -74.84,
+            "humidity": 41,
+            "viability": 97.9
+          },
+          {
+            "timestamp": "2026-10-09T13:21:32.829Z",
+            "temperature": -74.6,
+            "humidity": 41,
+            "viability": 97.8
+          },
+          {
+            "timestamp": "2026-10-09T13:25:32.829Z",
+            "temperature": -59.55,
+            "humidity": 41,
+            "viability": 95.2
+          },
+          {
+            "timestamp": "2026-10-09T13:29:32.829Z",
+            "temperature": -59.1,
+            "humidity": 41,
+            "viability": 92.4
+          },
+          {
+            "timestamp": "2026-10-09T13:33:32.829Z",
+            "temperature": -58.65,
+            "humidity": 41,
+            "viability": 89.6
+          },
+          {
+            "timestamp": "2026-10-09T13:37:32.829Z",
+            "temperature": -58.2,
+            "humidity": 41,
+            "viability": 86.8
+          },
+          {
+            "timestamp": "2026-10-09T13:41:32.829Z",
+            "temperature": -57.75,
+            "humidity": 41,
+            "viability": 84
+          },
+          {
+            "timestamp": "2026-10-09T13:45:32.829Z",
+            "temperature": -57.3,
+            "humidity": 41,
+            "viability": 81.2
+          },
+          {
+            "timestamp": "2026-10-09T13:49:32.829Z",
+            "temperature": -56.85,
+            "humidity": 41,
+            "viability": 78.4
+          },
+          {
+            "timestamp": "2026-10-09T13:53:32.829Z",
+            "temperature": -56.4,
+            "humidity": 41,
+            "viability": 76
+          }
+        ]
+      }
+    }
+  },
+  "alerts": {
+    "ALT-CG-9021-PFZ": {
+      "alertId": "ALT-CG-9021-PFZ",
+      "shipmentId": "CG-9021-PFZ",
+      "vaccineName": "Comirnaty (COVID-19 BNT162b2)",
+      "severity": "CRITICAL",
+      "type": "HEAT_EXCURSION",
+      "temperature": -52.4,
+      "deviation": 7.6,
+      "message": "Excursion detected on Comirnaty (COVID-19 BNT162b2) (CG-9021-PFZ). Current temp: -52.4°C exceeds threshold.",
+      "recommendedAction": "Reroute immediately to nearest cryo-checkpoint for dry-ice re-icing.",
+      "timestamp": 1791552212829,
+      "status": "ACTIVE"
+    },
+    "ALT-CG-8842-AZN": {
+      "alertId": "ALT-CG-8842-AZN",
+      "shipmentId": "CG-8842-AZN",
+      "vaccineName": "Vaxzevria (ChAdOx1-S / Recombinant)",
+      "severity": "WARNING",
+      "type": "FREEZE_EXCURSION",
+      "temperature": 7.7,
+      "deviation": -0.3,
+      "message": "Excursion detected on Vaxzevria (ChAdOx1-S / Recombinant) (CG-8842-AZN). Current temp: 7.7°C exceeds threshold.",
+      "recommendedAction": "Check vehicle reefer temperature setpoint; alert driver to avoid door openings.",
+      "timestamp": 1791552212829,
+      "status": "ACTIVE"
+    },
+    "ALT-CG-3304-ROT": {
+      "alertId": "ALT-CG-3304-ROT",
+      "shipmentId": "CG-3304-ROT",
+      "vaccineName": "Rotarix (Rotavirus Vaccine Live Oral)",
+      "severity": "WARNING",
+      "type": "FREEZE_EXCURSION",
+      "temperature": 4.8,
+      "deviation": 0,
+      "message": "Excursion detected on Rotarix (Rotavirus Vaccine Live Oral) (CG-3304-ROT). Current temp: 4.8°C exceeds threshold.",
+      "recommendedAction": "Inspect packaging seal at next stop for moisture condensation or water ingress.",
+      "timestamp": 1791552212829,
+      "status": "ACTIVE"
+    },
+    "ALT-CG-7719-MMR": {
+      "alertId": "ALT-CG-7719-MMR",
+      "shipmentId": "CG-7719-MMR",
+      "vaccineName": "M-M-R II (Measles, Mumps, Rubella Vaccine)",
+      "severity": "WARNING",
+      "type": "FREEZE_EXCURSION",
+      "temperature": 6.9,
+      "deviation": -1.1,
+      "message": "Excursion detected on M-M-R II (Measles, Mumps, Rubella Vaccine) (CG-7719-MMR). Current temp: 6.9°C exceeds threshold.",
+      "recommendedAction": "Contact driver immediately regarding unexpected mountain detour; verify reefer auxiliary fuel.",
+      "timestamp": 1791552212829,
+      "status": "ACTIVE"
+    },
+    "ALT-CG-4419-BCG": {
+      "alertId": "ALT-CG-4419-BCG",
+      "shipmentId": "CG-4419-BCG",
+      "vaccineName": "BCG Vaccine (Bacillus Calmette-Guérin Live)",
+      "severity": "WARNING",
+      "type": "FREEZE_EXCURSION",
+      "temperature": 2.1,
+      "deviation": 0.1,
+      "message": "Excursion detected on BCG Vaccine (Bacillus Calmette-Guérin Live) (CG-4419-BCG). Current temp: 2.1°C exceeds threshold.",
+      "recommendedAction": "FREEZE RISK DETECTED: Direct contact with frozen icepacks suspected. Warm reefer blower by +1.5°C.",
+      "timestamp": 1791552212829,
+      "status": "ACTIVE"
+    },
+    "ALT-CG-2290-RAB": {
+      "alertId": "ALT-CG-2290-RAB",
+      "shipmentId": "CG-2290-RAB",
+      "vaccineName": "RabAvert (Rabies Vaccine Human Pre/Post-exposure)",
+      "severity": "WARNING",
+      "type": "FREEZE_EXCURSION",
+      "temperature": 5.2,
+      "deviation": 0,
+      "message": "Excursion detected on RabAvert (Rabies Vaccine Human Pre/Post-exposure) (CG-2290-RAB). Current temp: 5.2°C exceeds threshold.",
+      "recommendedAction": "Sensor logger battery critically low (<10%). Swap backup logger probe at next driver rest stop.",
+      "timestamp": 1791552212829,
+      "status": "ACTIVE"
+    },
+    "ALT-CG-7102-PFZ": {
+      "alertId": "ALT-CG-7102-PFZ",
+      "shipmentId": "CG-7102-PFZ",
+      "vaccineName": "Comirnaty XBB.1.5 (mRNA Vaccine)",
+      "severity": "WARNING",
+      "type": "HEAT_EXCURSION",
+      "temperature": -58.9,
+      "deviation": 1.1,
+      "message": "Excursion detected on Comirnaty XBB.1.5 (mRNA Vaccine) (CG-7102-PFZ). Current temp: -58.9°C exceeds threshold.",
+      "recommendedAction": "Emergency protocol active: vehicle docking in 12 mins for liquid nitrogen replenish.",
+      "timestamp": 1791552212829,
+      "status": "ACTIVE"
+    }
+  },
+  "audit_logs": {
+    "LOG-0001": {
+      "logId": "LOG-0001",
+      "shipmentId": "CG-9021-PFZ",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-9021-PFZ (Comirnaty (COVID-19 BNT162b2), Lot: undefined) dispatched from Kalamazoo Bio-Production Plant (MI). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "REVIEW_REQUIRED"
+    },
+    "LOG-0002": {
+      "logId": "LOG-0002",
+      "shipmentId": "CG-8842-AZN",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-8842-AZN (Vaxzevria (ChAdOx1-S / Recombinant), Lot: undefined) dispatched from Gaithersburg Distribution Core (MD). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "REVIEW_REQUIRED"
+    },
+    "LOG-0003": {
+      "logId": "LOG-0003",
+      "shipmentId": "CG-5510-MDN",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-5510-MDN (Spikevax (COVID-19 mRNA-1273), Lot: undefined) dispatched from Norwood Technical Operations (MA). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "COMPLIANT"
+    },
+    "LOG-0004": {
+      "logId": "LOG-0004",
+      "shipmentId": "CG-3304-ROT",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-3304-ROT (Rotarix (Rotavirus Vaccine Live Oral), Lot: undefined) dispatched from Wavre Vaccine Center (US Hub Philadelphia). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "REVIEW_REQUIRED"
+    },
+    "LOG-0005": {
+      "logId": "LOG-0005",
+      "shipmentId": "CG-7719-MMR",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-7719-MMR (M-M-R II (Measles, Mumps, Rubella Vaccine), Lot: undefined) dispatched from West Point Manufacturing Facility (PA). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "REVIEW_REQUIRED"
+    },
+    "LOG-0006": {
+      "logId": "LOG-0006",
+      "shipmentId": "CG-1088-ERV",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-1088-ERV (Ervebo (Ebola Zaire Live Recombinant), Lot: undefined) dispatched from CDC Strategic Stockpile Depot Atlanta (GA). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "COMPLIANT"
+    },
+    "LOG-0007": {
+      "logId": "LOG-0007",
+      "shipmentId": "CG-4419-BCG",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-4419-BCG (BCG Vaccine (Bacillus Calmette-Guérin Live), Lot: undefined) dispatched from Newark International Biologics Terminal (NJ). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "REVIEW_REQUIRED"
+    },
+    "LOG-0008": {
+      "logId": "LOG-0008",
+      "shipmentId": "CG-6631-VAR",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-6631-VAR (Varivax (Varicella Virus Live Vaccine), Lot: undefined) dispatched from Durham Vaccine Production Center (NC). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "COMPLIANT"
+    },
+    "LOG-0009": {
+      "logId": "LOG-0009",
+      "shipmentId": "CG-1205-HPV",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-1205-HPV (Gardasil 9 (Recombinant Human Papillomavirus), Lot: undefined) dispatched from Elkton Operations Center (VA). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "COMPLIANT"
+    },
+    "LOG-0010": {
+      "logId": "LOG-0010",
+      "shipmentId": "CG-2290-RAB",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-2290-RAB (RabAvert (Rabies Vaccine Human Pre/Post-exposure), Lot: undefined) dispatched from Morrisville Packaging Logistics (NC). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "REVIEW_REQUIRED"
+    },
+    "LOG-0011": {
+      "logId": "LOG-0011",
+      "shipmentId": "CG-9801-HEP",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-9801-HEP (Engerix-B (Hepatitis B Vaccine Recombinant), Lot: undefined) dispatched from King of Prussia Cold Depot (PA). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "COMPLIANT"
+    },
+    "LOG-0012": {
+      "logId": "LOG-0012",
+      "shipmentId": "CG-7102-PFZ",
+      "event": "DISPATCHED_IN_TRANSIT",
+      "details": "Consignment CG-7102-PFZ (Comirnaty XBB.1.5 (mRNA Vaccine), Lot: undefined) dispatched from St. Louis Distribution Hub (MO). Target: undefined°C to undefined°C.",
+      "operator": "ColdGuard Automated Logging System",
+      "pqsComplianceStatus": "REVIEW_REQUIRED"
+    }
+  }
+}

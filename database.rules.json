@@ -1,0 +1,68 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && (!newData.child('role').exists() || newData.child('role').val() === 'logistics_operator' || data.child('role').val() === 'admin')",
+        ".validate": "newData.hasChildren(['email'])"
+      }
+    },
+    "shipments": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$shipmentId": {
+        "location": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "telemetry": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "excursions": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        },
+        "alerts": {
+          ".read": "auth != null",
+          ".write": "auth != null"
+        }
+      }
+    },
+    "gps_history": {
+      ".read": "auth != null",
+      "$shipmentId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "devices": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "alerts": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "facilities": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "emergency_events": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "checkpoints": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "thresholds": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "audit_logs": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}
