@@ -1670,11 +1670,16 @@ class ColdGuardApp {
       this.charts.updateTelemetryChart(shipment);
       this.charts.updateViabilityProjectionChart(trajectoryData);
 
-      this.mapView = new RouteMapView("route-map-container", {
-        onSelectCheckpoint: (cp) => {
-          this.modals.openRerouteModal(shipment, cp);
-        }
-      });
+      const mapContainer = document.getElementById("route-map-container");
+      if (!this.mapView || this.mapView.containerElement !== mapContainer) {
+        if (this.mapView && typeof this.mapView.destroy === "function") this.mapView.destroy();
+        this.mapView = new RouteMapView("route-map-container", {
+          onSelectCheckpoint: (cp) => {
+            const selected = this.simulation.shipments.find(item => item.id === this.selectedShipmentId) || shipment;
+            this.modals.openRerouteModal(selected, cp);
+          }
+        });
+      }
       this.mapView.renderShipment(shipment, this.checkpoints);
     }, 50);
   }
