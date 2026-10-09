@@ -22,6 +22,17 @@
 #include <WiFiClientSecure.h>
 #include <DHT.h>
 #include <ArduinoJson.h>
+#include <TinyGPSPlus.h>
+
+// GPS UART2: connect GPS module TX to ESP32 GPIO 16 (RX2).
+#define PIN_GPS_RX 16
+#define PIN_GPS_TX 17
+HardwareSerial GPSSerial(2);
+TinyGPSPlus gps;
+
+// Set this to the deployed Vercel URL for this repository's /api/ingest-gps endpoint.
+// Example format: https://YOUR-PROJECT.vercel.app/api/ingest-gps
+const char* GPS_INGEST_URL = "https://YOUR-VERCEL-DOMAIN.vercel.app/api/ingest-gps";
 
 // Include isolated device secrets & WiFi configuration
 // NOTE: secrets.h is protected by .gitignore and never committed
@@ -115,10 +126,12 @@ void setup() {
   Serial.print(" Ambient Probe Pin:    GPIO "); Serial.println(PIN_DHT_AMBIENT);
   Serial.println("========================================================\n");
 
-  // Initialize Sensors
-  Serial.println("[Sensors] Initializing DHT22 Probes...");
+  // Initialize environmental and GPS sensors
+  Serial.println("[Sensors] Initializing DHT22 Probes and UART GPS...");
   dhtCore.begin();
   dhtAmbient.begin();
+  GPSSerial.begin(9600, SERIAL_8N1, PIN_GPS_RX, PIN_GPS_TX);
+  Serial.printf("[GPS] UART2 started at 9600 baud (RX=%d, TX=%d).\n", PIN_GPS_RX, PIN_GPS_TX);
 
   // Connect to Network
   connectToWiFi();
@@ -188,6 +201,57 @@ bool sendViaCloudFunction(float tCore, float hCore, float tAmbient, float hAmbie
 }
 
 /**
+ * Process GPS NMEA data and post the latest fix to /api/ingest-gps.
+ * GPS is sent separately so a GPS upload failure won't block temperature telemetry.
+ */
+void processGpsInput() {
+  while (GPSSerial.available() > 0) gps.encode(GPSSerial.read());
+}
+
+bool sendGpsUpdate() {
+  processGpsInput();
+  WiFiClientSecure client;
+  client.setInsecure();
+  HTTPClient https;
+  if (!https.begin(client, GPS_INGEST_URL)) {
+    Serial.println("[GPS] HTTPS setup failed; check GPS_INGEST_URL.");
+    return false;
+  }
+
+  https.addHeader("Content-Type", "application/json");
+  https.addHeader("x-coldguard-device-id", DEVICE_ID);
+  https.addHeader("x-coldguard-device-token", DEVICE_SECRET_TOKEN);
+
+  StaticJsonDocument<384> doc;
+  doc["deviceId"] = DEVICE_ID;
+  doc["deviceToken"] = DEVICE_SECRET_TOKEN;
+  doc["shipmentId"] = ASSIGNED_SHIPMENT_ID;
+  const bool hasFix = gps.location.isValid() && gps.location.age() < 15000;
+  doc["hasFix"] = hasFix;
+  if (hasFix) {
+    doc["latitude"] = gps.location.lat();
+    doc["longitude"] = gps.location.lng();
+    doc["speedKmH"] = gps.speed.isValid() ? gps.speed.kmph() : 0;
+    doc["satellites"] = gps.satellites.isValid() ? gps.satellites.value() : 0;
+    doc["altitudeM"] = gps.altitude.isValid() ? gps.altitude.meters() : 0;
+    doc["gpsTimestamp"] = (uint64_t)millis();
+    Serial.printf("[GPS] Fix: %.6f, %.6f | satellites: %u\n",
+      gps.location.lat(), gps.location.lng(),
+      gps.satellites.isValid() ? gps.satellites.value() : 0);
+  } else {
+    Serial.println("[GPS] No valid satellite fix yet.");
+  }
+
+  String requestBody;
+  serializeJson(doc, requestBody);
+  const int httpCode = https.POST(requestBody);
+  const String responseBody = https.getString();
+  Serial.printf("[GPS] Ingestion HTTP %d: %s\n", httpCode, responseBody.c_str());
+  https.end();
+  return httpCode == 200;
+}
+
+/**
  * Fallback: Transmits directly to Firebase Realtime Database REST API
  * (Works without Cloud Functions deployment on free Spark plan)
  */
@@ -243,6 +307,8 @@ bool sendViaFirebaseRest(float tCore, float hCore, float tAmbient, float hAmbien
 }
 
 void loop() {
+  // Drain UART continuously so the ESP32 serial buffer doesn't overflow.
+  processGpsInput();
   unsigned long currentMillis = millis();
 
   // Check transmission interval
@@ -301,7 +367,9 @@ void loop() {
     // Flash LED on transmission
     digitalWrite(PIN_STATUS_LED, LOW);
 
-    // 4. Send Payload
+    // 4. Send live GPS separately; continue temperature upload even if GPS has no fix.
+    sendGpsUpdate();
+
     bool success = false;
     if (USE_HTTPS_CLOUD_FUNCTION) {
       success = sendViaCloudFunction(tCore, hCore, tAmbient, hAmbient, batteryMv, rssi);
