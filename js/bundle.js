@@ -71,7 +71,7 @@ const CHECKPOINTS = [
     name: "Pune Vaccine Cold-Chain Hub",
     type: "Regional Vaccine Cold-Storage Hub",
     lat: 18.5204,
-    lng: 73.8567, // Pittsburgh, PA
+    lng: 73.8567, // Pune, Maharashtra
     city: "Pune, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
@@ -80,7 +80,7 @@ const CHECKPOINTS = [
     supportedCategories: ["mRNA Ultra-Cold", "Frozen (-20°C)", "Standard Cold Chain (2°C - 8°C)", "Active Powered Cryo-Transport"],
     operatingStatus: "24/7 Operational",
     staffAvailability: "On-site Cold Chain Specialist (Dr. M. Vance, RPh)",
-    emergencyPhone: "+1 (412) 555-0192",
+    emergencyPhone: "+91 98765 43210",
     dockBayAvailable: "Bays 4 & 5 (Cryo-Transfer Equipped)",
     distanceKm: 28.4,
     travelTimeMinutes: 24,
@@ -91,7 +91,7 @@ const CHECKPOINTS = [
     name: "Mumbai Vaccine Distribution Centre",
     type: "Metro Vaccine Distribution Centre",
     lat: 19.076,
-    lng: 72.8777, // Harrisburg, PA
+    lng: 72.8777, // Mumbai, Maharashtra
     city: "Mumbai, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
@@ -100,7 +100,7 @@ const CHECKPOINTS = [
     supportedCategories: ["mRNA Ultra-Cold", "Frozen (-20°C)", "Standard Cold Chain (2°C - 8°C)"],
     operatingStatus: "24/7 Operational",
     staffAvailability: "Duty Logistics Officer (S. Chen)",
-    emergencyPhone: "+1 (717) 555-0348",
+    emergencyPhone: "+91 98765 43211",
     dockBayAvailable: "Bay 2 (Active Nitrogen Purge)",
     distanceKm: 64.2,
     travelTimeMinutes: 48,
@@ -111,7 +111,7 @@ const CHECKPOINTS = [
     name: "Nagpur Regional Medical Depot",
     type: "Regional Medical Cold-Storage Hub",
     lat: 21.1458,
-    lng: 79.0882, // Lancaster, PA
+    lng: 79.0882, // Nagpur, Maharashtra
     city: "Nagpur, Maharashtra",
     coldStorageAvailable: true,
     storageTiers: ["Frozen (-20°C)", "Standard (2-8°C)"],
@@ -151,7 +151,7 @@ const CHECKPOINTS = [
     name: "Hyderabad Cold-Chain Centre",
     type: "Regional Vaccine Cold-Storage Hub",
     lat: 17.385,
-    lng: 78.4867, // Cleveland, OH
+    lng: 78.4867, // Hyderabad, Telangana
     city: "Hyderabad, Telangana",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
@@ -171,7 +171,7 @@ const CHECKPOINTS = [
     name: "Bengaluru Vaccine Depot",
     type: "Regional Vaccine Cold-Storage Hub",
     lat: 12.9719,
-    lng: 77.5937, // Philadelphia, PA
+    lng: 77.5937, // Bengaluru, Karnataka
     city: "Bengaluru, Karnataka",
     coldStorageAvailable: true,
     storageTiers: ["Ultra-Cold (-80°C)", "Frozen (-20°C)", "Standard (2-8°C)"],
@@ -191,7 +191,7 @@ const CHECKPOINTS = [
     name: "Chennai Medical Distribution Hub",
     type: "Metro Medical Distribution Centre",
     lat: 13.0827,
-    lng: 80.2707, // Indianapolis, IN
+    lng: 80.2707, // Chennai, Tamil Nadu
     city: "Chennai, Tamil Nadu",
     coldStorageAvailable: true,
     storageTiers: ["Frozen (-20°C)", "Standard (2-8°C)"],
@@ -211,7 +211,7 @@ const CHECKPOINTS = [
     name: "Ahmedabad Vaccine Storage Hub",
     type: "Regional Vaccine Cold-Storage Hub",
     lat: 23.0225,
-    lng: 72.5714, // Natrona Heights / New Kensington, PA
+    lng: 72.5714, // Ahmedabad, Gujarat
     city: "Ahmedabad, Gujarat",
     coldStorageAvailable: true,
     storageTiers: ["Standard (2-8°C)"],
@@ -334,9 +334,9 @@ const INITIAL_SHIPMENTS = [
       { lat: 19.0760, lng: 72.8777, name: "Mumbai Vaccine Distribution Centre" }
     ],
     timeline: [
-      { time: "08:30", severity: "safe", desc: "Shipment dispatched from Kalamazoo Hub. Seal verified." },
+      { time: "08:30", severity: "safe", desc: "Shipment dispatched from Pune Vaccine Hub. Seal verified." },
       { time: "10:15", severity: "safe", desc: "GPS logger locked. Initial core temp: -78.2°C. Sensor health 100%." },
-      { time: "14:45", severity: "safe", desc: "Midpoint checkpoint cleared at Ohio border. Sub-zero telemetry nominal." },
+      { time: "14:45", severity: "safe", desc: "Midpoint checkpoint cleared at Amravati checkpoint. Sub-zero telemetry nominal." },
       { time: "17:35", severity: "warning", desc: "Approaching threshold alert: temp rose to -61.2°C." },
       { time: "17:42", severity: "critical", desc: "CRITICAL EXCURSION DETECTED: core temp breached -60.0°C ceiling." },
       { time: "17:55", severity: "critical", desc: "Automated alert pushed to Fleet Operations & Receiving Pharmacist." },
@@ -487,8 +487,8 @@ const INITIAL_SHIPMENTS = [
       { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
-      { time: "06:00", severity: "safe", desc: "Batch verified at Norwood facility. Core temp -22.1°C." },
-      { time: "11:30", severity: "safe", desc: "Entering Pennsylvania toll road. Logger battery 96%." },
+      { time: "06:00", severity: "safe", desc: "Batch verified at Mumbai distribution facility. Core temp -22.1°C." },
+      { time: "11:30", severity: "safe", desc: "Entering Mumbai-Pune Expressway. Logger battery 96%." },
       { time: "15:40", severity: "safe", desc: "Continuous sub-zero reading verified. Viability 99.1%." }
     ],
     history: generateSensorHistory(-21.2, -25.0, -15.0, 42.1, false, 25)
@@ -561,7 +561,7 @@ const INITIAL_SHIPMENTS = [
       { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
-      { time: "13:00", severity: "safe", desc: "Dispatched from Philadelphia. Humidity 52% RH." },
+      { time: "13:00", severity: "safe", desc: "Dispatched from Delhi. Humidity 52% RH." },
       { time: "16:20", severity: "warning", desc: "Humidity climbed past 65% limit to 78.4% RH. Condensation suspected." },
       { time: "16:30", severity: "warning", desc: "Secondary alert: Desiccant packet check requested." }
     ],
@@ -722,7 +722,7 @@ const INITIAL_SHIPMENTS = [
     vaccineType: "Live Attenuated Mycobacterium bovis",
     vaccineCategory: "standard_cold_chain",
     manufacturer: "Serum Institute of India / Sanofi Pasteur",
-    batchNumber: "BCG-902-PA",
+    batchNumber: "BCG-902-IN",
     doses: 30000,
     packagingType: "Insulated Polyurethane Shipper with Ice Packs",
     storageRequirement: "Refrigerated (+2°C to +8°C) - DO NOT FREEZE",
@@ -843,7 +843,7 @@ const INITIAL_SHIPMENTS = [
     predictedSpoilageRiskPercent: 0.4,
     riskClassification: "Low",
     predictedDelay: "On Time",
-    recommendedNextAction: "Prepare receiving freezer at Johns Hopkins Hospital.",
+    recommendedNextAction: "Prepare receiving freezer at Jaipur Regional Hospital.",
 
     nearestCheckpointId: "CP-02",
     routeDeviationDetected: false,
@@ -855,7 +855,7 @@ const INITIAL_SHIPMENTS = [
     ],
     timeline: [
       { time: "07:15", severity: "safe", desc: "Pre-conditioned cold pack verification passed." },
-      { time: "12:00", severity: "safe", desc: "Virginia transit on schedule. Core temp -22.4°C." }
+      { time: "12:00", severity: "safe", desc: "Gujarat transit on schedule. Core temp -22.4°C." }
     ],
     history: generateSensorHistory(-22.4, -25.0, -15.0, 38.5, false, 25)
   },
@@ -1067,7 +1067,7 @@ const INITIAL_SHIPMENTS = [
       { lat: 23.0225, lng: 72.5714, name: "Ahmedabad Vaccine Logistics Hub" }
     ],
     timeline: [
-      { time: "06:00", severity: "safe", desc: "Dispatched from King of Prussia warehouse." },
+      { time: "06:00", severity: "safe", desc: "Dispatched from Nagpur warehouse." },
       { time: "10:14", severity: "safe", desc: "Dock delivery completed; physical temp assay passed at 4.1°C." }
     ],
     history: generateSensorHistory(4.1, 2.0, 8.0, 44.5, false, 25)
@@ -1138,10 +1138,10 @@ const INITIAL_SHIPMENTS = [
       { lat: 26.9124, lng: 75.7873, name: "Jaipur Regional Vaccine Centre" }
     ],
     timeline: [
-      { time: "04:30", severity: "safe", desc: "Dispatched from St. Louis Hub." },
+      { time: "04:30", severity: "safe", desc: "Dispatched from Ahmedabad Hub." },
       { time: "16:40", severity: "warning", desc: "Cooling unit compressor pressure drop detected." },
       { time: "17:15", severity: "critical", desc: "Core temp rose above -60°C. ColdGuard auto-calculated nearest hub." },
-      { time: "17:22", severity: "safe", desc: "Emergency reroute executed to Apex Cryo-Depot (CP-01)." }
+      { time: "17:22", severity: "safe", desc: "Emergency reroute executed to Pune Cryo Depot (CP-01)." }
     ],
     history: generateSensorHistory(-58.9, -90.0, -60.0, 41.0, true, 26)
   },
