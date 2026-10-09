@@ -540,8 +540,18 @@
       const blob=doc.output("blob");
       const filename="ColdGuard-Quality-"+String(shipment.id).replace(/[^a-zA-Z0-9_-]/g,"_")+"-"+data.reportId+".pdf";
       doc.save(filename);
+      let pdfUrl=null;
+      if(window.firebase && window.firebase.storage && currentUser()) {
+        try {
+          const pdfRef=window.firebase.storage().ref("shipment-reports/"+shipment.id+"/"+data.reportId+".pdf");
+          const uploaded=await pdfRef.put(blob,{contentType:"application/pdf",customMetadata:{shipmentId:String(shipment.id),reportId:data.reportId,reportVersion:data.version}});
+          pdfUrl=await uploaded.ref.getDownloadURL();
+        } catch(uploadError) {
+          console.warn("PDF file upload failed; retaining evidence snapshot only.",uploadError);
+        }
+      }
       const historical={
-        reportId:data.reportId,version:data.version,generatedAt:data.generatedAt,
+        reportId:data.reportId,version:data.version,generatedAt:data.generatedAt,pdfUrl:pdfUrl,
         shipmentId:String(shipment.id),status:data.temp.status,assessmentExplanation:data.temp.explanation,
         summary:{
           minAllowedTemperature:data.temp.min,maxAllowedTemperature:data.temp.max,
@@ -556,7 +566,7 @@
           gps:data.gps.points.map(p=>({timestamp:p.timestamp,lat:p.lat,lng:p.lng,source:p.source})),
           gpsGaps:data.gps.gaps
         },
-        pdfStorage:"Download generated locally; historical evidence snapshot preserved in Firebase."
+        pdfStorage:pdfUrl?"PDF stored in Firebase Storage; evidence snapshot stored in Realtime Database.":"PDF download completed locally; evidence snapshot stored in Realtime Database. Storage upload may require Firebase Storage rules/configuration."
       };
       // Keep an immutable per-report evidence snapshot. PDF itself remains downloaded locally
       // to avoid oversized RTDB records and to avoid implying Cloud Storage was configured.
