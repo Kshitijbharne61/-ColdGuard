@@ -1,0 +1,9 @@
+{
+  "name": "coldguard-gps-ingestion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dependencies for ColdGuard Vercel GPS ingestion API",
+  "dependencies": {
+    "firebase-admin": "^13.5.0"
+  }
+}
