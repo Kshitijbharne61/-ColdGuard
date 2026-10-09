@@ -6,7 +6,7 @@
 // "Protect Every Dose. Predict Every Excursion."
 // ============================================================================
 
-export const VACCINE_PROFILES = {
+const VACCINE_PROFILES = {
   mrna_ultra_cold: {
     categoryName: "mRNA Ultra-Cold",
     shortCode: "mRNA-ULT",
@@ -65,7 +65,7 @@ export const VACCINE_PROFILES = {
   }
 };
 
-export const CHECKPOINTS = [
+const CHECKPOINTS = [
   {
     id: "CP-01",
     name: "Pune Vaccine Cold-Chain Hub",
@@ -266,7 +266,7 @@ function generateSensorHistory(baseTemp, minAllowed, maxAllowed, baseHumidity, i
   return history;
 }
 
-export const INITIAL_SHIPMENTS = [
+const INITIAL_SHIPMENTS = [
   {
     // 1. Critical Excursion in Progress
     id: "CG-9021-PFZ",
@@ -1195,7 +1195,7 @@ export const INITIAL_SHIPMENTS = [
   }
 ];
 
-export const WHO_AUDIT_STANDARDS = {
+const WHO_AUDIT_STANDARDS = {
   standardName: "WHO Technical Report Series No. 961, Annex 9 / PQS E006",
   complianceStatement: "Model guideline for the storage and transport of time- and temperature-sensitive pharmaceutical products (TTSPPs).",
   guidelineLimits: {
@@ -2084,7 +2084,7 @@ class SimulationEngine {
 // Leaflet Map with Custom High-Resolution Markers & Schematic Fallback
 // ============================================================================
 
-export class RouteMapView {
+class RouteMapView {
   constructor(containerId, options = {}) {
     this.containerId = containerId;
     this.options = options;
@@ -4082,15 +4082,13 @@ class AuthUiManager {
 // "Protect Every Dose. Predict Every Excursion."
 // ============================================================================
 
-import { VACCINE_PROFILES, CHECKPOINTS, INITIAL_SHIPMENTS } from "./data/mockData.js";
-import { SimulationEngine } from "./engine/simulationEngine.js";
-import { RouteMapView } from "./components/mapView.js";
-import { TelemetryCharts } from "./components/charts.js";
-import { ModalManager } from "./components/modals.js";
-import { ViabilityModel } from "./engine/viabilityModel.js";
-import { FirebaseAuthService } from "./auth/firebaseAuth.js";
-import { FirebaseDatabaseService } from "./database/firebaseDatabase.js";
-import { AuthUiManager } from "./auth/authUi.js";
+
+
+
+
+
+
+
 
 class ColdGuardApp {
   constructor() {
