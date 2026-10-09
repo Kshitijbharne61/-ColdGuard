@@ -18,7 +18,7 @@ class ColdGuardApp {
     this.vaccineProfiles = JSON.parse(JSON.stringify(VACCINE_PROFILES));
     this.checkpoints = CHECKPOINTS;
     this.currentView = "dashboard"; // "dashboard" | "shipments" | "details" | "excursion_engine" | "viability_lab" | "checkpoints"
-    this.selectedShipmentId = "CG-9021-PFZ"; // default critical shipment
+    this.selectedShipmentId = "CG-IN-1301-COV"; // default India demo vaccine shipment
     this.soundAlertsEnabled = false;
 
     // Filters for Shipment table
