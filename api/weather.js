@@ -1,6 +1,6 @@
 // ColdGuard weather endpoint. Uses genuine Open-Meteo forecast data; no API key required.
 // No forecast is fabricated when the upstream service is unavailable.
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=60");
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
   const lat = Number(req.query?.lat);
