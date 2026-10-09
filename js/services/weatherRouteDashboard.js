@@ -7,7 +7,7 @@
   const STALE_AFTER_MS = 120000;
   const WEATHER_REFRESH_MS = 15 * 60 * 1000;
   const ROUTE_REFRESH_MS = 10 * 60 * 1000;
-  const state = { app: null, records: [], connected: false, map: null, layers: [], lastWeatherAt: 0, lastRouteAt: 0, lastOrigin: null, lastRouteKey: "", busy: false, observer: null };
+  const state = { app: null, records: [], connected: false, map: null, layers: [], lastWeatherAt: 0, lastWeatherData: null, lastRouteAt: 0, lastOrigin: null, lastRouteKey: "", lastRoutes: [], selectedSensorId: "", selectedDestinationId: "", recommendedId: null, busy: false, observer: null };
 
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
   const num = value => value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value)) ? Number(value) : null;
@@ -28,7 +28,7 @@
   const humidityOf = r => num(r?.telemetry?.live?.humidity ?? r?.currentHumidity ?? r?.humidity);
   const batteryOf = r => num(r?.telemetry?.live?.batteryLevel ?? r?.batteryLevel ?? r?.battery);
   const selectedRecord = () => {
-    const id = String(state.app?.selectedShipmentId || "");
+    const id = String(state.selectedSensorId || state.app?.selectedShipmentId || "");
     return state.records.find(r => String(r.id || r.shipmentId) === id) || state.records.find(r => coordsOf(r)) || state.records[0] || null;
   };
   const fmtTime = t => t ? new Date(t).toLocaleString() : "Timestamp not supplied";
@@ -164,14 +164,14 @@
     const cp=(state.app?.checkpoints||[]).find(c=>String(c.id)===String(select?.value));
     if(!cp||!Number.isFinite(Number(cp.lat))||!Number.isFinite(Number(cp.lng))){out.textContent="Choose a destination with valid coordinates.";return;}
     const key=[gps.lat.toFixed(4),gps.lon.toFixed(4),cp.lat,cp.lng].join("|");
-    if(!force&&key===state.lastRouteKey&&Date.now()-state.lastRouteAt<ROUTE_REFRESH_MS)return;
+    if(!force&&key===state.lastRouteKey&&Date.now()-state.lastRouteAt<ROUTE_REFRESH_MS){renderMap(record,state.lastRoutes);return;}
     out.textContent="Comparing road alternatives and sampling live weather along each route…";
     try{
       const q=new URLSearchParams({originLat:String(gps.lat),originLon:String(gps.lon),destLat:String(cp.lat),destLon:String(cp.lng)});
       const response=await fetch("/api/routes?"+q.toString(),{headers:{Accept:"application/json"}});
       const data=await response.json();if(!response.ok)throw new Error(data.error||"Route provider error");
-      state.recommendedId=data.recommendedId;state.lastRouteAt=Date.now();state.lastRouteKey=key;
-      renderMap(record,data.routes||[]);
+      state.recommendedId=data.recommendedId;state.lastRouteAt=Date.now();state.lastRouteKey=key;state.lastRoutes=data.routes||[];
+      renderMap(record,state.lastRoutes);
       out.innerHTML=(data.routes||[]).map((route,i)=>'<div class="border '+(route.id===data.recommendedId?"border-emerald-300 bg-emerald-50":"border-slate-200 bg-white")+' rounded-lg p-3 mb-2"><div class="flex items-center justify-between gap-2"><b class="text-xs">'+(route.id===data.recommendedId?"Recommended":"Alternative "+(i+1))+'</b><span class="text-[10px] font-bold">'+(route.weatherRiskScore===null?"Weather unavailable":"Weather risk "+route.weatherRiskScore+"/100")+'</span></div><div class="text-xs text-slate-600 mt-1">'+esc(route.distanceKm)+' km · '+esc(route.durationMinutes)+' min estimated</div><div class="text-[10px] text-slate-500 mt-1">'+(route.weatherAvailable?"Forecast sampled at route points":"Route available, but weather scoring unavailable")+'</div></div>').join("")||"No route alternatives returned.";
       if(!data.recommendedId)out.innerHTML+='<div class="text-xs text-amber-700">No weather-based recommendation: forecast data was unavailable.</div>';
       out.innerHTML+='<p class="text-[10px] text-slate-500 mt-2">'+esc(data.disclaimer||"Weather-aware guidance only; not a road-safety guarantee.")+'</p>';
@@ -186,11 +186,13 @@
     const panel=document.getElementById("coldguard-live-route-panel");if(!panel)return;
     ensureMap();
     const shipment=document.getElementById("coldguard-live-shipment");
-    if(shipment)shipment.onchange=()=>{state.app.selectedShipmentId=shipment.value;renderPanel();};
+    if(shipment)shipment.onchange=()=>{state.selectedSensorId=shipment.value;state.lastWeatherAt=0;state.lastRouteKey="";state.lastRoutes=[];renderPanel();};
     const destination=document.getElementById("coldguard-destination");
-    if(destination)destination.onchange=()=>loadRoutes(true);
+    if(destination)destination.onchange=()=>{state.selectedDestinationId=destination.value;state.lastRouteKey="";state.lastRoutes=[];loadRoutes(true);};
     const recalc=document.getElementById("coldguard-recalculate");
     if(recalc)recalc.onclick=()=>{state.lastWeatherAt=0;state.lastRouteAt=0;loadWeather(true);loadRoutes(true);};
+    if(state.lastRoutes.length)renderMap(selectedRecord(),state.lastRoutes);
+    if(state.lastWeatherData)renderWeather(state.lastWeatherData);
     loadWeather(false);loadRoutes(false);updateAlerts();
   }
 
