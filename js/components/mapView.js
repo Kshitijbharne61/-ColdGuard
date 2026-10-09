@@ -13,6 +13,10 @@ export class RouteMapView {
     this.allCheckpoints = [];
     this.onSelectCheckpoint = options.onSelectCheckpoint || null;
     this.isLeafletLoaded = typeof window.L !== "undefined";
+    this.containerElement = null;
+    this.shipmentChanged = false;
+    this.fitRouteRequested = false;
+    this.resizeObserver = null;
 
     this.init();
   }
@@ -20,12 +24,14 @@ export class RouteMapView {
   init() {
     const el = document.getElementById(this.containerId);
     if (!el) return;
+    this.containerElement = el;
 
     if (this.isLeafletLoaded && window.L) {
       try {
-        this.map = window.L.map(this.containerId, {
-          zoomControl: true,
-          attributionControl: false
+        this.map = window.L.map(el, {
+          zoomControl: false,
+          attributionControl: false,
+          preferCanvas: true
         }).setView([22.5, 79.0], 5);
 
         // Clean OpenStreetMap tiles with custom styling class
@@ -35,10 +41,15 @@ export class RouteMapView {
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(this.map);
 
-        // Window resize handler
-        setTimeout(() => {
-          if (this.map) this.map.invalidateSize();
-        }, 200);
+        this.addTrackingControls();
+        const invalidate = () => { if (this.map) this.map.invalidateSize({ pan: false }); };
+        window.addEventListener("resize", invalidate);
+        this._resizeHandler = invalidate;
+        if (typeof ResizeObserver !== "undefined") {
+          this.resizeObserver = new ResizeObserver(invalidate);
+          this.resizeObserver.observe(el);
+        }
+        setTimeout(invalidate, 200);
       } catch (err) {
         console.warn("Leaflet tile init error, falling back to schematic canvas", err);
         this.initSchematicFallback(el);
@@ -46,6 +57,56 @@ export class RouteMapView {
     } else {
       this.initSchematicFallback(el);
     }
+  }
+
+  addTrackingControls() {
+    if (!this.map || !window.L) return;
+    const control = window.L.control({ position: "topleft" });
+    control.onAdd = () => {
+      const wrap = window.L.DomUtil.create("div", "leaflet-bar coldguard-map-controls");
+      wrap.style.cssText = "display:flex;flex-direction:column;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px #0002";
+      wrap.innerHTML = [['cg-zoom-in','+','Zoom in'],['cg-zoom-out','−','Zoom out'],['cg-recenter','◎','Recenter'],['cg-fit-route','↔','Fit route']].map(([id,label,title]) => '<button type="button" id="'+id+'" title="'+title+'" aria-label="'+title+'" style="width:36px;height:34px;border:0;border-bottom:1px solid #e2e8f0;background:white;color:#0f172a;font-size:18px;font-weight:700;cursor:pointer">'+label+'</button>').join('');
+      window.L.DomEvent.disableClickPropagation(wrap);
+      window.L.DomEvent.disableScrollPropagation(wrap);
+      window.L.DomEvent.on(wrap.querySelector("#cg-zoom-in"), "click", () => this.map && this.map.zoomIn());
+      window.L.DomEvent.on(wrap.querySelector("#cg-zoom-out"), "click", () => this.map && this.map.zoomOut());
+      window.L.DomEvent.on(wrap.querySelector("#cg-recenter"), "click", () => this.recenter());
+      window.L.DomEvent.on(wrap.querySelector("#cg-fit-route"), "click", () => this.fitRoute());
+      return wrap;
+    };
+    control.addTo(this.map);
+    this.trackingControl = control;
+  }
+
+  recenter() {
+    if (!this.map) return;
+    const s = this.currentShipment, loc = s && s.location || {};
+    const lat = Number(loc.latitude ?? (s && s.gpsLatitude));
+    const lng = Number(loc.longitude ?? (s && s.gpsLongitude));
+    if (!(loc.isLiveGps === true && loc.hasFix === false) && Number.isFinite(lat) && Number.isFinite(lng) && lat >= 6 && lat <= 38 && lng >= 68 && lng <= 98) {
+      this.map.setView([lat, lng], Math.max(this.map.getZoom(), 10), { animate: true });
+    } else this.map.setView([22.5, 79.0], 5, { animate: true });
+  }
+
+  fitRoute() {
+    if (!this.map || !window.L) return;
+    const s = this.currentShipment, points = [];
+    const valid = (lat,lng) => Number.isFinite(Number(lat)) && Number.isFinite(Number(lng)) && Number(lat) >= 6 && Number(lat) <= 38 && Number(lng) >= 68 && Number(lng) <= 98;
+    (s && Array.isArray(s.routeWaypoints) ? s.routeWaypoints : []).forEach(w => { if (w && valid(w.lat,w.lng)) points.push([Number(w.lat),Number(w.lng)]); });
+    const loc = s && s.location || {}, lat = Number(loc.latitude ?? (s && s.gpsLatitude)), lng = Number(loc.longitude ?? (s && s.gpsLongitude));
+    if (!(loc.isLiveGps === true && loc.hasFix === false) && valid(lat,lng)) points.push([lat,lng]);
+    if (points.length > 1) this.map.fitBounds(window.L.latLngBounds(points), { padding:[36,36], maxZoom:11, animate:true });
+    else if (points.length === 1) this.map.setView(points[0],10,{animate:true});
+    else this.map.setView([22.5,79.0],5,{animate:true});
+    this.fitRouteRequested = false;
+    this.shipmentChanged = false;
+  }
+
+  destroy() {
+    if (this.resizeObserver) { this.resizeObserver.disconnect(); this.resizeObserver = null; }
+    if (this._resizeHandler) window.removeEventListener("resize", this._resizeHandler);
+    if (this.map) { this.map.remove(); this.map = null; }
+    this.layers = [];
   }
 
   initSchematicFallback(container) {
@@ -61,8 +122,12 @@ export class RouteMapView {
   }
 
   renderShipment(shipment, checkpoints) {
-    this.currentShipment = shipment;
+    const nextId = shipment && String(shipment.id || shipment.shipmentId || "");
+    const currentId = this.currentShipment && String(this.currentShipment.id || this.currentShipment.shipmentId || "");
+    this.shipmentChanged = !this.currentShipment || nextId !== currentId;
+    this.currentShipment = shipment || null;
     this.allCheckpoints = checkpoints || [];
+    if (!shipment) { if (this.map) this.map.setView([22.5,79.0],5); return; }
 
     if (this.map && window.L) {
       this.renderLeaflet(shipment, checkpoints);
@@ -151,7 +216,6 @@ export class RouteMapView {
       });
 
       this.layers.push(marker);
-      bounds.push([cp.lat, cp.lng]);
     });
 
     // 2. Plot Route Waypoints & Lines
@@ -245,7 +309,7 @@ export class RouteMapView {
           <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${statusColor}"></span>
           ${shipment.id} — ${shipment.vaccineName || "Shipment"}
         </div>
-        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation || "Live sensor location"}</div>
+        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation || "Reported location"} · ${(liveLocation.isLiveGps === true || shipment.gpsSource === "live") ? "LIVE GPS" : "DEMO GPS — not live"}</div>
         <div class="mt-2 text-xs font-mono">${gpsLatitude.toFixed(6)}, ${gpsLongitude.toFixed(6)}</div>
         <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-xs">
           <div><span class="text-slate-400">Current Temp:</span> <b class="font-mono ${isCritical ? 'text-red-600' : 'text-slate-800'}">${shipment.currentTemperature ?? "—"}°C</b></div>
@@ -271,14 +335,8 @@ export class RouteMapView {
       this.layers.push(gpsNotice);
     }
 
-    // Fit map bounds smoothly
-    if (bounds.length > 0) {
-      try {
-        this.map.fitBounds(bounds, { padding: [50, 50], maxZoom: 10 });
-      } catch (e) {
-        // Safe catch
-      }
-    }
+    // Do not reset view for every GPS/telemetry refresh.
+    if (this.shipmentChanged || this.fitRouteRequested) this.fitRoute();
   }
 
   renderCanvasSchematic(shipment, checkpoints) {
