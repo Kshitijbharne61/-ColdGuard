@@ -1,0 +1,17 @@
+# Dependencies and generated build output
+node_modules/
+functions/node_modules/
+.vercel/
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Local Firebase and provider secrets - never commit
+.env
+.env.*
+functions/.env
+functions/.env.*
+!.env.example
+!functions/.env.example
+service-account*.json
+*-service-account*.json
