@@ -47,9 +47,9 @@ module.exports = async function handler(req, res) {
           outageStartedAt: state.outageStartedAt || null, lastCheckedAt: state.lastCheckedAt || null,
           lastEventId: state.lastEventId || null,
           contacts: {
-            driver: maskPhone((contacts[shipmentId] || contacts.default || {}).driverPhone),
-            emergency: maskPhone((contacts[shipmentId] || contacts.default || {}).emergencyPhone),
-            agency: maskPhone((contacts[shipmentId] || contacts.default || {}).agencyPhone || (contacts[shipmentId] || contacts.default || {}).controlRoomPhone)
+            driver: { name: (contacts[shipmentId] || contacts.default || {}).driverName || shipment.driverName || shipment.assignedDriver || "Driver", phone: maskPhone((contacts[shipmentId] || contacts.default || {}).driverPhone) },
+            emergency: { name: (contacts[shipmentId] || contacts.default || {}).emergencyName || "Emergency contact", phone: maskPhone((contacts[shipmentId] || contacts.default || {}).emergencyPhone) },
+            agency: { name: (contacts[shipmentId] || contacts.default || {}).agencyName || "Transport agency / control room", phone: maskPhone((contacts[shipmentId] || contacts.default || {}).agencyPhone || (contacts[shipmentId] || contacts.default || {}).controlRoomPhone) }
           }
         };
       });
