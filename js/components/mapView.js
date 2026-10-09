@@ -75,7 +75,10 @@ export class RouteMapView {
     if (!this.map) return;
 
     // Clear previous markers & polylines
-    this.layers.forEach(l => this.map.removeLayer(l));
+    this.layers.forEach(l => {
+      if (l && typeof l.remove === "function") l.remove();
+      else this.map.removeLayer(l);
+    });
     this.layers = [];
 
     const bounds = [];
