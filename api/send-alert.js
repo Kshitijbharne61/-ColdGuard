@@ -1,21 +1,12 @@
-const admin = require("firebase-admin");
-function appAdmin() {
- if(admin.apps.length)return admin.app();
- const raw=process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
- if(!raw)throw Error("Missing FIREBASE_SERVICE_ACCOUNT_JSON");
- let sa;try{sa=JSON.parse(raw);}catch(e){throw Error("FIREBASE_SERVICE_ACCOUNT_JSON must be valid JSON");}
- admin.initializeApp({credential:admin.credential.cert(sa),databaseURL:process.env.FIREBASE_DATABASE_URL||"https://coldguard-fdfc5-default-rtdb.asia-southeast1.firebasedatabase.app"});
- return admin.app();
-}
 function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]);});}
 module.exports=async function(req,res){
  res.setHeader("Cache-Control","no-store");
  if(req.method!=="POST")return res.status(405).json({error:"Method not allowed"});
- const key=process.env.RESEND_API_KEY,to=process.env.ALERT_EMAIL_TO,from=process.env.ALERT_FROM_EMAIL;
- if(!key||!to||!from)return res.status(503).json({error:"Email is not configured. Add RESEND_API_KEY, ALERT_EMAIL_TO, ALERT_FROM_EMAIL and FIREBASE_SERVICE_ACCOUNT_JSON in Vercel."});
+ const key=process.env.RESEND_API_KEY,to=process.env.ALERT_EMAIL_TO,from=process.env.ALERT_FROM_EMAIL,webApiKey=process.env.FIREBASE_WEB_API_KEY;
+ if(!key||!to||!from||!webApiKey)return res.status(503).json({error:"Email is not configured. Add RESEND_API_KEY, ALERT_EMAIL_TO, ALERT_FROM_EMAIL and FIREBASE_WEB_API_KEY in Vercel."});
  const h=req.headers.authorization||"",token=h.indexOf("Bearer ")===0?h.slice(7):"";
  if(!token)return res.status(401).json({error:"Sign in is required to send email alerts."});
- let user;try{user=await appAdmin().auth().verifyIdToken(token);}catch(e){console.error("ColdGuard auth verification failed",e.message);return res.status(503).json({error:"Firebase Admin authentication is not configured correctly in Vercel."});}
+ let user;try{const vr=await fetch("https://identitytoolkit.googleapis.com/v1/accounts:lookup?key="+encodeURIComponent(webApiKey),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({idToken:token})});const vd=await vr.json().catch(function(){return {};});if(!vr.ok||!vd.users||!vd.users.length)return res.status(401).json({error:"Firebase session is invalid or expired. Sign in again."});user={uid:vd.users[0].localId,email:vd.users[0].email};}catch(e){console.error("ColdGuard auth verification failed",e.message);return res.status(502).json({error:"Could not verify the Firebase session."});}
  const b=req.body||{},test=b.type==="test",id=String(b.shipmentId||"").slice(0,100);
  if(!test&&b.type!=="temperature_excursion")return res.status(400).json({error:"Unsupported alert type."});
  if(!test&&(!id||!Number.isFinite(Number(b.temperature))))return res.status(400).json({error:"Shipment ID and valid temperature are required."});
