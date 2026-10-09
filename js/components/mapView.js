@@ -79,6 +79,13 @@ export class RouteMapView {
     this.layers = [];
 
     const bounds = [];
+    const liveLocation = shipment.location || {};
+    const explicitNoFix = liveLocation.isLiveGps === true && liveLocation.hasFix === false;
+    const gpsLatitude = explicitNoFix ? null : Number(liveLocation.latitude ?? shipment.gpsLatitude);
+    const gpsLongitude = explicitNoFix ? null : Number(liveLocation.longitude ?? shipment.gpsLongitude);
+    const hasValidGps = Number.isFinite(gpsLatitude) && Number.isFinite(gpsLongitude)
+      && gpsLatitude >= -90 && gpsLatitude <= 90
+      && gpsLongitude >= -180 && gpsLongitude <= 180;
     const isCritical = shipment.excursionSeverity === "Critical" || shipment.riskClassification === "Critical";
     const isWarning = shipment.excursionSeverity === "Warning" || shipment.riskClassification === "High Risk";
     const statusColor = isCritical ? "#EF4444" : (isWarning ? "#F59E0B" : "#10B981");
@@ -180,11 +187,11 @@ export class RouteMapView {
       latlngs.forEach(ll => bounds.push(ll));
     }
 
-    // 3. Line from current position to nearest checkpoint
+    // 3. Line from current position to nearest checkpoint (requires a valid GPS fix)
     const nearest = checkpoints.find(c => c.id === shipment.nearestCheckpointId);
-    if (nearest) {
+    if (nearest && hasValidGps) {
       const diversionLine = window.L.polyline([
-        [shipment.gpsLatitude, shipment.gpsLongitude],
+        [gpsLatitude, gpsLongitude],
         [nearest.lat, nearest.lng]
       ], {
         color: "#6366F1",
@@ -195,7 +202,9 @@ export class RouteMapView {
       this.layers.push(diversionLine);
     }
 
-    // 4. Current Moving Shipment Position Marker
+    // 4. Current position marker. Don't show stale/demo coordinates if the device
+    // explicitly reports that it has no satellite fix.
+    if (hasValidGps) {
     const vehicleIcon = window.L.divIcon({
       className: "custom-vehicle-marker",
       html: `
@@ -212,24 +221,39 @@ export class RouteMapView {
       iconAnchor: [18, 18]
     });
 
-    const vehicleMarker = window.L.marker([shipment.gpsLatitude, shipment.gpsLongitude], { icon: vehicleIcon }).addTo(this.map);
+    const vehicleMarker = window.L.marker([gpsLatitude, gpsLongitude], { icon: vehicleIcon }).addTo(this.map);
+    const gpsTime = liveLocation.lastUpdated ? new Date(liveLocation.lastUpdated).toLocaleString() : "Not reported";
     vehicleMarker.bindPopup(`
       <div class="p-2 text-slate-800 font-sans max-w-xs">
         <div class="flex items-center gap-1.5 font-bold text-sm text-slate-900">
           <span class="w-2.5 h-2.5 rounded-full" style="background-color: ${statusColor}"></span>
-          ${shipment.id} — ${shipment.vaccineName}
+          ${shipment.id} — ${shipment.vaccineName || "Shipment"}
         </div>
-        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation}</div>
+        <div class="text-xs text-slate-500 mt-1">${shipment.currentLocation || "Live sensor location"}</div>
+        <div class="mt-2 text-xs font-mono">${gpsLatitude.toFixed(6)}, ${gpsLongitude.toFixed(6)}</div>
         <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 text-xs">
-          <div><span class="text-slate-400">Current Temp:</span> <b class="font-mono ${isCritical ? 'text-red-600' : 'text-slate-800'}">${shipment.currentTemperature}°C</b></div>
-          <div><span class="text-slate-400">Viability:</span> <b>${shipment.estimatedViabilityPercent}%</b></div>
-          <div><span class="text-slate-400">Remaining:</span> <b>${shipment.routeDistanceRemainingKm} km</b></div>
-          <div><span class="text-slate-400">Status:</span> <b>${shipment.status}</b></div>
+          <div><span class="text-slate-400">Current Temp:</span> <b class="font-mono ${isCritical ? 'text-red-600' : 'text-slate-800'}">${shipment.currentTemperature ?? "—"}°C</b></div>
+          <div><span class="text-slate-400">Viability:</span> <b>${shipment.estimatedViabilityPercent ?? "—"}%</b></div>
+          <div><span class="text-slate-400">GPS speed:</span> <b>${liveLocation.speedKmH ?? "—"} km/h</b></div>
+          <div><span class="text-slate-400">Satellites:</span> <b>${liveLocation.satellites ?? "—"}</b></div>
+          <div><span class="text-slate-400">GPS updated:</span> <b>${gpsTime}</b></div>
+          <div><span class="text-slate-400">Status:</span> <b>${shipment.status || "Tracking"}</b></div>
         </div>
       </div>
     `);
     this.layers.push(vehicleMarker);
-    bounds.push([shipment.gpsLatitude, shipment.gpsLongitude]);
+    bounds.push([gpsLatitude, gpsLongitude]);
+    } else {
+      const gpsNotice = window.L.control({ position: "topright" });
+      gpsNotice.onAdd = () => {
+        const div = window.L.DomUtil.create("div", "leaflet-bar");
+        div.style.cssText = "background:#fff;padding:8px 10px;border-radius:8px;font-size:11px;color:#b45309;max-width:220px;box-shadow:0 1px 5px #0002";
+        div.textContent = "GPS fix unavailable — waiting for sensor coordinates";
+        return div;
+      };
+      gpsNotice.addTo(this.map);
+      this.layers.push(gpsNotice);
+    }
 
     // Fit map bounds smoothly
     if (bounds.length > 0) {
