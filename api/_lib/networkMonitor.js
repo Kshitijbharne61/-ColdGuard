@@ -27,8 +27,8 @@ async function requireUser(req, { adminOnly = false } = {}) {
     err.status = 401;
     throw err;
   }
-  const decoded = await admin.auth().verifyIdToken(match[1]);
   const db = getDatabase();
+  const decoded = await admin.auth().verifyIdToken(match[1]);
   const profile = (await db.ref("users/" + decoded.uid).once("value")).val() || {};
   const isAdmin = profile.role === "admin" || profile.role === "system_admin";
   if (adminOnly && !isAdmin) {
