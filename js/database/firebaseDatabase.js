@@ -206,19 +206,18 @@ export class FirebaseDatabaseService {
       }
       updates[`shipments/${shipmentId}/telemetry/live`] = livePayload;
 
-      // Keep a bounded rolling history: one actual sensor sample per minute for the latest 120 minutes.
-      // Refreshing the current minute slot avoids an unbounded stream of new history records.
-      if (reading.temperature !== null && reading.temperature !== undefined && Number.isFinite(Number(reading.temperature))) {
+      // Keep a bounded rolling history: one sample per minute for the latest 120 minutes.
+      // Write only channels actually supplied by the sensor ingestion layer.
+      const typedKeys = ["airTemperature", "liquidTemperature", "vialTemperature", "ambientTemperature", "coreTemperature",
+        "airSensorId", "liquidSensorId", "vialSensorId", "ambientSensorId", "coreSensorId",
+        "sensorRole", "sensorType", "measurementType"];
+      const hasGenericTemp = reading.temperature !== null && reading.temperature !== undefined && Number.isFinite(Number(reading.temperature));
+      const hasTypedTemp = typedKeys.some((key) => /Temperature$/.test(key) && reading[key] !== undefined && reading[key] !== null && Number.isFinite(Number(reading[key])));
+      if (hasGenericTemp || hasTypedTemp) {
         const minuteSlot = String(Math.floor(now / 60000) % 120);
-        const historySample = {
-          temperature: Number(reading.temperature),
-          timestamp: now,
-          source: "sensor"
-        };
-        // Preserve explicitly supplied, typed channels in history; absent channels remain absent.
-        ["airTemperature", "liquidTemperature", "vialTemperature", "ambientTemperature", "coreTemperature",
-         "airSensorId", "liquidSensorId", "vialSensorId", "ambientSensorId", "coreSensorId",
-         "sensorRole", "sensorType", "measurementType"].forEach((key) => {
+        const historySample = { timestamp: now, source: "sensor" };
+        if (hasGenericTemp) historySample.temperature = Number(reading.temperature);
+        typedKeys.forEach((key) => {
           if (reading[key] !== undefined && reading[key] !== null) historySample[key] = reading[key];
         });
         updates[`shipments/${shipmentId}/telemetry/history/${minuteSlot}`] = historySample;
