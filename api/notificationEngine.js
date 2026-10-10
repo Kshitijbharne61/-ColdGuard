@@ -171,7 +171,10 @@ async function fcmAccessToken() {
   const header=base64url(JSON.stringify({ alg:"RS256", typ:"JWT" }));
   const claim=base64url(JSON.stringify({ iss:email, scope:"https://www.googleapis.com/auth/firebase.messaging", aud:"https://oauth2.googleapis.com/token", iat:now, exp:now+3600 }));
   const unsigned=header+"."+claim;
-  const signature=crypto.createSign("RSA-SHA256").update(unsigned).end().sign(privateKey).toString("base64url");
+  const signer=crypto.createSign("RSA-SHA256");
+  signer.update(unsigned);
+  signer.end();
+  const signature=signer.sign(privateKey).toString("base64url");
   const assertion=unsigned+"."+signature;
   const response=await fetch("https://oauth2.googleapis.com/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({grant_type:"urn:ietf:params:oauth:grant-type:jwt-bearer",assertion:assertion}).toString()});
   const data=await response.json().catch(()=>({}));
