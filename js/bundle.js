@@ -3348,6 +3348,7 @@ class ModalManager {
             </div>
 
             ${shipment.sensorFaultHistory && shipment.sensorFaultHistory.length ? '<section class="rounded-xl border border-amber-200 bg-amber-50 p-4"><h4 class="font-bold text-amber-900">Sensor Data-Integrity Note</h4><p class="mt-1 text-amber-800">Dual-sensor state: ' + (shipment.sensorHealth || 'healthy') + '. Current delta: ' + (shipment.sensorDelta == null ? 'N/A' : Number(shipment.sensorDelta).toFixed(2) + '°C') + '.</p><ul class="mt-2 space-y-1 text-amber-900">' + shipment.sensorFaultHistory.map(e => '<li>' + e.type.toUpperCase() + ' · ' + new Date(e.timestamp).toLocaleString() + ' · Δ ' + (e.delta == null ? 'N/A' : Number(e.delta).toFixed(2) + '°C') + ' · Suspect: ' + (e.suspectSensor || 'unknown') + (e.reason ? ' · ' + e.reason : '') + '</li>').join('') + '</ul></section>' : '<section class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-800">Dual-sensor cross-validation: no recorded sensor faults.</section>'}
+            ${shipment.routeDecisionHistory && shipment.routeDecisionHistory.length ? '<section class="rounded-xl border border-blue-200 bg-blue-50 p-4"><h4 class="font-bold text-blue-900">Weather-Aware Route Decisions</h4><ul class="mt-2 space-y-1 text-blue-900">' + shipment.routeDecisionHistory.map(e => '<li>' + (e.action || 'review') + ' · ' + (e.routeName || e.routeId || 'Route') + ' · ' + new Date(e.at || e.timestamp || Date.now()).toLocaleString() + ' · Operator: ' + (e.who || 'Operator') + ' · Reason: ' + (e.reason || 'Weather risk review') + '</li>').join('') + '</ul></section>' : '')}
             <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div>
                 <div class="text-[10px] text-slate-400 uppercase font-semibold">Vaccine Identification</div>
@@ -4774,6 +4775,16 @@ class ColdGuardApp {
     const atRiskShipments = this.simulation.shipments.filter(
       s => s.riskClassification === "High Risk" || s.excursionSeverity === "Warning"
     );
+    const dashboardFlaggedShipments = [...this.simulation.shipments]
+      .filter(s => s.sensorHealth === "fault" || s.routeRiskActive || s.excursionSeverity === "Critical" || s.riskClassification === "Critical" || s.riskClassification === "High Risk" || s.excursionSeverity === "Warning")
+      .sort((a, b) => {
+        const rank = s => s.excursionSeverity === "Critical" || s.riskClassification === "Critical" ? 0
+          : s.sensorHealth === "fault" ? 1
+          : s.routeRiskActive ? 2
+          : s.riskClassification === "High Risk" || s.excursionSeverity === "Warning" ? 3 : 4;
+        return rank(a) - rank(b);
+      });
+    const dashboardPriorityShipments = (dashboardFlaggedShipments.length ? dashboardFlaggedShipments : this.simulation.shipments.filter(s => s.status !== "Delivered")).slice(0, 4);
 
     container.innerHTML = `
       <div class="space-y-6 animate-fade-in">
@@ -4832,12 +4843,12 @@ class ColdGuardApp {
                 <p class="text-xs text-slate-500">Live sorting by highest thermal deviation and spoilage risk.</p>
               </div>
               <span class="px-2.5 py-1 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-full">
-                ${criticalShipments.length + atRiskShipments.length} Flagged
+                ${dashboardFlaggedShipments.length} Flagged
               </span>
             </div>
 
             <div class="divide-y divide-slate-100 overflow-x-auto">
-              ${this.simulation.shipments.slice(0, 5).map(s => `
+              ${dashboardPriorityShipments.map(s => `
                 <div class="py-3 flex items-center justify-between gap-3 hover:bg-slate-50 px-2 rounded-xl transition cursor-pointer row-inspect-shipment" data-id="${s.id}">
                   <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
@@ -5165,8 +5176,8 @@ class ColdGuardApp {
         <!-- Title & Stats -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-slate-200">
           <div>
-            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Real-Time Vaccine Shipments</h1>
-            <p class="text-xs text-slate-500">Continuous environmental telemetry, batch tracking, and risk classification.</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Shipment Fleet Registry</h1>
+            <p class="text-xs text-slate-500">Search, filter, compare, and triage every shipment. Open Inspect for one shipment’s telemetry, route, viability, and audit trail.</p>
           </div>
           <div class="flex items-center gap-2">
             <button id="btn-export-all-csv" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl shadow-sm transition flex items-center gap-1.5">
@@ -5338,6 +5349,7 @@ class ColdGuardApp {
 
                   <td class="p-3.5 text-center">
                     ${s.sensorHealth==='fault' ? '<span class="sensor-table-badge" title="Data-integrity alert; separate from temperature excursion">⚠ Sensor Fault</span>' : s.sensorHealth==='warning' ? '<span class="sensor-table-warning">Sensor Warning</span>' : ''}
+                    ${s.routeRiskActive ? '<span class="sensor-table-warning" title="ROUTE_RISK: Heat risk ahead; reroute recommended.">⚠ Route Risk</span>' : ''}
                     <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${
                       s.status === 'Delivered' ? 'bg-slate-100 text-slate-700' :
                       s.status === 'Emergency Rerouting' ? 'bg-purple-100 text-purple-800 font-bold' :

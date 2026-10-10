@@ -6,8 +6,8 @@ async function weatherAt(lat, lon) {
   const url = new URL(WEATHER_BASE);
   url.search = new URLSearchParams({
     latitude: String(lat), longitude: String(lon),
-    current: "precipitation,rain,showers,wind_speed_10m,wind_gusts_10m,weather_code",
-    hourly: "precipitation_probability,precipitation,rain,showers,wind_speed_10m,weather_code",
+    current: "temperature_2m,apparent_temperature,precipitation,rain,showers,wind_speed_10m,wind_gusts_10m,weather_code",
+    hourly: "temperature_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,wind_speed_10m,weather_code",
     forecast_days: "1", timezone: "auto"
   }).toString();
   const response = await fetch(url);
@@ -17,6 +17,8 @@ async function weatherAt(lat, lon) {
   const times = data.hourly?.time || [];
   const idx = Math.max(0, times.findIndex(t => new Date(t).getTime() >= Date.now()));
   return {
+    temperatureC: Number(now.temperature_2m ?? data.hourly?.temperature_2m?.[idx] ?? 30),
+    apparentTemperatureC: Number(now.apparent_temperature ?? data.hourly?.apparent_temperature?.[idx] ?? now.temperature_2m ?? 30),
     precipitationMm: Number(now.precipitation ?? now.rain ?? now.showers ?? 0),
     windKmh: Number(now.wind_speed_10m ?? 0),
     gustKmh: Number(now.wind_gusts_10m ?? 0),
@@ -25,14 +27,23 @@ async function weatherAt(lat, lon) {
     weatherCode: now.weather_code ?? null
   };
 }
-function samples(coords, count = 5) {
-  if (!Array.isArray(coords) || !coords.length) return [];
-  const result = [];
-  const n = Math.min(count, coords.length);
-  for (let i = 0; i < n; i++) {
-    const p = coords[Math.round(i * (coords.length - 1) / Math.max(1, n - 1))];
-    if (Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1])) result.push(p);
+function distanceKm(a, b) {
+  const rad = n => n * Math.PI / 180;
+  const dLat = rad(b[1] - a[1]), dLon = rad(b[0] - a[0]);
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1])) * Math.cos(rad(b[1])) * Math.sin(dLon / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+function samples(coords, spacingKm = 25, maxSamples = 20) {
+  if (!Array.isArray(coords) || coords.length < 2) return [];
+  const result = [coords[0]];
+  let distance = 0, previous = coords[0];
+  for (let i = 1; i < coords.length; i++) {
+    distance += distanceKm(previous, coords[i]);
+    if (distance >= spacingKm) { result.push(coords[i]); distance = 0; }
+    previous = coords[i];
   }
+  if (result[result.length - 1] !== coords[coords.length - 1]) result.push(coords[coords.length - 1]);
+  if (result.length > maxSamples) return Array.from({ length: maxSamples }, (_, i) => result[Math.round(i * (result.length - 1) / (maxSamples - 1))]);
   return result;
 }
 module.exports = async function handler(req, res) {
@@ -66,7 +77,9 @@ module.exports = async function handler(req, res) {
         for (const [lon, lat] of samples(coords)) {
           const w = await weatherAt(lat, lon);
           weatherSamples.push({ lat, lon, ...w });
-          weatherRisk += Math.min(100, w.rainProbability * 0.45 + w.precipitationMm * 6 + w.windKmh * 0.25 + Math.max(0, w.gustKmh - 40) * 0.35);
+          const thermal = Math.max(0, w.temperatureC - 30) * 4 + Math.max(0, w.apparentTemperatureC - 32) * 2.5;
+          const storm = w.weatherCode >= 95 || w.precipitationMm >= 7 || w.windKmh >= 55;
+          weatherRisk += Math.min(100, thermal + w.rainProbability * 0.12 + w.precipitationMm * 1.6 + w.windKmh * 0.08 + (storm ? 28 : 0));
         }
       } catch (error) {
         weatherAvailable = false;
