@@ -88,9 +88,8 @@
     r.ttb = duration(delta);
     r.reason = slope > 0 ? "Temperature rising toward maximum limit" : "Temperature falling toward minimum limit";
     if (delta <= critical) { r.status = "critical"; r.risk = "Critical"; }
-    else if (delta <= warning) { r.status = "warning"; r.risk = "Warning"; }
-    else if (delta > horizon) { r.status = "safe"; r.risk = "Safe"; r.ttb = "No breach predicted within the forecast window"; r.breachAt = null; r.reason = "No limit crossing projected in the next " + horizon + " minutes"; }
-    else { r.status = "safe"; r.risk = "Safe"; r.reason = "Breach projected within the horizon but beyond warning threshold"; }
+    else if (delta <= warning || delta <= horizon) { r.status = "warning"; r.risk = "Warning"; }
+    else { r.status = "safe"; r.risk = "Safe"; r.ttb = "No breach predicted within the forecast window"; r.breachAt = null; r.reason = "No limit crossing projected in the next " + horizon + " minutes"; }
     return r;
   }
   function badge(status) { return status === "breached" || status === "critical" ? "bg-red-100 text-red-800 border-red-200" : status === "warning" ? "bg-amber-100 text-amber-800 border-amber-200" : status === "safe" ? "bg-emerald-100 text-emerald-800 border-emerald-200" : "bg-slate-100 text-slate-700 border-slate-200"; }
