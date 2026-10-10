@@ -4463,6 +4463,10 @@ class ColdGuardApp {
       this.handleAuthStateChanged(null);
       return;
     }
+    // Successful login always lands on the main dashboard, not a stale deep link.
+    this.currentView = "dashboard";
+    this.updateNavActiveState("dashboard");
+    if (window.location.hash !== "#dashboard") window.location.hash = "#dashboard";
     this.handleAuthStateChanged(verifiedUser);
   }
 
