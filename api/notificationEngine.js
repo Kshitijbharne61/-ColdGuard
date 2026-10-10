@@ -106,10 +106,15 @@ function linksFor(alert, uid, req) {
   const view = base + "/index.html#details?id=" + encodeURIComponent(alert.shipmentId || "");
   const reroute = base + "/index.html#details?id=" + encodeURIComponent(alert.shipmentId || "") + "&modal=reroute";
   let acknowledge = base + "/index.html#alert_center";
+  let mute = base + "/index.html#notification_settings";
   const expiresAt = Date.now() + 30 * 60 * 1000;
   const token = signActionToken(uid, alert.id, expiresAt);
-  if (token && adminDatabase()) acknowledge = base + "/api/notifications?action=ack&uid=" + encodeURIComponent(uid) + "&alertId=" + encodeURIComponent(alert.id) + "&exp=" + expiresAt + "&token=" + encodeURIComponent(token);
-  return { view:view, acknowledge:acknowledge, reroute:reroute, expiresAt:expiresAt };
+  const muteToken = signActionToken(uid, "mute:" + alert.id, expiresAt);
+  if (token && adminDatabase()) {
+    acknowledge = base + "/api/notifications?action=ack&uid=" + encodeURIComponent(uid) + "&alertId=" + encodeURIComponent(alert.id) + "&exp=" + expiresAt + "&token=" + encodeURIComponent(token);
+    mute = base + "/api/notifications?action=mute&uid=" + encodeURIComponent(uid) + "&alertId=" + encodeURIComponent(alert.id) + "&exp=" + expiresAt + "&token=" + encodeURIComponent(muteToken);
+  }
+  return { view:view, acknowledge:acknowledge, reroute:reroute, mute:mute, expiresAt:expiresAt };
 }
 function compactText(alert, viewLink) {
   const unit = alert.valueUnit === "% RH" ? "%RH" : alert.valueUnit === "% battery" ? "%" : "C";
