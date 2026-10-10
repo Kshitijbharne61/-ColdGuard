@@ -3808,13 +3808,19 @@ class FirebaseDatabaseService {
       
       // Update environmental telemetry without fabricating GPS coordinates.
       const livePayload = {
-        temperature: reading.temperature,
-        humidity: reading.humidity,
-        batteryLevel: reading.batteryLevel,
         timestamp: now,
         severity: reading.severity || "SAFE",
         excursionStatus: reading.excursionStatus || "Nominal"
       };
+      ["temperature", "humidity", "batteryLevel"].forEach((key) => {
+        if (reading[key] !== undefined && reading[key] !== null) livePayload[key] = reading[key];
+      });
+      // Store only explicitly supplied thermal channels; never infer liquid temperature.
+      ["airTemperature", "liquidTemperature", "vialTemperature", "ambientTemperature", "coreTemperature",
+       "airSensorId", "liquidSensorId", "vialSensorId", "ambientSensorId", "coreSensorId",
+       "sensorRole", "sensorType", "measurementType"].forEach((key) => {
+        if (reading[key] !== undefined && reading[key] !== null) livePayload[key] = reading[key];
+      });
       const latitude = reading.latitude ?? reading.lat;
       const longitude = reading.longitude ?? reading.lng;
       if (latitude !== undefined && latitude !== null && Number.isFinite(Number(latitude))) {
@@ -3825,11 +3831,27 @@ class FirebaseDatabaseService {
       }
       updates[`shipments/${shipmentId}/telemetry/live`] = livePayload;
 
-      // Update root summary fields for fast querying
-      updates[`shipments/${shipmentId}/currentTemperature`] = reading.temperature;
-      updates[`shipments/${shipmentId}/currentHumidity`] = reading.humidity;
+      // Bounded history: one timestamped sample per minute, only for channels actually supplied.
+      const typedKeys = ["airTemperature", "liquidTemperature", "vialTemperature", "ambientTemperature", "coreTemperature",
+        "airSensorId", "liquidSensorId", "vialSensorId", "ambientSensorId", "coreSensorId",
+        "sensorRole", "sensorType", "measurementType"];
+      const hasGenericTemp = reading.temperature !== undefined && reading.temperature !== null && Number.isFinite(Number(reading.temperature));
+      const hasTypedTemp = typedKeys.some((key) => /Temperature$/.test(key) && reading[key] !== undefined && reading[key] !== null && Number.isFinite(Number(reading[key])));
+      if (hasGenericTemp || hasTypedTemp) {
+        const minuteSlot = String(Math.floor(now / 60000) % 120);
+        const historySample = { timestamp: now, source: "sensor" };
+        if (hasGenericTemp) historySample.temperature = Number(reading.temperature);
+        typedKeys.forEach((key) => {
+          if (reading[key] !== undefined && reading[key] !== null) historySample[key] = reading[key];
+        });
+        updates[`shipments/${shipmentId}/telemetry/history/${minuteSlot}`] = historySample;
+      }
+
+      // Update root summary fields for fast querying without writing undefined values.
+      if (reading.temperature !== undefined && reading.temperature !== null) updates[`shipments/${shipmentId}/currentTemperature`] = reading.temperature;
+      if (reading.humidity !== undefined && reading.humidity !== null) updates[`shipments/${shipmentId}/currentHumidity`] = reading.humidity;
       updates[`shipments/${shipmentId}/lastSensorUpdate`] = new Date(now).toISOString();
-      updates[`shipments/${shipmentId}/batteryLevel`] = reading.batteryLevel;
+      if (reading.batteryLevel !== undefined && reading.batteryLevel !== null) updates[`shipments/${shipmentId}/batteryLevel`] = reading.batteryLevel;
       if (reading.viability !== undefined) {
         updates[`shipments/${shipmentId}/estimatedViabilityPercent`] = reading.viability;
       }
