@@ -28,6 +28,19 @@
     if (val === null || time === null || Math.abs(val) > 150) return null;
     return { x: time, y: val, source: String(p.source || fallbackSource || "sensor"), mode: String(p.measurementType || p.mode || "measured") };
   }
+  function normalizeGenericHistory(raw, fallbackSource) {
+    if (!raw) return [];
+    var arr = Array.isArray(raw) ? raw : Object.keys(raw).map(function(k) {
+      var p = raw[k]; return p && typeof p === "object" ? Object.assign({ _key:k }, p) : p;
+    });
+    return arr.map(function(p) {
+      if (!p || typeof p !== "object") return null;
+      var value = n(first(p, ["temperature","temp","currentTemperature","value"]));
+      var time = ts(first(p, ["timestamp","ts","time","recordedAt","createdAt","at"]));
+      if (value === null || time === null || Math.abs(value) > 150) return null;
+      return {x:time,y:value,source:String(p.source || fallbackSource || "sensor"),mode:String(p.measurementType || p.mode || (fallbackSource === "SIMULATED DEMO" ? "simulated" : "measured")),untyped:true};
+    }).filter(Boolean).sort(function(a,b){return a.x-b.x;}).slice(-500);
+  }
   function normalizeHistory(raw, kind, fallbackSource) {
     if (!raw) return [];
     var arr = Array.isArray(raw) ? raw : Object.keys(raw).map(function (k) { var p = raw[k]; return p && typeof p === "object" ? Object.assign({ _key:k }, p) : p; });
@@ -51,6 +64,7 @@
     var rawHistory = tel.history || tel.readings || remote && (remote.sensorHistory || remote.sensorReadings || remote.readings) || null;
     var air = normalizeHistory(rawHistory, "air", source);
     var vial = normalizeHistory(rawHistory, "vial", source);
+    var generic = liveFlag ? normalizeGenericHistory(rawHistory, source) : [];
 
     // Accept explicit typed histories; generic {temperature:...} records are intentionally ignored.
     var explicitAirHistory = remote && (remote.airTemperatureHistory || remote.ambientTemperatureHistory || tel.airTemperatureHistory || tel.ambientTemperatureHistory);
@@ -64,6 +78,10 @@
       n(first(live, ["liquidTemperature","vialTemperature","coreTemperature","liquid_temperature_c","vial_temperature_c","core_temperature_c"])) !== null);
     if (liveFlag) {
       var nowTs = ts(first(live, ["timestamp","ts","time"])) || ts(remote.lastSensorUpdate);
+      var genericTemp = n(first(live, ["temperature","temp","value"]));
+      if (genericTemp === null) genericTemp = n(remote.currentTemperature);
+      if (genericTemp !== null && nowTs !== null && !generic.some(function(p){return p.x===nowTs;})) generic.push({x:nowTs,y:genericTemp,source:"LIVE SENSOR",mode:"measured",untyped:true});
+      generic = generic.sort(function(a,b){return a.x-b.x;}).slice(-500);
       var av = airMapped ? n(first(live, ["airTemperature","ambientTemperature","air_temperature_c","ambient_temperature_c"])) : null;
       var vv = vialMapped ? n(first(live, ["liquidTemperature","vialTemperature","coreTemperature","liquid_temperature_c","vial_temperature_c","core_temperature_c"])) : null;
       if (av !== null && nowTs !== null && !air.some(function(p){return p.x===nowTs;})) air.push({x:nowTs,y:av,source:"LIVE SENSOR",mode:"measured"});
@@ -92,7 +110,7 @@
       airMapped = false; vialMapped = false;
       return { air:air, vial:vial, generic:genericDemo, source:source, live:false, airMapped:false, vialMapped:false, remote:null, genericDemo:true };
     }
-    return { air:air, vial:vial, generic:[], source:source, live:liveFlag, airMapped:airMapped, vialMapped:vialMapped, remote:remote, genericDemo:false };
+    return { air:air, vial:vial, generic:generic, source:source, live:liveFlag, airMapped:airMapped, vialMapped:vialMapped, remote:remote, genericDemo:false };
   }
   function limits(s) {
     var min=n(s.minAllowedTemperature); if(min===null) min=n(s.minTemp);
@@ -161,7 +179,7 @@
     var datasets=[];
     if(data.airMapped || data.air.length) datasets.push({label:data.airMapped?"Air temperature":"Explicit air/ambient (demo)",data:vals("air"),borderColor:COLORS.air,backgroundColor:COLORS.air,tension:0.18,spanGaps:false,pointRadius:2,parsing:false});
     if(data.vialMapped || data.vial.length) datasets.push({label:data.vialMapped?"Measured vial/liquid temperature":"Explicit vial/core (demo)",data:vals("vial"),borderColor:COLORS.vial,backgroundColor:COLORS.vial,tension:0.18,spanGaps:false,pointRadius:3,parsing:false});
-    if(data.genericDemo && data.generic.length) datasets.push({label:"Simulated sensor history (role unspecified)",data:vals("generic"),borderColor:"#64748b",backgroundColor:"#64748b",borderDash:[4,4],tension:0.18,spanGaps:false,pointRadius:2,parsing:false});
+    if(data.generic.length) datasets.push({label:data.genericDemo?"Simulated sensor history (role unspecified)":"Sensor temperature (role unverified)",data:vals("generic"),borderColor:"#64748b",backgroundColor:"#64748b",borderDash:[4,4],tension:0.18,spanGaps:false,pointRadius:2,parsing:false});
     if(lim.max!==null) datasets.push({label:"Upper safe limit",data:all.map(function(x){return{x:x,y:lim.max};}),borderColor:COLORS.max,borderDash:[6,4],pointRadius:0,borderWidth:1.5,spanGaps:false,parsing:false});
     if(lim.min!==null) datasets.push({label:"Lower safe limit",data:all.map(function(x){return{x:x,y:lim.min};}),borderColor:COLORS.min,borderDash:[6,4],pointRadius:0,borderWidth:1.5,spanGaps:false,parsing:false});
     // Prediction is added only from a supported, measured vial trend and is drawn through the limit crossing.
@@ -230,7 +248,7 @@
     correctLegacyProbeCard(s, data, airCurrent || genericCurrent, vialCurrent);
     var card=ensureCard(); if(!card) return;
     var sourceLabel=data.live?"LIVE SENSOR DATA":"SIMULATED DEMO DATA";
-    var airLabel=data.airMapped?"Measured air temperature":(data.air.length?"Simulated ambient temperature":(data.genericDemo&&genericCurrent?"Simulated sensor temperature (role unspecified)":"Air temperature unavailable"));
+    var airLabel=data.airMapped?"Measured air temperature":(data.air.length?"Simulated ambient temperature":(genericCurrent?(data.genericDemo?"Simulated sensor temperature (role unspecified)":"Sensor temperature (role unverified)"):"Air temperature unavailable"));
     var vialLabel=data.vialMapped?"Measured vial/liquid temperature":(data.vial.length?"Simulated vial/core temperature":"Vial temperature unavailable");
     var responseText = vialCurrent ? (vialCurrent.y < lim.min || vialCurrent.y > lim.max ? "vial temperature outside range" : "vial temperature within range") : "vial response unavailable";
     var eventHtml=spike?'<div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><strong>Brief air spike candidate</strong> · '+new Date(spike.start).toLocaleString()+' · duration '+spike.duration+' min · peak '+spike.peak.toFixed(2)+'°C · '+responseText+'. Do not dismiss; follow the configured cold-chain protocol.</div>':'<div class="text-xs text-slate-500">No short-duration air spike detected in this window, or insufficient typed air samples.</div>';
