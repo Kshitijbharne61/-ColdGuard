@@ -247,6 +247,8 @@
     var count = events.filter(function (a) { return a.unread && a.status !== "resolved"; }).length;
     var badge = document.getElementById("cg-alert-unread-count");
     if (badge) { badge.textContent = count > 99 ? "99+" : String(count); badge.hidden = count === 0; }
+    var sideBadge = document.getElementById("cg-sidebar-alert-count");
+    if (sideBadge) { sideBadge.textContent = count > 99 ? "99+" : String(count); sideBadge.hidden = count === 0; }
     var critical = document.getElementById("header-critical-count");
     var liveCriticals = events.filter(function (a) { return a.severity === "CRITICAL" && a.status === "open"; }).length;
     if (critical && app && app.simulation) {
@@ -550,6 +552,45 @@
     test.escalation.nextAt = new Date(Date.now() + Number(prefs.criticalEscalationMinutes || 5) * 60000).toISOString();
     persistAndShow(test);
   }
+  function renderBellDropdown() {
+    var bell = document.getElementById("btn-open-alert-center");
+    if (!bell || !bell.parentElement) return;
+    var dropdown = document.getElementById("cg-alert-dropdown");
+    if (!dropdown) {
+      dropdown = document.createElement("div");
+      dropdown.id = "cg-alert-dropdown";
+      dropdown.className = "cg-alert-dropdown";
+      dropdown.setAttribute("role", "dialog");
+      dropdown.setAttribute("aria-label", "Recent notifications");
+      bell.parentElement.appendChild(dropdown);
+    }
+    var recent = getAllEvents().filter(function (a) { return a.status !== "resolved"; }).slice(0, 5);
+    dropdown.innerHTML = '<div class="cg-alert-dropdown__head"><div><strong>Recent alerts</strong><small>' + events.filter(function (a) { return a.unread && a.status !== "resolved"; }).length + ' unread</small></div><button type="button" class="cg-btn cg-btn--ghost cg-btn--sm" data-cg-bell-close aria-label="Close recent alerts">×</button></div>' +
+      (recent.length ? '<div class="cg-alert-dropdown__list">' + recent.map(function (a) {
+        return '<button class="cg-alert-dropdown__item" type="button" data-cg-alert-action="view" data-alert-id="' + esc(a.id) + '"><span class="cg-alert-dot cg-alert-dot--' + renderSeverityClass(a.severity) + '" aria-hidden="true"></span><span class="cg-alert-dropdown__copy"><strong>' + esc(a.title) + '</strong><small>' + esc(a.shipmentId + " · " + localTime(a.detectedAt)) + '</small></span><span class="cg-alert-dropdown__status">' + (a.unread ? "New" : esc(a.status)) + '</span></button>';
+      }).join("") + '</div>' : '<div class="cg-alert-dropdown__empty"><strong>No recent alerts</strong><span>New conditions will appear here.</span></div>') +
+      '<div class="cg-alert-dropdown__footer"><button type="button" class="cg-btn cg-btn--primary cg-btn--sm" data-cg-notification-action="center">Open Alert Center</button><button type="button" class="cg-btn cg-btn--secondary cg-btn--sm" data-cg-notification-action="test">Send test</button></div>';
+  }
+  function toggleBellDropdown() {
+    var dropdown = document.getElementById("cg-alert-dropdown");
+    var bell = document.getElementById("btn-open-alert-center");
+    if (!bell) { buttonNavigate("alert_center"); return; }
+    renderBellDropdown();
+    dropdown = document.getElementById("cg-alert-dropdown");
+    var show = !dropdown || dropdown.hidden || !dropdown.classList.contains("is-open");
+    if (dropdown) {
+      dropdown.hidden = !show;
+      dropdown.classList.toggle("is-open", show);
+      bell.setAttribute("aria-expanded", String(show));
+    }
+  }
+  function closeBellDropdown() {
+    var dropdown = document.getElementById("cg-alert-dropdown");
+    var bell = document.getElementById("btn-open-alert-center");
+    if (dropdown) { dropdown.hidden = true; dropdown.classList.remove("is-open"); }
+    if (bell) bell.setAttribute("aria-expanded", "false");
+  }
+
   function handleAction(action, alertId, button) {
     var alert = events.find(function (a) { return a.id === alertId; });
     if (action === "ack") return acknowledge(alertId);
@@ -597,7 +638,8 @@
     };
     document.addEventListener("click", function (e) {
       var openCenter = e.target.closest("[data-cg-open-alert-center]");
-      if (openCenter) { e.preventDefault(); buttonNavigate("alert_center"); return; }
+      if (openCenter) { e.preventDefault(); toggleBellDropdown(); return; }
+      if (e.target.closest("[data-cg-bell-close]")) { closeBellDropdown(); return; }
       var actionButton = e.target.closest("[data-cg-alert-action]");
       if (actionButton) { e.preventDefault(); handleAction(actionButton.getAttribute("data-cg-alert-action"), actionButton.getAttribute("data-alert-id"), actionButton); return; }
       var navAction = e.target.closest("[data-cg-notification-action]");
@@ -617,6 +659,10 @@
       var clear = e.target.closest("[data-cg-clear-filters]");
       if (clear) renderCenter(document.getElementById("main-content-view"));
     });
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest("#cg-alert-dropdown") && !e.target.closest("[data-cg-open-alert-center]")) closeBellDropdown();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeBellDropdown(); });
     document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") updateHeader(); });
     var db = database(), u = liveUser();
     if (db && u) {
@@ -643,6 +689,11 @@
     };
     var originalAlerts = app.handleRemoteAlerts.bind(app);
     app.handleRemoteAlerts = function (remote) { originalAlerts(remote); if (app.currentView === "alert_center") renderCenter(document.getElementById("main-content-view")); };
+    var originalRemoteShipments = app.handleRemoteShipments.bind(app);
+    app.handleRemoteShipments = function (remote) {
+      originalRemoteShipments(remote);
+      if (Array.isArray(app.simulation && app.simulation.shipments)) observeShipments(app.simulation.shipments);
+    };
     // Store a digest snapshot locally; providers can send configured digests through the same API.
     digestTimer = window.setInterval(function () {
       var live = liveUser(); if (!live) return;
