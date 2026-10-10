@@ -5378,6 +5378,21 @@ class ColdGuardApp {
 
     // Run Viability Model
     const viabilityEst = ViabilityModel.estimateViability(s, prof);
+    const recentProbeHistory = (s.history || []).slice(-8);
+    const probeSparkline = (key, color) => {
+      const values = recentProbeHistory.map(point => Number(point[key]) || 0);
+      if (values.length < 2) return '<span class="probe-sparkline-empty">History unavailable</span>';
+      const min = Math.min(...values), max = Math.max(...values), span = max - min || 1;
+      const points = values.map((value, index) => `${(2 + index / (values.length - 1) * 96).toFixed(1)},${(22 - (value - min) / span * 18).toFixed(1)}`).join(' ');
+      return `<svg class="probe-sparkline" viewBox="0 0 100 26" role="img" aria-label="Recent ${key} trend" focusable="false"><polyline points="${points}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    };
+    const probeState = s.isHardwareConnected
+      ? { label: "Live", tone: "live" }
+      : /demo|sample|simulat/i.test(String(s.sensorConnectivity || s.dataTransmissionStatus || ""))
+        ? { label: "Demo Data", tone: "demo" }
+        : Number(s.sensorDataAgeSeconds) > 60
+          ? { label: "Offline", tone: "offline" }
+          : { label: "Awaiting", tone: "awaiting" };
     const trajectoryData = ViabilityModel.generateProjectionTrajectory(s, viabilityEst);
 
     container.innerHTML = `
@@ -5386,43 +5401,44 @@ class ColdGuardApp {
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-              <div class="flex items-center gap-2">
-                <button id="btn-back-to-shipments" class="text-xs text-blue-600 hover:underline flex items-center gap-1 font-semibold">
-                  ← Back to Fleet Table
-                </button>
-                <span class="text-slate-300">•</span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white" style="background-color: ${prof.color}">
-                  ${prof.categoryName}
-                </span>
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
-                  isCritical ? 'bg-red-100 text-red-800' : isWarning ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                }">
-                  ${s.riskClassification}
-                </span>
+              <nav class="shipment-breadcrumb flex flex-wrap items-center gap-2 text-xs font-semibold" aria-label="Breadcrumb">
+                <button id="btn-back-to-shipments" class="shipment-breadcrumb-link" type="button">Fleet</button>
+                <svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="text-slate-500">Shipment</span>
+                <svg class="h-3.5 w-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m9 18 6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="font-mono text-slate-800" aria-current="page">${s.id}</span>
+              </nav>
+              <div class="shipment-status-row mt-2">
+                <span class="shipment-chip shipment-chip-protocol">${prof.categoryName}</span>
+                <span class="shipment-chip ${isCritical ? 'shipment-chip-critical' : isWarning ? 'shipment-chip-warning' : 'shipment-chip-safe'}"><span class="status-dot"></span>Risk: ${s.riskClassification}</span>
+                <span class="shipment-chip shipment-chip-${probeState.tone}"><span class="status-dot ${probeState.tone === 'live' ? 'animate-pulse' : ''}"></span>${probeState.label}</span>
               </div>
-
-              <div class="flex flex-wrap items-center gap-3 mt-1.5">
+              <div class="flex flex-wrap items-center gap-3 mt-2">
                 <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">${s.vaccineName}</h1>
                 <span class="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200">${s.id}</span>
-                <span class="text-xs text-slate-500 font-mono">Lot: ${s.batchNumber}</span>
+                <span class="text-xs text-slate-600 font-mono">Lot: ${s.batchNumber}</span>
               </div>
-              <p class="text-xs text-slate-500 mt-1">${s.manufacturer} • ${s.doses.toLocaleString()} doses • ${s.packagingType}</p>
+              <details class="shipment-carrier-details mt-1">
+                <summary>${s.manufacturer} • ${s.doses.toLocaleString()} doses • ${s.packagingType}</summary>
+                <p>${s.manufacturer} • ${s.doses.toLocaleString()} doses • ${s.packagingType} • Carrier: ${s.carrierIdentifier || s.transportVehicleId}</p>
+              </details>
             </div>
 
-            <!-- Quick Action Buttons -->
-            <div class="flex flex-wrap items-center gap-2">
-              <button id="btn-trigger-reroute-modal" class="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm transition flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                        <!-- Quick Action Buttons -->
+            <div class="shipment-header-actions flex flex-wrap items-center gap-2">
+              <button id="btn-trigger-reroute-modal" class="shipment-action-danger ${isCritical ? 'is-critical' : ''}" type="button" aria-label="Open emergency reroute confirmation">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
                 Emergency Reroute
               </button>
-              <button id="btn-view-who-audit" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl shadow-sm transition flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+              <button id="btn-view-who-audit" class="shipment-action-secondary" type="button">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Audit Report
               </button>
-              <button id="btn-toggle-sim-detail" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition flex items-center gap-1.5">
-                <span>${this.simulation.isRunning ? '⏸ Pause Telemetry' : '▶ Resume Telemetry'}</span>
+              <button id="btn-toggle-sim-detail" class="shipment-action-secondary shipment-action-pause" type="button" aria-label="${this.simulation.isRunning ? 'Pause telemetry' : 'Resume telemetry'}">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${this.simulation.isRunning ? 'M8 5v14m8-14v14' : 'm7 4 12 8-12 8V4'}"/></svg>
+                <span>${this.simulation.isRunning ? 'Pause Telemetry' : 'Resume Telemetry'}</span>
               </button>
-            </div>
+            </div>            </div>
           </div>
         </div>
 
@@ -5430,71 +5446,49 @@ class ColdGuardApp {
         <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm" id="hardware-probe-card">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
             <div class="flex items-center gap-2.5">
-              <div class="w-9 h-9 rounded-xl ${s.isHardwareConnected ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-500'} flex items-center justify-center font-bold text-sm">
-                📡
+              <div class="w-9 h-9 rounded-xl ${s.isHardwareConnected ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-slate-100 text-slate-500'} flex items-center justify-center" aria-hidden="true">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="7" width="16" height="10" rx="2"/><path d="M8 7V4m8 3V4M8 20v-3m8 3v-3M8 11h.01M12 11h.01M16 11h.01M9 14h6"/></svg>
               </div>
-              <div>
-                <div class="flex items-center gap-2">
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
                   <span class="text-xs font-bold text-slate-900">Hardware Telemetry Probe: ESP32-CG-PROBE-01</span>
-                  ${s.isHardwareConnected ? `
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 flex items-center gap-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      Live Hardware Streaming
-                    </span>
-                  ` : `
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-                      Provisioned (Awaiting Live Ingestion)
-                    </span>
-                  `}
+                  <span class="probe-state-badge probe-state-${probeState.tone}" role="status"><span class="status-dot ${probeState.tone === 'live' ? 'animate-pulse' : ''}"></span>${probeState.label}</span>
                 </div>
-                <p class="text-[11px] text-slate-500">Dual DHT22 Probes: Internal Core Payload (In-Vial) + External Container Ambient.</p>
+                <p class="text-[11px] text-slate-600 mt-1">Dual DHT22 probes: internal core payload and external container ambient.</p>
               </div>
             </div>
 
             <div class="flex items-center gap-2 text-xs">
-              <span class="text-[11px] text-slate-400">Security Verification:</span>
-              <span class="font-mono text-[10px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-700 border border-slate-200 font-semibold">SHA-256 Authenticated</span>
-            </div>
+              <span class="text-[11px] text-slate-500">Security Verification:</span>
+              <span class="security-verified" tabindex="0" title="Telemetry integrity is verified using a SHA-256 digest." aria-label="SHA-256 authenticated. Telemetry integrity verification badge.">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><rect x="9" y="10" width="6" height="5" rx="1"/><path d="M10 10V8a2 2 0 0 1 4 0v2"/></svg>
+                SHA-256 Authenticated
+                <span class="security-tooltip" role="tooltip">Telemetry integrity is verified using a SHA-256 digest.</span>
+              </span>
+            </div>            </div>
           </div>
 
           <!-- Dual Probe Live Metrics Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3">
-            <!-- Probe 1: Core -->
-            <div class="p-3.5 rounded-xl bg-blue-50/70 border border-blue-100 flex items-center justify-between">
-              <div>
-                <div class="text-[10px] uppercase font-bold text-blue-700 tracking-wider">Probe 1 (Internal Core)</div>
-                <div class="text-xl font-mono font-extrabold text-blue-950 mt-0.5">
-                  ${(s.coreTemperature !== undefined ? s.coreTemperature : s.currentTemperature)}°C
-                </div>
-                <div class="text-[11px] text-blue-600 font-mono">Humidity: ${(s.coreHumidity !== undefined ? s.coreHumidity : s.currentHumidity)}% RH</div>
-              </div>
-              <span class="text-2xl">🧪</span>
-            </div>
-
-            <!-- Probe 2: Ambient -->
-            <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-100 flex items-center justify-between">
-              <div>
-                <div class="text-[10px] uppercase font-bold text-amber-700 tracking-wider">Probe 2 (External Ambient)</div>
-                <div class="text-xl font-mono font-extrabold text-amber-950 mt-0.5">
-                  ${(s.ambientTemperature !== undefined ? s.ambientTemperature : (s.currentTemperature + 21.2).toFixed(1))}°C
-                </div>
-                <div class="text-[11px] text-amber-600 font-mono">Humidity: ${(s.ambientHumidity !== undefined ? s.ambientHumidity : (s.currentHumidity + 12.0).toFixed(1))}% RH</div>
-              </div>
-              <span class="text-2xl">📦</span>
-            </div>
-
-            <!-- Differential Delta T -->
-            <div class="p-3.5 rounded-xl bg-purple-50/70 border border-purple-100 flex items-center justify-between">
-              <div>
-                <div class="text-[10px] uppercase font-bold text-purple-700 tracking-wider">Thermal Barrier (ΔT)</div>
-                <div class="text-xl font-mono font-extrabold text-purple-950 mt-0.5">
-                  ${(s.deltaTemperature !== undefined ? s.deltaTemperature : ((s.ambientTemperature || (s.currentTemperature + 21.2)) - (s.coreTemperature || s.currentTemperature)).toFixed(1))}°C
-                </div>
-                <div class="text-[11px] text-purple-600">Insulation Gradient (Ext - Int)</div>
-              </div>
-              <span class="text-2xl">🛡️</span>
-            </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4">
+            <article class="probe-metric-card probe-metric-blue">
+              <div class="probe-card-topline"><span class="probe-icon-circle probe-icon-blue" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V5a2 2 0 0 0-4 0v9.76a4 4 0 1 0 4 0Z"/><path d="M12 11v6"/></svg></span><span class="probe-card-label">Probe 1 · Internal Core</span></div>
+              <div class="probe-card-value">${(s.coreTemperature !== undefined ? s.coreTemperature : s.currentTemperature)}°C</div>
+              <div class="probe-card-secondary">Humidity <strong>${(s.coreHumidity !== undefined ? s.coreHumidity : s.currentHumidity)}% RH</strong></div>
+              <div class="probe-range-wrap" aria-label="Core temperature against the 2 to 8 degree Celsius safe range"><div class="probe-range-track"><span class="probe-range-safe" style="left:20%;width:60%"></span><span class="probe-range-marker" style="left:${Math.max(0,Math.min(100,(Number(s.coreTemperature !== undefined ? s.coreTemperature : s.currentTemperature)/10)*100))}%"></span></div><div class="probe-range-labels"><span>0°C</span><span>Safe: 2–8°C</span><span>10°C</span></div></div>
+              <div class="probe-sparkline-row"><span>Last 30 min</span>${probeSparkline("temperature","#2563eb")}</div>
+            </article>
+            <article class="probe-metric-card probe-metric-amber">
+              <div class="probe-card-topline"><span class="probe-icon-circle probe-icon-amber" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16M6.4 6.4l11.2 11.2m0-11.2L6.4 17.6"/></svg></span><span class="probe-card-label">Probe 2 · External Ambient</span></div>
+              <div class="probe-card-value">${(s.ambientTemperature !== undefined ? s.ambientTemperature : (s.currentTemperature + 21.2).toFixed(1))}°C</div>
+              <div class="probe-card-secondary">Humidity <strong>${(s.ambientHumidity !== undefined ? s.ambientHumidity : (s.currentHumidity + 12.0).toFixed(1))}% RH</strong></div>
+              <div class="probe-sparkline-row"><span>Last 30 min</span>${probeSparkline("temperature","#d97706")}</div>
+            </article>
+            <article class="probe-metric-card probe-metric-violet">
+              <div class="probe-card-topline"><span class="probe-icon-circle probe-icon-violet" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M8 12h8m-4-4v8"/></svg></span><span class="probe-card-label">Thermal Barrier (ΔT)</span><span class="probe-info-tip" tabindex="0" aria-label="Higher gradient means better insulation" title="Higher gradient = better insulation.">i</span></div>
+              <div class="probe-card-value">${(s.deltaTemperature !== undefined ? s.deltaTemperature : ((s.ambientTemperature || (s.currentTemperature + 21.2)) - (s.coreTemperature || s.currentTemperature)).toFixed(1))}°C</div>
+              <div class="probe-card-secondary">Insulation gradient <strong>(Ext − Int)</strong></div>
+              <div class="probe-sparkline-row"><span>Last 30 min</span>${probeSparkline("temperature","#7c3aed")}</div>
+            </article>
           </div>
         </div>
 
@@ -5865,17 +5859,13 @@ class ColdGuardApp {
       if (badgeContainer) {
         badgeContainer.innerHTML = `
           <span class="text-xs font-bold text-slate-900">Hardware Telemetry Probe: ESP32-CG-PROBE-01</span>
-          ${s.isHardwareConnected ? `
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Live Hardware Streaming
-            </span>
-          ` : `
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
-              Provisioned (Awaiting Live Ingestion)
-            </span>
-          `}
+          ${s.isHardwareConnected
+            ? '<span class="probe-state-badge probe-state-live"><span class="status-dot animate-pulse"></span>Live</span>'
+            : /demo|sample|simulat/i.test(String(s.sensorConnectivity || s.dataTransmissionStatus || ""))
+              ? '<span class="probe-state-badge probe-state-demo"><span class="status-dot"></span>Demo Data</span>'
+              : Number(s.sensorDataAgeSeconds) > 60
+                ? '<span class="probe-state-badge probe-state-offline"><span class="status-dot"></span>Offline</span>'
+                : '<span class="probe-state-badge probe-state-awaiting"><span class="status-dot"></span>Awaiting</span>'}
         `;
       }
     }
