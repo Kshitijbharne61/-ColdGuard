@@ -3506,8 +3506,10 @@ class FirebaseAuthService {
       this.auth.onAuthStateChanged((user) => {
         this.currentUser = user;
         this.notifyListeners(user);
-      }, (err) => {
-        console.error("Firebase onAuthStateChanged error:", err);
+      }, () => {
+        // Fail closed if Firebase can no longer resolve the session.
+        this.currentUser = null;
+        this.notifyListeners(null);
       });
 
       return true;
@@ -4427,6 +4429,7 @@ class ColdGuardApp {
       if (dashboardContainer) {
         dashboardContainer.classList.remove("hidden");
         dashboardContainer.style.display = "flex";
+        dashboardContainer.setAttribute("aria-hidden", "false");
       }
 
       this.updateUserBadge(user);
@@ -4437,6 +4440,7 @@ class ColdGuardApp {
       if (dashboardContainer) {
         dashboardContainer.classList.add("hidden");
         dashboardContainer.style.display = "none";
+        dashboardContainer.setAttribute("aria-hidden", "true");
       }
       if (authContainer) {
         authContainer.classList.remove("hidden");
