@@ -48,13 +48,15 @@
     return Number.isFinite(kelvin) ? kelvin - 273.15 : state.vial;
   }
   function syncLiveTelemetry() {
-    if(state.forceDemo || !app || !window.ColdGuardDualThermal || typeof window.ColdGuardDualThermal.collect!=="function") return false;
-    var s=shipment(); if(!s) return false;
-    var d; try { d=window.ColdGuardDualThermal.collect(s); } catch(e) { return false; }
-    if(!d || !d.live || !d.airMapped || !d.vialMapped) return false;
+    function fallback(){if(state.scenario==="live"){state.scenario="normal";state.scenarioLabel="Demo fallback — typed sensor channels stale";state.air=4.2;state.vial=4.2;state.points=[];}return false;}
+    if(state.forceDemo) return false;
+    if(!app || !window.ColdGuardDualThermal || typeof window.ColdGuardDualThermal.collect!=="function") return fallback();
+    var s=shipment(); if(!s) return fallback();
+    var d; try { d=window.ColdGuardDualThermal.collect(s); } catch(e) { return fallback(); }
+    if(!d || !d.live || !d.airMapped || !d.vialMapped) return fallback();
     var a=d.air && d.air.length ? d.air[d.air.length-1] : null, v=d.vial && d.vial.length ? d.vial[d.vial.length-1] : null;
-    if(!a || !v || !Number.isFinite(a.y) || !Number.isFinite(v.y)) return false;
-    if(Date.now()-a.x>300000 || Date.now()-v.x>300000) return false;
+    if(!a || !v || !Number.isFinite(a.y) || !Number.isFinite(v.y)) return fallback();
+    if(Date.now()-a.x>300000 || Date.now()-v.x>300000) return fallback();
     state.air=a.y; state.vial=v.y; state.scenario="live"; state.scenarioLabel="Mapped live air + vial sensors"; state.frozen=state.vial<0;
     return true;
   }
@@ -178,7 +180,7 @@
     if(which==="spike"){state.air=12;state.vial=4.2;state.scenarioLabel="Door-Ajar Spike — air only";}
     if(which==="failure"){state.air=12.5;state.vial=4.2;state.scenarioLabel="Refrigeration Failure";}
     if(which==="freeze"){state.air=-1.5;state.vial=-1.5;state.frozen=true;state.scenarioLabel="Over-Icing Breach";}
-    for(var i=30;i>=1;i--){state.points.push({t:Date.now()-i*3000,a:which==="normal"?4.2:which==="spike"?12:which==="failure"?Math.max(4.2,4.2+(12.5-4.2)*(1-i/30)): -1.5,v:which==="freeze"?-1.5:which==="normal"?4.2:4.2+(Math.max(4.2,which==="spike"?12:12.5)-4.2)*(1-Math.exp(-(30-i)*0.05/15))});}
+    for(var i=30;i>=1;i--){var airPoint=which==="normal"?4.2:which==="spike"?12:which==="failure"?12.5:-1.5;var elapsed=(30-i)*0.05;var vialPoint=which==="freeze"?-1.5:which==="normal"?4.2:4.2+(airPoint-4.2)*(1-Math.exp(-elapsed/15));state.points.push({t:Date.now()-i*3000,a:airPoint,v:vialPoint});} if(which!=="freeze"&&which!=="normal"){state.vial=state.points[state.points.length-1].v;}
     state.lastRescue=state.vial<0||state.vial>8;
     if(app && app.modals && app.modals.showToast) app.modals.showToast("Simulation preset: "+state.scenarioLabel+" (demo data)", which==="freeze"||which==="failure"?"critical":"info");
     render();
