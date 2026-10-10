@@ -423,7 +423,7 @@
     if(!app||!app.dbService){return;}
     if(state.app!==app){
       state.app=app;
-      app.dbService.on("shipments", records=>{state.records=Array.isArray(records)?records:[];if(document.getElementById("coldguard-live-route-panel"))renderPanel();});
+      app.dbService.on("shipments", records=>{state.records=Array.isArray(records)?records:[];if(document.getElementById("coldguard-live-route-panel")||document.getElementById("coldguard-route-overview-card"))renderPanel();});
       app.dbService.on("connection", connected=>{state.connected=connected===true;if(document.getElementById("coldguard-live-route-panel"))renderPanel();});
       state.connected=app.dbService.isConnected===true;
     }
