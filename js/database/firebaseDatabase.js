@@ -189,6 +189,13 @@ export class FirebaseDatabaseService {
         severity: reading.severity || "SAFE",
         excursionStatus: reading.excursionStatus || "Nominal"
       };
+      // Optional typed channels: only write them when the ingestion layer supplies them.
+      // Never infer vial/liquid temperature from a generic temperature field.
+      ["airTemperature", "liquidTemperature", "vialTemperature", "ambientTemperature", "coreTemperature",
+       "airSensorId", "liquidSensorId", "vialSensorId", "ambientSensorId", "coreSensorId",
+       "sensorRole", "sensorType", "measurementType"].forEach((key) => {
+        if (reading[key] !== undefined && reading[key] !== null) livePayload[key] = reading[key];
+      });
       const latitude = reading.latitude ?? reading.lat;
       const longitude = reading.longitude ?? reading.lng;
       if (latitude !== undefined && latitude !== null && Number.isFinite(Number(latitude))) {
@@ -203,11 +210,18 @@ export class FirebaseDatabaseService {
       // Refreshing the current minute slot avoids an unbounded stream of new history records.
       if (reading.temperature !== null && reading.temperature !== undefined && Number.isFinite(Number(reading.temperature))) {
         const minuteSlot = String(Math.floor(now / 60000) % 120);
-        updates[`shipments/${shipmentId}/telemetry/history/${minuteSlot}`] = {
+        const historySample = {
           temperature: Number(reading.temperature),
           timestamp: now,
           source: "sensor"
         };
+        // Preserve explicitly supplied, typed channels in history; absent channels remain absent.
+        ["airTemperature", "liquidTemperature", "vialTemperature", "ambientTemperature", "coreTemperature",
+         "airSensorId", "liquidSensorId", "vialSensorId", "ambientSensorId", "coreSensorId",
+         "sensorRole", "sensorType", "measurementType"].forEach((key) => {
+          if (reading[key] !== undefined && reading[key] !== null) historySample[key] = reading[key];
+        });
+        updates[`shipments/${shipmentId}/telemetry/history/${minuteSlot}`] = historySample;
       }
 
       // Update root summary fields for fast querying
