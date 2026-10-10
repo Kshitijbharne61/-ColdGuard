@@ -68,6 +68,10 @@
       ".read": false,
       ".write": false
     },
+    "notification_worker_lock": {
+      ".read": false,
+      ".write": false
+    },
     "facilities": {
       ".read": "auth != null",
       ".write": "auth != null"
