@@ -67,7 +67,11 @@ async function updateAlert(uid, alertId, token, mutate) {
   return alert;
 }
 function recipientsFor(settings, contact) {
-  const c=Object.assign({},contact||{},settings && settings.contacts || {});
+  const c=Object.assign({},contact||{});
+  const preferred=settings && settings.contacts || {};
+  ["email","phone","telegramChatId","whatsappPhone","pushToken"].forEach(key => {
+    if (String(preferred[key] || "").trim()) c[key]=String(preferred[key]).trim();
+  });
   return {
     email:String(c.email || process.env.ALERT_EMAIL_TO || "").trim(),
     phone:String(c.phone || process.env.ALERT_PHONE_TO || "").trim(),
