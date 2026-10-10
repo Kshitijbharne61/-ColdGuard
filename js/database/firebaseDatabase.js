@@ -199,6 +199,17 @@ export class FirebaseDatabaseService {
       }
       updates[`shipments/${shipmentId}/telemetry/live`] = livePayload;
 
+      // Keep a bounded rolling history: one actual sensor sample per minute for the latest 120 minutes.
+      // Refreshing the current minute slot avoids an unbounded stream of new history records.
+      if (reading.temperature !== null && reading.temperature !== undefined && Number.isFinite(Number(reading.temperature))) {
+        const minuteSlot = String(Math.floor(now / 60000) % 120);
+        updates[`shipments/${shipmentId}/telemetry/history/${minuteSlot}`] = {
+          temperature: Number(reading.temperature),
+          timestamp: now,
+          source: "sensor"
+        };
+      }
+
       // Update root summary fields for fast querying
       updates[`shipments/${shipmentId}/currentTemperature`] = reading.temperature;
       updates[`shipments/${shipmentId}/currentHumidity`] = reading.humidity;
