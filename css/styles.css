@@ -715,3 +715,56 @@ tbody tr:hover [data-chevron] {
 @media(prefers-reduced-motion:reduce){.sensor-delta-fill{transition:none!important}}
 
 .sensor-fault-banner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:13px 15px;border:1px solid #fbbf24;border-left:4px solid #d97706;border-radius:13px;background:#fffbeb;color:#78350f}.sensor-fault-banner strong{font-size:12px}.sensor-fault-banner p{font-size:11px;color:#92400e}.sensor-fault-banner button{padding:7px 10px;border:1px solid #d97706;border-radius:8px;background:#fff;color:#92400e;font-size:10px;font-weight:750;cursor:pointer;transition:all .2s ease-out}.sensor-fault-banner button:hover{background:#fef3c7;box-shadow:0 3px 10px #d977061a;transform:translateY(-1px)}.sensor-fault-banner button:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+
+
+/* Weather-aware route optimization: accessible comparison and operator actions */
+.weather-loading-skeleton{min-height:84px;border-radius:10px;padding:18px;color:#334155;background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 45%,#f1f5f9 65%);background-size:220% 100%;animation:weather-skeleton 1.4s ease-in-out infinite}
+@keyframes weather-skeleton{to{background-position:-220% 0}}
+.weather-sim-badge{margin:10px 0;padding:7px 9px;border:1px solid #b45309;border-radius:8px;background:#fffbeb;color:#78350f;font-size:11px;font-weight:800}
+.weather-recommendation{border:1px solid #cbd5e1;border-radius:10px;padding:12px;margin-bottom:10px;color:#0f172a}
+.weather-recommendation.recommend-reroute{border-color:#d97706;background:#fffbeb}
+.weather-recommendation.recommend-current{border-color:#059669;background:#ecfdf5}
+.weather-recommendation-badge{display:inline-flex;align-items:center;border-radius:999px;padding:4px 8px;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;font-size:10px;font-weight:800}
+.recommend-current .weather-recommendation-badge{background:#dcfce7;color:#166534;border-color:#86efac}
+.weather-comparison-wrap{overflow-x:auto;border:1px solid #cbd5e1;border-radius:9px;margin-top:10px}
+.weather-comparison{width:100%;border-collapse:collapse;font-size:11px;min-width:630px}
+.weather-comparison th{padding:9px 8px;text-align:left;background:#f1f5f9;color:#334155;font-weight:800;white-space:nowrap}
+.weather-comparison td{padding:9px 8px;border-top:1px solid #e2e8f0;color:#0f172a;white-space:nowrap}
+.weather-route-row{cursor:pointer;outline-offset:-2px;transition:background-color .16s ease,box-shadow .16s ease}
+.weather-route-row:hover{background:#f8fafc}
+.weather-route-row:focus-visible{outline:3px solid #2563eb;background:#eff6ff}
+.weather-route-row.is-selected{box-shadow:inset 0 0 0 2px #2563eb;background:#eff6ff}
+.weather-route-row.is-recommended:not(.is-selected){background:#f0fdf4}
+.weather-risk-pill{display:inline-flex;gap:4px;align-items:center;border-radius:999px;padding:4px 7px;font-weight:800;font-size:10px;border:1px solid}
+.weather-risk-pill.risk-low{background:#dcfce7;color:#166534;border-color:#86efac}
+.weather-risk-pill.risk-medium{background:#fef3c7;color:#92400e;border-color:#fcd34d}
+.weather-risk-pill.risk-high{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.weather-btn{border-radius:8px;padding:8px 11px;font-size:11px;font-weight:800;border:1px solid transparent;transition:background-color .15s ease,transform .15s ease,box-shadow .15s ease;cursor:pointer}
+.weather-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 2px 5px #0f172a1a}
+.weather-btn:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+.weather-btn:disabled{opacity:.45;cursor:not-allowed}
+.weather-btn-primary{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.weather-btn-primary:hover:not(:disabled){background:#1e40af}
+.weather-btn-secondary{background:#fff;color:#1e293b;border-color:#94a3b8}
+.weather-btn-secondary:hover:not(:disabled){background:#f1f5f9}
+.weather-btn-warning{background:#92400e;color:#fff;border-color:#92400e}
+.weather-why summary{cursor:pointer;font-size:11px;font-weight:800;color:#1d4ed8;padding:5px 0}
+.weather-why summary:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+.weather-why ul{margin:7px 0 0 17px;list-style:disc;font-size:11px;line-height:1.6;color:#334155}
+.weather-confirm-backdrop{position:fixed;inset:0;z-index:10000;background:#0f172acc;display:flex;align-items:center;justify-content:center;padding:18px}
+.weather-confirm-modal{width:min(100%,440px);background:#fff;border-radius:16px;padding:22px;box-shadow:0 20px 60px #02061755;color:#0f172a}
+.weather-confirm-modal h3{font-size:18px;font-weight:800;margin-bottom:8px}
+.weather-confirm-modal p{font-size:13px;line-height:1.6;color:#334155}
+.weather-hub-marker{display:flex!important;align-items:center;justify-content:center;border:2px solid #1d4ed8;border-radius:50%;background:#eff6ff;color:#1e40af;font-size:17px;box-shadow:0 2px 8px #0f172a30}
+.weather-shipment-marker{display:flex!important;align-items:center;justify-content:center;border-radius:50%;background:#dbeafe;border:2px solid #1d4ed8;animation:weather-marker-pulse 1.8s infinite}
+.weather-shipment-marker span{font-size:18px}
+@keyframes weather-marker-pulse{0%,100%{box-shadow:0 0 0 0 #2563eb55}50%{box-shadow:0 0 0 9px #2563eb00}}
+@media(max-width:640px){.weather-comparison{font-size:10px}.weather-btn{flex:1 1 auto}.weather-recommendation{padding:10px}}
+@media(prefers-reduced-motion:reduce){.weather-loading-skeleton,.weather-shipment-marker{animation:none}.weather-btn{transition:none}}
+
+.weather-map-legend{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:9px;color:#334155;font-size:10px;font-weight:700}
+.weather-map-legend span{display:inline-flex;align-items:center;gap:5px}
+.weather-map-legend i{display:inline-block;width:18px;height:4px;border-radius:4px}
+.weather-map-legend .legend-green{background:#059669}.weather-map-legend .legend-amber{background:#d97706}.weather-map-legend .legend-red{background:#dc2626}
+
+.weather-event-marker{display:flex!important;align-items:center;justify-content:center;background:#fff;border:1px solid #64748b;border-radius:50%;font-size:16px;box-shadow:0 2px 6px #0f172a33}

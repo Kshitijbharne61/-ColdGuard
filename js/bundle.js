@@ -3348,6 +3348,7 @@ class ModalManager {
             </div>
 
             ${shipment.sensorFaultHistory && shipment.sensorFaultHistory.length ? '<section class="rounded-xl border border-amber-200 bg-amber-50 p-4"><h4 class="font-bold text-amber-900">Sensor Data-Integrity Note</h4><p class="mt-1 text-amber-800">Dual-sensor state: ' + (shipment.sensorHealth || 'healthy') + '. Current delta: ' + (shipment.sensorDelta == null ? 'N/A' : Number(shipment.sensorDelta).toFixed(2) + '°C') + '.</p><ul class="mt-2 space-y-1 text-amber-900">' + shipment.sensorFaultHistory.map(e => '<li>' + e.type.toUpperCase() + ' · ' + new Date(e.timestamp).toLocaleString() + ' · Δ ' + (e.delta == null ? 'N/A' : Number(e.delta).toFixed(2) + '°C') + ' · Suspect: ' + (e.suspectSensor || 'unknown') + (e.reason ? ' · ' + e.reason : '') + '</li>').join('') + '</ul></section>' : '<section class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-800">Dual-sensor cross-validation: no recorded sensor faults.</section>'}
+            ${shipment.routeDecisionHistory && shipment.routeDecisionHistory.length ? '<section class="rounded-xl border border-blue-200 bg-blue-50 p-4"><h4 class="font-bold text-blue-900">Weather-Aware Route Decisions</h4><ul class="mt-2 space-y-1 text-blue-900">' + shipment.routeDecisionHistory.map(e => '<li>' + (e.action || 'review') + ' · ' + (e.routeName || e.routeId || 'Route') + ' · ' + new Date(e.at || e.timestamp || Date.now()).toLocaleString() + ' · Operator: ' + (e.who || 'Operator') + ' · Reason: ' + (e.reason || 'Weather risk review') + '</li>').join('') + '</ul></section>' : '')}
             <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div>
                 <div class="text-[10px] text-slate-400 uppercase font-semibold">Vaccine Identification</div>
@@ -5338,6 +5339,7 @@ class ColdGuardApp {
 
                   <td class="p-3.5 text-center">
                     ${s.sensorHealth==='fault' ? '<span class="sensor-table-badge" title="Data-integrity alert; separate from temperature excursion">⚠ Sensor Fault</span>' : s.sensorHealth==='warning' ? '<span class="sensor-table-warning">Sensor Warning</span>' : ''}
+                    ${s.routeRiskActive ? '<span class="sensor-table-warning" title="ROUTE_RISK: Heat risk ahead; reroute recommended.">⚠ Route Risk</span>' : ''}
                     <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${
                       s.status === 'Delivered' ? 'bg-slate-100 text-slate-700' :
                       s.status === 'Emergency Rerouting' ? 'bg-purple-100 text-purple-800 font-bold' :
