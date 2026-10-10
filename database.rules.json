@@ -4,6 +4,18 @@
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid && (!newData.child('role').exists() || newData.child('role').val() === 'logistics_operator' || data.child('role').val() === 'admin')",
+        "notificationCenter": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "notificationPreferences": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        },
+        "emergencyContact": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        },
         ".validate": "newData.hasChildren(['email'])"
       }
     },
