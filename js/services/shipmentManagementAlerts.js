@@ -54,7 +54,14 @@ function contactForm(){
 }
 
 async function remove(id){if(!confirm("Remove shipment "+id+" from the visible fleet? If signed in, its Firebase record will also be deleted."))return;try{var u=user(),database=db(),remote=!!(u&&!u.isDemo&&u.uid&&database);if(remote)await database.ref("shipments/"+id).remove();if(app.simulation&&Array.isArray(app.simulation.shipments))app.simulation.shipments=app.simulation.shipments.filter(function(s){return String(s.id)!==String(id);});breaches.delete(String(id));app.renderCurrentView();toast(remote?"Shipment "+id+" removed from Firebase and fleet.":"Shipment "+id+" removed from this session only; sign in to delete its Firebase record.","safe");}catch(e){toast("Could not remove shipment: "+e.message,"warning");}}
-async function send(payload){var u=user();if(!u||u.isDemo||!u.uid){toast("Sign in with Firebase to send emergency alerts.","warning");return;}try{var token=await u.getIdToken(),r=await fetch("/api/send-alert",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify(payload)}),out=await r.json().catch(function(){return {};});if(!r.ok)throw Error(out.error||"Alert service failed.");toast(out.message||"Emergency alert request completed.","safe");}catch(e){toast("Alert was not sent: "+(e.message||"Check email/SMS provider setup."),"warning");}}
+async function send(payload){
+  // Alert detection stays here; the new center owns delivery, deduplication,
+  // demo previews, acknowledgement and escalation. Never block telemetry on provider calls.
+  if(window.ColdGuardNotifications&&typeof window.ColdGuardNotifications.observe==="function")return {queuedToNotificationCenter:true};
+  var u=user();if(!u||u.isDemo||!u.uid){toast("Sign in with Firebase to send emergency alerts.","warning");return;}
+  try{var token=await u.getIdToken(),r=await fetch("/api/send-alert",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify(payload)}),out=await r.json().catch(function(){return {};});if(!r.ok)throw Error(out.error||"Alert service failed.");toast(out.message||"Emergency alert request completed.","safe");}
+  catch(e){toast("Alert was not sent: "+(e.message||"Check email/SMS provider setup."),"warning");}
+}
 var latestShipmentList=[];
 function watch(list){if(!Array.isArray(list))return;latestShipmentList=list;var active=new Set(),now=Date.now();list.forEach(function(s){var id=String(s.id||s.shipmentId||"");if(!id)return;
  var raw=s.telemetry&&s.telemetry.live&&s.telemetry.live.temperature;if(raw==null||raw==="")raw=s.currentTemperature;
