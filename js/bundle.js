@@ -4799,11 +4799,11 @@ class ColdGuardApp {
             <p class="text-xs text-slate-500">Live multi-sensor telemetry processing across all active biologics carriers.</p>
           </div>
           <div class="flex items-center gap-2">
-            <button id="btn-quick-export" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <button id="btn-quick-export" class="cg-btn cg-btn--secondary px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl shadow-sm transition flex items-center gap-1.5">
               <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
               WHO Audit Manifest
             </button>
-            <button id="btn-view-all-shipments" class="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition flex items-center gap-1.5">
+            <button id="btn-view-all-shipments" class="cg-btn cg-btn--primary px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition flex items-center gap-1.5">
               <span>View All Shipments</span>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
             </button>
@@ -4827,7 +4827,7 @@ class ColdGuardApp {
                 <p class="text-xs text-red-800">Shipment <b>${criticalShipments[0].id}</b> (${criticalShipments[0].vaccineName}) breached thermal envelope. Viability degrading.</p>
               </div>
             </div>
-            <button class="btn-inspect-shipment px-3.5 py-1.5 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg shadow transition whitespace-nowrap self-start sm:self-auto" data-id="${criticalShipments[0].id}">
+            <button class="btn-inspect-shipment cg-btn cg-btn--danger cg-btn--sm px-3.5 py-1.5 text-xs font-bold bg-red-600 hover:bg-red-700 text-white rounded-lg shadow transition whitespace-nowrap self-start sm:self-auto" data-id="${criticalShipments[0].id}">
               Inspect Telemetry & Reroute →
             </button>
           </div>
@@ -4836,13 +4836,13 @@ class ColdGuardApp {
         <!-- High Priority Active Shipments Grid / Quick Actions -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Left 2 Cols: Action Required Shipments -->
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+          <div class="cg-card lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
             <div class="flex items-center justify-between">
               <div>
                 <h3 class="font-bold text-slate-900 text-sm">High-Priority Shipments Requiring Attention</h3>
                 <p class="text-xs text-slate-500">Live sorting by highest thermal deviation and spoilage risk.</p>
               </div>
-              <span class="px-2.5 py-1 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-full">
+              <span class="cg-badge cg-badge--warning px-2.5 py-1 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-full">
                 ${dashboardFlaggedShipments.length} Flagged
               </span>
             </div>
@@ -4890,7 +4890,7 @@ class ColdGuardApp {
           <!-- Right 1 Col: Quick Simulation Sandbox & Category Breakdown -->
           <div class="space-y-6">
             <!-- Vaccine Categories Overview -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
+            <div class="cg-card bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-3">
               <h3 class="font-bold text-slate-900 text-sm">Storage Protocol Breakdown</h3>
               <div class="space-y-2.5 text-xs">
                 ${Object.keys(this.vaccineProfiles).map(catKey => {
@@ -4982,7 +4982,7 @@ class ColdGuardApp {
   renderKpiCardsHtml(kpis) {
     return `
       <!-- KPI 1: Active Shipments -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">Active Shipments</span>
           <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
@@ -4999,7 +4999,7 @@ class ColdGuardApp {
       </div>
 
       <!-- KPI 2: Shipments at Risk -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">Shipments at Risk</span>
           <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
@@ -5015,7 +5015,7 @@ class ColdGuardApp {
       </div>
 
       <!-- KPI 3: Temperature Excursions -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">Temperature Excursions</span>
           <div class="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
@@ -5031,7 +5031,7 @@ class ColdGuardApp {
       </div>
 
       <!-- KPI 4: Average Vaccine Viability -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">Avg Vaccine Viability</span>
           <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -5047,7 +5047,7 @@ class ColdGuardApp {
       </div>
 
       <!-- KPI 5: Critical Alerts -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">Critical Incidents</span>
           <div class="w-8 h-8 rounded-xl bg-red-100 text-red-700 flex items-center justify-center">
@@ -5063,7 +5063,7 @@ class ColdGuardApp {
       </div>
 
       <!-- KPI 6: On-Time Delivery Rate -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">On-Time Delivery Rate</span>
           <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -5079,7 +5079,7 @@ class ColdGuardApp {
       </div>
 
       <!-- KPI 7: Humidity Compliance -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">Humidity Compliance</span>
           <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
@@ -5095,7 +5095,7 @@ class ColdGuardApp {
       </div>
 
       <!-- KPI 8: GPS Connectivity -->
-      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+      <div class="cg-card bg-white rounded-2xl p-4 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
         <div class="flex items-center justify-between">
           <span class="text-xs font-semibold text-slate-500">GPS Connectivity</span>
           <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
