@@ -2,7 +2,7 @@
    Forecasts are trend estimates, not guarantees. Demo readings are labelled. */
 (function () {
   "use strict";
-  var app = null, horizon = 120, warning = 60, critical = 15;
+  var app = null, horizon = 120, warning = 60, critical = 15, sortMode = "default", riskFilter = "all";
   var rawRemote = Object.create(null), liveHistory = Object.create(null), lastStamp = Object.create(null), lastRisk = Object.create(null), notified = Object.create(null);
   var $ = function (id) { return document.getElementById(id); };
   var num = function (v) { return v !== null && v !== undefined && v !== "" && Number.isFinite(Number(v)) ? Number(v) : null; };
@@ -140,8 +140,10 @@
       row.setAttribute("data-ttb-status", r.status); row.setAttribute("data-ttb-minutes", r.breachAt ? Math.max(0, (r.breachAt - Date.now()) / 60000) : 999999);
     });
     var sort = $("ttb-sort"), filter = $("ttb-filter"), rows = Array.prototype.slice.call(body.querySelectorAll("tr.shipment-row"));
-    if (filter) rows.forEach(function (row) { row.hidden = filter.value !== "all" && row.getAttribute("data-ttb-status") !== filter.value; });
-    if (sort && sort.value === "shortest") { rows.sort(function (a, b) { return Number(a.getAttribute("data-ttb-minutes")) - Number(b.getAttribute("data-ttb-minutes")); }); rows.forEach(function (row) { body.appendChild(row); }); }
+    if (sort) sort.value = sortMode; if (filter) filter.value = riskFilter;
+    if (filter) rows.forEach(function (row) { row.hidden = riskFilter !== "all" && row.getAttribute("data-ttb-status") !== riskFilter; });
+    if (sortMode === "shortest") { rows.sort(function (a, b) { return Number(a.getAttribute("data-ttb-minutes")) - Number(b.getAttribute("data-ttb-minutes")); }); rows.forEach(function (row) { body.appendChild(row); }); }
+    else { var order = list().map(function (s) { return String(s.id); }); rows.sort(function (a, b) { return order.indexOf(a.getAttribute("data-id")) - order.indexOf(b.getAttribute("data-id")); }); rows.forEach(function (row) { body.appendChild(row); }); }
   }
   function render() {
     if (!app || !$("main-content-view")) return;
@@ -150,7 +152,7 @@
       var kpi = $("kpi-cards-grid");
       if (kpi) { var root = $("ttb-dashboard"); if (!root) { root = document.createElement("div"); root.id = "ttb-dashboard"; root.className = "mt-4"; kpi.insertAdjacentElement("afterend", root); }
         var r = results.find(function (x) { return x.id === String(s.id); }) || evaluate(s);
-        root.innerHTML = card(s, r, "dashboard") + '<div class="flex flex-wrap items-center gap-3 mt-3 text-xs text-slate-500"><span>Fleet risk: ' + results.filter(function (x) { return x.status === "warning" || x.status === "critical" || x.status === "breached"; }).length + ' shipment(s).</span><label class="flex items-center gap-2">Select shipment<select id="ttb-selected" class="border border-slate-300 rounded-lg px-2 py-1.5 bg-white">' + sList.map(function (x) { return '<option value="' + esc(x.id) + '"' + (String(x.id) === String(s.id) ? " selected" : "") + '>' + esc(x.id + " · " + (x.vaccineName || x.productName || "")) + '</option>'; }).join("") + '</select></label></div>';
+        root.innerHTML = card(s, r, "dashboard") + '<div class="flex flex-wrap items-center gap-3 mt-3 text-xs text-slate-500"><span>Fleet risk: ' + results.filter(function (x) { return x.status === "warning" || x.status === "critical" || x.status === "breached"; }).length + ' shipment(s).</span><label class="flex items-center gap-2">Select shipment<select id="ttb-selected" class="border border-slate-300 rounded-lg px-2 py-1.5 bg-white">' + sList.map(function (x) { return '<option value="' + esc(x.id) + '"' + (String(x.id) === String(s.id) ? " selected" : "") + '>' + esc(x.id + " · " + (x.vaccineName || x.productName || "")) + '</option>'; }).join("") + '</select></label><label class="flex items-center gap-1">Critical at <select id="ttb-critical" class="border rounded px-1.5 py-1 bg-white"><option value="5">5 min</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option></select></label><label class="flex items-center gap-1">Warning at <select id="ttb-warning" class="border rounded px-1.5 py-1 bg-white"><option value="30">30 min</option><option value="60">60 min</option><option value="120">2 hours</option><option value="360">6 hours</option></select></label></div>';
       }
     } else { var old = $("ttb-dashboard"); if (old) old.remove(); }
     if (app.currentView === "details" && s) {
@@ -167,7 +169,10 @@
     var t = e.target;
     if (t && t.classList && t.classList.contains("ttb-horizon")) { var v = num(t.value); if ([30, 60, 120, 360].indexOf(v) >= 0) { horizon = v; render(); } }
     if (t && t.id === "ttb-selected") { app.selectedShipmentId = t.value; render(); }
-    if (t && (t.id === "ttb-sort" || t.id === "ttb-filter")) fleet(list().map(evaluate));
+    if (t && t.id === "ttb-sort") { sortMode = t.value; fleet(list().map(evaluate)); }
+    if (t && t.id === "ttb-filter") { riskFilter = t.value; fleet(list().map(evaluate)); }
+    if (t && t.id === "ttb-critical") { critical = Math.max(1, Math.min(60, Number(t.value) || 15)); render(); }
+    if (t && t.id === "ttb-warning") { warning = Math.max(critical, Math.min(360, Number(t.value) || 60)); render(); }
   }
   function boot() {
     app = window.coldGuardApp; if (!app) { window.setTimeout(boot, 50); return; }
