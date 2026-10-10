@@ -130,16 +130,34 @@ module.exports = async function handler(req,res) {
   const db=engine.adminDatabase();
   if(!db)return res.status(503).json({error:"FIREBASE_SERVICE_ACCOUNT_JSON must be configured to run durable notifications."});
   try {
+    const lockRef=db.ref("notification_worker_lock");
+    const lockOwner=cryptoRandomId();
+    const lockClaim=await lockRef.transaction(function(current) {
+      if(current && Number(current.leaseUntil||0)>Date.now()) return;
+      return {owner:lockOwner,leaseUntil:Date.now()+4*60*1000,createdAt:new Date().toISOString()};
+    });
+    if(!lockClaim.committed) return res.status(200).json({ok:true,skipped:true,reason:"Another worker holds the lease."});
     const queueSnap=await db.ref("notification_queue").once("value");
     const queue=queueSnap.val()||{};
     const due=[];
     Object.keys(queue).forEach(uid=>Object.keys(queue[uid]||{}).forEach(key=>{
       const task=queue[uid][key];
-      if(task && task.status==="queued" && Number(task.nextAttemptAt||0)<=Date.now() && due.length<60) due.push({uid:uid,key:key,task:task});
+      const queuedDue=task && task.status==="queued" && Number(task.nextAttemptAt||0)<=Date.now();
+      const leaseExpired=task && task.status==="processing" && Number(task.leaseUntil||0)<=Date.now();
+      if((queuedDue||leaseExpired) && due.length<60) due.push({uid:uid,key:key,task:task});
     }));
     let sent=0, retried=0, failed=0, skipped=0;
     for(const item of due) {
-      const task=item.task, uid=item.uid, channel=task.channel, alert=task.alert||{};
+      const uid=item.uid, queueRef=db.ref("notification_queue/"+uid+"/"+item.key);
+      const claim=await queueRef.transaction(function(current) {
+        if(!current) return;
+        const dueQueued=current.status==="queued" && Number(current.nextAttemptAt||0)<=Date.now();
+        const staleLease=current.status==="processing" && Number(current.leaseUntil||0)<=Date.now();
+        if(!dueQueued && !staleLease) return;
+        return Object.assign({},current,{status:"processing",claimedAt:new Date().toISOString(),leaseUntil:Date.now()+2*60*1000});
+      });
+      if(!claim.committed) { skipped++; continue; }
+      const task=claim.snapshot.val(), channel=task.channel, alert=task.alert||{};
       try {
         const originUid=task.ownerUid||alert.ownerUid||uid;
         const originRef=db.ref("users/"+originUid+"/notificationCenter/"+task.alertId);
@@ -218,5 +236,13 @@ module.exports = async function handler(req,res) {
   } catch(error) {
     console.error("ColdGuard notification worker failed",error.message);
     return res.status(500).json({error:"Notification worker failed."});
+  } finally {
+    await db.ref("notification_worker_lock").transaction(function(current) {
+      return current && current.owner===lockOwner ? null : current;
+    }).catch(function(){});
   }
 };
+
+function cryptoRandomId() {
+  return require("crypto").randomBytes(16).toString("hex");
+}
