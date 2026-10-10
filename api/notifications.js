@@ -219,9 +219,12 @@ async function runAckLink(req,res) {
       if(alert.escalation) alert.escalation.nextAt=null;
       appendTimeline(alert,"acknowledged","Acknowledged from a signed link.");
       await ref.set(alert);
-      // Escalated copies carry ownerUid; stop the original alert's escalation too.
-      if(alert.ownerUid && alert.ownerUid!==uid) {
-        const ownerRef=db.ref("users/"+alert.ownerUid+"/notificationCenter/"+alertId);
+      // Resolve escalation ownership from the server-only map; the alert JSON is user-editable.
+      const mappingSnap=await db.ref("notification_escalation_map/"+uid+"/"+alertId).once("value");
+      const mapping=mappingSnap.val()||{};
+      const trustedOwnerUid=String(mapping.ownerUid||"");
+      if(trustedOwnerUid && trustedOwnerUid!==uid) {
+        const ownerRef=db.ref("users/"+trustedOwnerUid+"/notificationCenter/"+alertId);
         const ownerSnap=await ownerRef.once("value");
         const ownerAlert=ownerSnap.val();
         if(ownerAlert && ownerAlert.status==="open") {
@@ -314,20 +317,25 @@ module.exports = async function handler(req,res) {
           appendTimeline(a,"resolved",a.resolution.reason||"Condition cleared");
         }
       });
-      // If this is an escalation copy, also stop the owner's escalation chain.
-      if(alert.ownerUid && alert.ownerUid!==user.uid && engine.adminDatabase()) {
-        const ownerAlert=await engine.dbRead("users/"+alert.ownerUid+"/notificationCenter/"+alertId,null).catch(()=>null);
-        if(ownerAlert) {
-          if(action==="acknowledge" && ownerAlert.status==="open") {
-            ownerAlert.status="acknowledged";ownerAlert.unread=false;ownerAlert.acknowledgedAt=alert.acknowledgedAt||new Date().toISOString();ownerAlert.acknowledgedBy=user.email||user.uid;
-            if(ownerAlert.escalation)ownerAlert.escalation.nextAt=null;
-            appendTimeline(ownerAlert,"acknowledged","Acknowledged by escalation recipient "+(user.email||user.uid));
-          } else if(action==="resolve" && ownerAlert.status!=="resolved") {
-            ownerAlert.status="resolved";ownerAlert.unread=false;ownerAlert.resolvedAt=alert.resolvedAt||new Date().toISOString();ownerAlert.resolution=body.resolution||{reason:"Condition cleared"};
-            if(ownerAlert.escalation)ownerAlert.escalation.nextAt=null;
-            appendTimeline(ownerAlert,"resolved","Resolved by escalation recipient");
+      // Trust server-side escalation metadata, not the editable alert JSON.
+      if(engine.adminDatabase()) {
+        const mappingSnap=await engine.adminDatabase().ref("notification_escalation_map/"+user.uid+"/"+alertId).once("value");
+        const mapping=mappingSnap.val()||{};
+        const trustedOwnerUid=String(mapping.ownerUid||"");
+        if(trustedOwnerUid && trustedOwnerUid!==user.uid) {
+          const ownerAlert=await engine.dbRead("users/"+trustedOwnerUid+"/notificationCenter/"+alertId,null).catch(()=>null);
+          if(ownerAlert) {
+            if(action==="acknowledge" && ownerAlert.status==="open") {
+              ownerAlert.status="acknowledged";ownerAlert.unread=false;ownerAlert.acknowledgedAt=alert.acknowledgedAt||new Date().toISOString();ownerAlert.acknowledgedBy=user.email||user.uid;
+              if(ownerAlert.escalation)ownerAlert.escalation.nextAt=null;
+              appendTimeline(ownerAlert,"acknowledged","Acknowledged by escalation recipient "+(user.email||user.uid));
+            } else if(action==="resolve" && ownerAlert.status!=="resolved") {
+              ownerAlert.status="resolved";ownerAlert.unread=false;ownerAlert.resolvedAt=alert.resolvedAt||new Date().toISOString();ownerAlert.resolution=body.resolution||{reason:"Condition cleared"};
+              if(ownerAlert.escalation)ownerAlert.escalation.nextAt=null;
+              appendTimeline(ownerAlert,"resolved","Resolved by escalation recipient");
+            }
+            await engine.dbWrite("users/"+trustedOwnerUid+"/notificationCenter/"+alertId,ownerAlert,null);
           }
-          await engine.dbWrite("users/"+alert.ownerUid+"/notificationCenter/"+alertId,ownerAlert,null);
         }
       }
       await audit(user.uid,action==="acknowledge"?"NOTIFICATION_ACKNOWLEDGED":"NOTIFICATION_RESOLVED",alert,token,action==="acknowledge"?"Dashboard acknowledgement":"Condition resolved");
