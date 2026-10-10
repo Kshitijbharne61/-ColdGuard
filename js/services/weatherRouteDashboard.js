@@ -387,15 +387,30 @@
     loadWeather(false);loadRoutes(false);updateAlerts();
   }
 
+  function renderDashboardRouteSummary(main,kpis) {
+    document.getElementById("coldguard-live-route-panel")?.remove();
+    const shipments=state.app?.simulation?.shipments||[];
+    const risky=shipments.filter(s=>s.routeRiskActive||s.sensorHealth==="fault"||s.excursionSeverity==="Critical"||s.riskClassification==="High Risk");
+    const selected=shipments.find(s=>String(s.id)===String(state.app?.selectedShipmentId))||risky[0]||shipments.find(s=>s.status!=="Delivered")||shipments[0];
+    let card=document.getElementById("coldguard-route-overview-card");
+    if(!card){card=document.createElement("section");card.id="coldguard-route-overview-card";card.className="mt-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm";kpis.insertAdjacentElement("afterend",card);}
+    card.innerHTML='<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div class="min-w-0"><div class="text-[11px] font-bold uppercase tracking-widest text-indigo-600">Route intelligence</div><h2 class="mt-1 text-lg font-extrabold text-slate-900">Route & Weather Watch</h2><p class="mt-1 max-w-2xl text-sm text-slate-600">A fleet-level summary belongs here. Open an individual shipment to inspect its route map, forecast, alternatives, and approval controls.</p><div class="mt-3 flex flex-wrap gap-2"><span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">Active shipments: '+shipments.filter(s=>s.status!=="Delivered").length+'</span><span class="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-900">Needs review: '+risky.length+'</span><span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">Detailed route analysis: per shipment</span></div></div><div class="flex shrink-0 flex-col gap-2 sm:items-end"><div class="text-right"><div class="text-xs text-slate-500">Suggested next inspection</div><div class="font-mono text-sm font-bold text-slate-900">'+esc(selected?.id||"No shipment selected")+'</div><div class="text-xs text-slate-500">'+esc(selected?.vaccineName||"Waiting for shipment data")+'</div></div><button id="coldguard-open-route-detail" type="button" class="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" '+(!selected?'disabled':'')+'>Open shipment analysis →</button></div></div>';
+    const button=card.querySelector("#coldguard-open-route-detail");
+    if(button)button.onclick=()=>{if(!selected)return;state.app.selectedShipmentId=selected.id;state.app.currentView="details";if(typeof state.app.renderCurrentView==="function")state.app.renderCurrentView();document.querySelectorAll(".nav-link").forEach(el=>{const active=el.getAttribute("data-view")==="details";el.classList.toggle("bg-blue-600",active);el.classList.toggle("text-white",active);});};
+  }
+
   function renderPanel() {
     const main=document.getElementById("main-content-view");
     const kpis=main?.querySelector("#kpi-cards-grid");
     const detailMap=main?.querySelector("#route-map-container");
-    if(!main||(!kpis&&!detailMap))return;
+    if(!main)return;
+    if(kpis&&!detailMap){renderDashboardRouteSummary(main,kpis);return;}
+    document.getElementById("coldguard-route-overview-card")?.remove();
+    if(!detailMap){document.getElementById("coldguard-live-route-panel")?.remove();return;}
     let panel=document.getElementById("coldguard-live-route-panel");
     if(!panel){
       panel=document.createElement("div");panel.innerHTML=panelHtml();const section=panel.firstElementChild;
-      const anchor=kpis?kpis.parentElement:(detailMap.closest(".bg-white.rounded-2xl")||detailMap.parentElement);
+      const anchor=detailMap.closest(".bg-white.rounded-2xl")||detailMap.parentElement;
       anchor.insertAdjacentElement("afterend",section);panel=section;
     }else{
       const holder=document.createElement("div");holder.innerHTML=panelHtml();panel.replaceWith(holder.firstElementChild);panel=document.getElementById("coldguard-live-route-panel");
@@ -418,7 +433,7 @@
   function start(){
     const main=document.getElementById("main-content-view");
     if(main&&window.MutationObserver){
-      state.observer=new MutationObserver(()=>{if((document.getElementById("kpi-cards-grid")||document.getElementById("route-map-container"))&&!document.getElementById("coldguard-live-route-panel"))attach();});
+      state.observer=new MutationObserver(()=>{if(document.getElementById("kpi-cards-grid")&&!document.getElementById("coldguard-route-overview-card")||document.getElementById("route-map-container")&&!document.getElementById("coldguard-live-route-panel"))attach();});
       state.observer.observe(main,{childList:true,subtree:true});
     }
     attach();
