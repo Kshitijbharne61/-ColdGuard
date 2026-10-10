@@ -2,12 +2,12 @@
 (function () {
   "use strict";
   var app = null, chart = null, rescueMap = null, rescueLine = null, rescueMarker = null;
-  var state = { air: 4.2, vial: 4.2, scenario: "normal", points: [], lastTick: Date.now(), lastRescue: false, exposureDegreeHours: 0, mkt: 4.2, tripStart: Date.now(), frozen: false, scenarioLabel: "Normal Transit (4.2°C)" };
+  var state = { air: 4.2, vial: 4.2, scenario: "normal", points: [], lastTick: Date.now(), lastRescue: false, exposureDegreeHours: 0, mkt: 4.2, tripStart: Date.now(), frozen: false, scenarioLabel: "Normal Transit (4.2°C)", forceDemo: false };
   var $ = function (id) { return document.getElementById(id); };
   var DEMO_HUBS = [
-    { id: "PHC-02", name: "Sub-District Hospital / Depot #2", lat: 18.7850, lng: 73.4850, type: "PHC / Cold-chain depot" },
+    { id: "PHC-02", name: "Sub-District Hospital / Depot #2", lat: 18.7800, lng: 73.4740, type: "PHC / Cold-chain depot" },
     { id: "HUB-PUNE", name: "Pune Vaccine Cold-Chain Hub", lat: 18.5204, lng: 73.8567, type: "Regional cold-storage hub" },
-    { id: "PHC-LON", name: "Lonavala Primary Health Centre", lat: 18.7546, lng: 73.4062, type: "Primary Health Centre" }
+    { id: "PHC-LON", name: "Lonavala Primary Health Centre", lat: 18.7300, lng: 73.4450, type: "Primary Health Centre" }
   ];
   var TRUCK = { lat: 18.7546, lng: 73.4062 };
   function esc(v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[c]; }); }
@@ -47,13 +47,22 @@
     var kelvin = -eaOverR / Math.log(avg);
     return Number.isFinite(kelvin) ? kelvin - 273.15 : state.vial;
   }
+  function syncLiveTelemetry() {
+    if(state.forceDemo || !app || !window.ColdGuardDualThermal || typeof window.ColdGuardDualThermal.collect!=="function") return false;
+    var s=shipment(); if(!s) return false;
+    var d; try { d=window.ColdGuardDualThermal.collect(s); } catch(e) { return false; }
+    if(!d || !d.live || !d.airMapped || !d.vialMapped) return false;
+    var a=d.air && d.air.length ? d.air[d.air.length-1] : null, v=d.vial && d.vial.length ? d.vial[d.vial.length-1] : null;
+    if(!a || !v || !Number.isFinite(a.y) || !Number.isFinite(v.y)) return false;
+    if(Date.now()-a.x>300000 || Date.now()-v.x>300000) return false;
+    state.air=a.y; state.vial=v.y; state.scenario="live"; state.scenarioLabel="Mapped live air + vial sensors"; state.frozen=state.vial<0;
+    return true;
+  }
   function updateThermal() {
     var now = Date.now(), dt = Math.max(0.01, Math.min(1, (now-state.lastTick)/60000));
     state.lastTick = now;
-    if (state.scenario !== "freeze" && state.scenario !== "normal") {
-      state.vial += (state.air-state.vial) * (1-Math.exp(-dt/15));
-    } else if (state.scenario === "normal") {
-      state.vial += (state.air-state.vial) * (1-Math.exp(-dt/15));
+    if (state.scenario !== "live") {
+      if (state.scenario !== "freeze") state.vial += (state.air-state.vial) * (1-Math.exp(-dt/15));
     }
     if (state.scenario === "normal") {
       state.air = 4.2 + Math.sin(now/25000)*0.12;
@@ -124,6 +133,7 @@
     if($("cg-innovation-css")) return;
     var s=document.createElement("style"); s.id="cg-innovation-css";
     s.textContent = [
+      ".coldguard-toolbar-simulation{flex-wrap:wrap}",
       ".cg-preset-group{display:flex;gap:6px;flex-wrap:wrap;align-items:center;flex:1 1 100%;padding-top:4px}",
       ".cg-preset{border:1px solid #dbe3ef;border-radius:9px;padding:7px 9px;background:#fff;color:#334155;font-size:10px;font-weight:800;line-height:1.25;text-align:left;box-shadow:0 1px 2px #0f172a08}",
       ".cg-preset b{display:block;font-size:9px;font-weight:600;color:#64748b;margin-top:3px}",
@@ -159,11 +169,11 @@
       "@media(max-width:1000px){.cg-innovation .cg-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cg-innovation .cg-two{grid-template-columns:1fr}.cg-preset-group{flex-basis:100%}}",
       "@media(max-width:600px){.cg-innovation .cg-grid{grid-template-columns:1fr 1fr}.cg-innovation .cg-rescue-grid{grid-template-columns:1fr}.cg-modal-grid{grid-template-columns:1fr}.cg-innovation .cg-chart-wrap{height:230px}.cg-preset{flex:1 1 45%}.cg-passport-btn{font-size:9px;padding:8px}}",
       "@media print{body *{visibility:hidden!important}#cg-passport-modal,#cg-passport-modal *{visibility:visible!important}#cg-passport-modal{position:absolute;inset:0;background:#fff!important;padding:0!important}.cg-modal-actions,#cg-passport-close{display:none!important}}"
-    ].join("\\n");
+    ].join("\n");
     document.head.appendChild(s);
   }
   function setScenario(which) {
-    state.scenario = which; state.points=[]; state.lastTick=Date.now(); state.tripStart=Date.now(); state.exposureDegreeHours=0; state.frozen=false;
+    state.scenario = which; state.forceDemo=true; state.points=[]; state.lastTick=Date.now(); state.tripStart=Date.now(); state.exposureDegreeHours=0; state.frozen=false;
     if(which==="normal"){state.air=4.2;state.vial=4.2;state.scenarioLabel="Normal Transit (4.2°C)";}
     if(which==="spike"){state.air=12;state.vial=4.2;state.scenarioLabel="Door-Ajar Spike — air only";}
     if(which==="failure"){state.air=12.5;state.vial=4.2;state.scenarioLabel="Refrigeration Failure";}
@@ -196,6 +206,7 @@
   }
   function drawRescueMap() {
     var el=$("cg-rescue-map"); if(!el||!window.L) return;
+    if(rescueMap && rescueMap.getContainer && rescueMap.getContainer()!==el){rescueMap.remove();rescueMap=null;rescueLine=null;rescueMarker=null;}
     var breach=state.vial<0||state.vial>8, hub=nearestHub();
     if(!rescueMap){rescueMap=L.map(el,{zoomControl:false,scrollWheelZoom:false}).setView([TRUCK.lat,TRUCK.lng],10);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(rescueMap);L.marker([TRUCK.lat,TRUCK.lng]).addTo(rescueMap).bindPopup("Simulated shipment position");}
     if(rescueLine){rescueMap.removeLayer(rescueLine);rescueLine=null;} if(rescueMarker){rescueMap.removeLayer(rescueMarker);rescueMarker=null;}
@@ -210,7 +221,7 @@
     if(!host){host=document.createElement("section");host.id="cg-innovation-suite";host.className="cg-innovation";main.insertBefore(host,main.firstChild);}
     var s=shipment(), slope=thermalSlope(), ttb=timeToBreach(), stage=vvmStage(), vm=stageMeta(stage), breach=state.vial<0||state.vial>8;
     var airStatus=state.air<0||state.air>8?"Excursion":"In range";
-    var liveTag=state.scenario==="live"?"TYPED SENSOR CHANNEL":"SIMULATED DEMO";
+    var liveTag=state.scenario==="live"?"VERIFIED TYPED CHANNELS":"SIMULATED DEMO";
     var freezePass=state.vial>=0 && state.vial<=8 && !state.frozen;
     host.innerHTML=
       '<div class="flex flex-col md:flex-row md:items-center justify-between gap-3"><div><div class="text-[10px] font-extrabold tracking-[.16em] uppercase text-blue-600">ColdGuard innovation suite</div><h2 class="text-xl font-extrabold tracking-tight mt-1">Predict · Protect · Prove</h2><p class="cg-muted mt-1">Selected shipment: '+esc(s?s.id:"Demo batch")+' · '+esc(state.scenarioLabel)+' · '+liveTag+'</p></div><div class="flex items-center gap-2 flex-wrap"><span class="cg-badge" style="background:'+(breach?'#fee2e2':'#dcfce7')+';color:'+(breach?'#991b1b':'#166534')+'">'+(breach?'EXCURSION / RESCUE':'THERMAL GUARD ACTIVE')+'</span><button type="button" id="cg-open-passport-inline" class="cg-passport-btn">Generate Batch Passport</button></div></div>'+
@@ -273,7 +284,7 @@
       app.onSimulationTick=function(){tick.apply(null,arguments);renderPanel();};
     }
     document.addEventListener("visibilitychange",function(){if(!document.hidden)renderPanel();});
-    window.setInterval(function(){if(!document.hidden){updateThermal();renderPanel();}},3000);
+    window.setInterval(function(){if(!document.hidden){syncLiveTelemetry();updateThermal();renderPanel();}},3000);
     window.ColdGuardInnovationSuite={setScenario:setScenario,passportData:passportData,timeToBreach:timeToBreach};
     renderPanel();
   }
