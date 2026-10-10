@@ -541,12 +541,9 @@
     prefs.digest = Object.assign(base.digest, prefs.digest || {});
   }
   function loadEvents() {
+    // Keep one operator's history private; never fall back to a cross-user local key.
     events = loadLocal(KEY + ":" + uid(), []);
     if (!Array.isArray(events)) events = [];
-    if (!events.length) {
-      var existing = loadLocal(KEY, []);
-      if (Array.isArray(existing)) events = existing;
-    }
   }
   function loadProviderHealth() {
     fetch("/api/notifications?action=health", { headers:{ "Accept":"application/json" } }).then(function (r) { return r.json(); }).then(function (d) {
@@ -649,6 +646,43 @@
       return;
     }
   }
+  var syncedNotificationUid = null;
+  var syncedNotificationRef = null;
+  function attachUserNotificationSync() {
+    var u = liveUser(), db = database();
+    if (!db || !u) {
+      if (syncedNotificationRef) { syncedNotificationRef.off(); syncedNotificationRef = null; }
+      syncedNotificationUid = null;
+      return;
+    }
+    if (syncedNotificationUid === u.uid && syncedNotificationRef) return;
+    if (syncedNotificationRef) syncedNotificationRef.off();
+    syncedNotificationUid = u.uid;
+    loadEvents();
+    loadSettings();
+    var ref = db.ref("users/" + u.uid + "/notificationCenter");
+    syncedNotificationRef = ref;
+    function mergeRemote(item) {
+      if (!item || !item.id) return;
+      var at = events.findIndex(function (e) { return e.id === item.id; });
+      if (at >= 0) events[at] = item; else events.unshift(item);
+      events.sort(function (a,b) { return Date.parse(b.detectedAt || 0) - Date.parse(a.detectedAt || 0); });
+      storeEvents(); updateHeader(); renderIfOpen();
+    }
+    ref.once("value").then(function (snap) {
+      var remote = snap.val() || {};
+      Object.keys(remote).forEach(function (key) { mergeRemote(remote[key]); });
+      storeEvents(); updateHeader(); renderIfOpen();
+    }).catch(function () {});
+    ref.on("child_added", function (snap) { mergeRemote(snap.val()); });
+    ref.on("child_changed", function (snap) { mergeRemote(snap.val()); });
+    ref.on("child_removed", function (snap) {
+      var item = snap.val();
+      if (!item || !item.id) return;
+      events = events.filter(function (e) { return e.id !== item.id; });
+      storeEvents(); updateHeader(); renderIfOpen();
+    });
+  }
   function initUi() {
     app = window.coldGuardApp;
     if (!app) { window.setTimeout(initUi, 50); return; }
@@ -708,24 +742,17 @@
     });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeBellDropdown(); });
     document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") updateHeader(); });
-    var db = database(), u = liveUser();
-    if (db && u) {
-      db.ref("users/" + u.uid + "/notificationCenter").once("value").then(function (snap) {
-        var remote = snap.val() || {};
-        Object.keys(remote).forEach(function (k) {
-          var item = remote[k];
-          if (item && !events.some(function (e) { return e.id === item.id; })) events.push(item);
-        });
-        events.sort(function (a,b) { return Date.parse(b.detectedAt || 0) - Date.parse(a.detectedAt || 0); });
-        storeEvents(); updateHeader(); renderIfOpen();
-      }).catch(function () {});
-      db.ref("users/" + u.uid + "/notificationCenter").on("child_changed", function (snap) {
-        var item=snap.val(), at=events.findIndex(function(e){return e.id===item.id;});
-        if(at>=0) events[at]=item; else events.unshift(item);
-        storeEvents(); updateHeader(); renderIfOpen();
-      });
-    }
-    var originalTick = app.onSimulationTick.bind(app);
+    attachUserNotificationSync();
+    var originalAuthStateChanged = app.handleAuthStateChanged.bind(app);
+    app.handleAuthStateChanged = function (user) {
+      originalAuthStateChanged(user);
+      loadEvents();
+      loadSettings();
+      attachUserNotificationSync();
+      updateHeader();
+      renderIfOpen();
+    };
+        var originalTick = app.onSimulationTick.bind(app);
     app.onSimulationTick = function (shipments) {
       originalTick(shipments);
       if (window.ColdGuardNotifications && Array.isArray(shipments)) window.ColdGuardNotifications.observeShipments(shipments);
