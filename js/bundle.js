@@ -5176,8 +5176,8 @@ class ColdGuardApp {
         <!-- Title & Stats -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-slate-200">
           <div>
-            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Real-Time Vaccine Shipments</h1>
-            <p class="text-xs text-slate-500">Continuous environmental telemetry, batch tracking, and risk classification.</p>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Shipment Fleet Registry</h1>
+            <p class="text-xs text-slate-500">Search, filter, compare, and triage every shipment. Open Inspect for one shipment’s telemetry, route, viability, and audit trail.</p>
           </div>
           <div class="flex items-center gap-2">
             <button id="btn-export-all-csv" class="px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 rounded-xl shadow-sm transition flex items-center gap-1.5">
