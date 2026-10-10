@@ -5499,6 +5499,7 @@ class ColdGuardApp {
             </div>
 
                         <!-- Quick Action Buttons -->
+            ${s.sensorHealth === "fault" ? '<div class="sensor-fault-banner" role="alert"><strong>⚠ Sensor problem detected.</strong><p>Readings are being verified. Using conservative value.</p><button type="button" class="sensor-ack-btn">Acknowledge</button> <button type="button" class="sensor-inspect-btn">Request Inspection</button></div>' : ""}
             <div class="shipment-header-actions flex flex-wrap items-center gap-2">
               <button id="btn-trigger-reroute-modal" class="shipment-action-danger ${isCritical ? 'is-critical' : ''}" type="button" aria-label="Open emergency reroute confirmation">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
@@ -6520,6 +6521,9 @@ class ColdGuardApp {
 
   updateHeaderBadges() {
     const criticals = this.simulation.shipments.filter(s => s.excursionSeverity === "Critical");
+    const sensorCount = this.simulation.shipments.filter(s => s.sensorHealth === "fault").length;
+    const sensorBadge = document.getElementById("header-sensor-fault-count");
+    if (sensorBadge) sensorBadge.textContent = sensorCount;
     const badge = document.getElementById("header-critical-count");
     if (badge) {
       badge.textContent = criticals.length;
