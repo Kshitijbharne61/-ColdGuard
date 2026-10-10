@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   var app = null, chart = null, rescueMap = null, rescueLine = null, rescueMarker = null;
-  var state = { air: 4.2, vial: 4.2, scenario: "normal", points: [], lastTick: Date.now(), lastRescue: false, exposureDegreeHours: 0, mkt: 4.2, tripStart: Date.now(), frozen: false, scenarioLabel: "Normal Transit (4.2°C)", forceDemo: false, mktSamples: [] };
+  var state = { air: 4.2, vial: 4.2, scenario: "normal", points: [], lastTick: Date.now(), lastRescue: false, exposureDegreeHours: 0, mkt: 4.2, tripStart: Date.now(), frozen: false, scenarioLabel: "Normal Transit (4.2°C)", forceDemo: false, mktSamples: [], scenarioStarted: Date.now() };
   var $ = function (id) { return document.getElementById(id); };
   var DEMO_HUBS = [
     { id: "PHC-02", name: "Sub-District Hospital / Depot #2", lat: 18.7800, lng: 73.4740, type: "PHC / Cold-chain depot" },
@@ -70,6 +70,9 @@
     }
     if (state.scenario === "normal") {
       state.air = 4.2 + Math.sin(now/25000)*0.12;
+    }
+    if (state.scenario === "spike" && now-state.scenarioStarted > 90000) {
+      state.air = 4.2; state.scenarioLabel = "Door-Ajar Spike — air recovering";
     }
     if (state.scenario === "freeze") { state.air = -1.5; state.vial = -1.5; state.frozen = true; }
     state.points.push({ t: now, a: state.air, v: state.vial });
@@ -177,7 +180,7 @@
     document.head.appendChild(s);
   }
   function setScenario(which) {
-    state.scenario = which; state.forceDemo=true; state.points=[]; state.mktSamples=[]; state.lastTick=Date.now(); state.tripStart=Date.now(); state.exposureDegreeHours=0; state.frozen=false;
+    state.scenario = which; state.forceDemo=true; state.points=[]; state.mktSamples=[]; state.lastTick=Date.now(); state.tripStart=Date.now(); state.scenarioStarted=Date.now(); state.exposureDegreeHours=0; state.frozen=false;
     if(which==="normal"){state.air=4.2;state.vial=4.2;state.scenarioLabel="Normal Transit (4.2°C)";}
     if(which==="spike"){state.air=12;state.vial=4.2;state.scenarioLabel="Door-Ajar Spike — air only";}
     if(which==="failure"){state.air=12.5;state.vial=4.2;state.scenarioLabel="Refrigeration Failure";}
