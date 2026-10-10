@@ -325,6 +325,7 @@
     var existing = makeExistingOpen(alert);
     if (existing) {
       if (existing.status === "acknowledged") return;
+      if (existing.severity !== "CRITICAL" && Number(existing.mutedUntil || 0) > Date.now()) return;
       var since = Date.now() - Date.parse(existing.lastNotifiedAt || existing.detectedAt);
       if (since > Math.max(1, Number(prefs.reminderCooldownMinutes || 15)) * 60000) {
         existing.lastNotifiedAt = nowIso();
