@@ -184,11 +184,15 @@ export class FirebaseAuthService {
         return "Too many unsuccessful attempts. Access temporarily blocked. Please wait or reset password.";
       case "auth/network-request-failed":
         return "Network connection issue. Please check your internet connection.";
+      case "auth/user-token-expired":
+      case "auth/id-token-expired":
+      case "auth/requires-recent-login":
+        return "Your authentication session has expired. Please sign in again.";
       case "auth/api-key-not-valid.":
       case "auth/invalid-api-key":
         return "Firebase API Key is invalid or not yet configured. Click 'Firebase Settings' to enter your Project Web API Key.";
       default:
-        return error?.message || "An authentication error occurred. Please try again.";
+        return "Unable to authenticate right now. Please check your details and connection, then try again.";
     }
   }
 }
