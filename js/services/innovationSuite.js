@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   var app = null, chart = null, rescueMap = null, rescueLine = null, rescueMarker = null;
-  var state = { air: 4.2, vial: 4.2, scenario: "normal", points: [], lastTick: Date.now(), lastRescue: false, exposureDegreeHours: 0, mkt: 4.2, tripStart: Date.now(), frozen: false, scenarioLabel: "Normal Transit (4.2°C)", forceDemo: false };
+  var state = { air: 4.2, vial: 4.2, scenario: "normal", points: [], lastTick: Date.now(), lastRescue: false, exposureDegreeHours: 0, mkt: 4.2, tripStart: Date.now(), frozen: false, scenarioLabel: "Normal Transit (4.2°C)", forceDemo: false, mktSamples: [] };
   var $ = function (id) { return document.getElementById(id); };
   var DEMO_HUBS = [
     { id: "PHC-02", name: "Sub-District Hospital / Depot #2", lat: 18.7800, lng: 73.4740, type: "PHC / Cold-chain depot" },
@@ -74,8 +74,8 @@
     if (state.scenario === "freeze") { state.air = -1.5; state.vial = -1.5; state.frozen = true; }
     state.points.push({ t: now, a: state.air, v: state.vial });
     if (state.points.length > 120) state.points.shift();
-    var temps = state.points.map(function (p) { return p.v; });
-    state.mkt = mktC(temps);
+    state.mktSamples.push(state.vial); if(state.mktSamples.length>5000)state.mktSamples.shift();
+    state.mkt = mktC(state.mktSamples);
     var outside = state.vial > 8 || state.vial < 0;
     if (outside) {
       var excursion = Math.max(0, state.vial-8, 0-state.vial);
@@ -177,12 +177,13 @@
     document.head.appendChild(s);
   }
   function setScenario(which) {
-    state.scenario = which; state.forceDemo=true; state.points=[]; state.lastTick=Date.now(); state.tripStart=Date.now(); state.exposureDegreeHours=0; state.frozen=false;
+    state.scenario = which; state.forceDemo=true; state.points=[]; state.mktSamples=[]; state.lastTick=Date.now(); state.tripStart=Date.now(); state.exposureDegreeHours=0; state.frozen=false;
     if(which==="normal"){state.air=4.2;state.vial=4.2;state.scenarioLabel="Normal Transit (4.2°C)";}
     if(which==="spike"){state.air=12;state.vial=4.2;state.scenarioLabel="Door-Ajar Spike — air only";}
     if(which==="failure"){state.air=12.5;state.vial=4.2;state.scenarioLabel="Refrigeration Failure";}
     if(which==="freeze"){state.air=-1.5;state.vial=-1.5;state.frozen=true;state.scenarioLabel="Over-Icing Breach";}
     for(var i=30;i>=1;i--){var airPoint=which==="normal"?4.2:which==="spike"?12:which==="failure"?12.5:-1.5;var elapsed=(30-i)*0.05;var vialPoint=which==="freeze"?-1.5:which==="normal"?4.2:4.2+(airPoint-4.2)*(1-Math.exp(-elapsed/15));state.points.push({t:Date.now()-i*3000,a:airPoint,v:vialPoint});} if(which!=="freeze"&&which!=="normal"){state.vial=state.points[state.points.length-1].v;}
+    state.mktSamples=state.points.map(function(p){return p.v;}); state.mkt=mktC(state.mktSamples);
     state.lastRescue=state.vial<0||state.vial>8;
     if(app && app.modals && app.modals.showToast) app.modals.showToast("Simulation preset: "+state.scenarioLabel+" (demo data)", which==="freeze"||which==="failure"?"critical":"info");
     render();
