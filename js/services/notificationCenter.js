@@ -140,40 +140,68 @@
     var max = payload.maxTemp != null ? Number(payload.maxTemp) : Number(shipment.maxAllowedTemperature != null ? shipment.maxAllowedTemperature : shipment.maxTemp);
     if (!Number.isFinite(min)) min = null;
     if (!Number.isFinite(max)) max = null;
-    var outHigh = temperature != null && max != null && temperature > max;
-    var deviation = temperature == null ? null : outHigh ? temperature - (max == null ? temperature : max) : (min != null && temperature < min ? min - temperature : 0);
+    var metricValue = temperature;
+    var valueUnit = "°C";
+    if (found.type === "HUMIDITY") {
+      metricValue = payload.humidity != null ? Number(payload.humidity) : Number(shipment.currentHumidity);
+      valueUnit = "% RH";
+      if (payload.minTemp == null && shipment.minAllowedHumidity != null) min = Number(shipment.minAllowedHumidity);
+      if (payload.maxTemp == null && shipment.maxAllowedHumidity != null) max = Number(shipment.maxAllowedHumidity);
+    } else if (found.type === "BATTERY_LOW") {
+      metricValue = payload.batteryLevel != null ? Number(payload.batteryLevel) : Number(shipment.batteryLevel);
+      valueUnit = "% battery";
+      min = 0; max = 20;
+    }
+    if (!Number.isFinite(metricValue)) metricValue = null;
+    var outHigh = metricValue != null && max != null && metricValue > max;
+    var belowLow = metricValue != null && min != null && metricValue < min;
+    var deviation = metricValue == null ? null : outHigh ? metricValue - max : (belowLow ? min - metricValue : 0);
     var where = payload.region || payload.location || shipment.currentLocation || shipment.location && shipment.location.name || "Location not recorded";
     var point = coords(shipment);
     var mapLink = point ? "https://www.openstreetmap.org/?mlat=" + point.lat + "&mlon=" + point.lon + "#map=13/" + point.lat + "/" + point.lon : "https://www.openstreetmap.org/search?query=" + encodeURIComponent(where);
     var product = payload.vaccineName || payload.productName || shipment.vaccineName || shipment.productName || "Vaccine";
     var shipmentId = String(payload.shipmentId || payload.id || "ALERT-TEST");
-    var deviationText = deviation == null ? "Not available" : (outHigh ? "+" : (temperature != null && min != null && temperature < min ? "-" : "")) + Math.abs(deviation).toFixed(1) + "°C";
-    var limitText = min != null && max != null ? min + "°C to " + max + "°C" : (max != null ? "≤ " + max + "°C" : (min != null ? "≥ " + min + "°C" : "Not configured"));
+    var unitSuffix = valueUnit;
+    var deviationText = found.type === "SENSOR_FAULT" ? String(payload.delta || "Cross-probe delta not available") :
+      deviation == null ? "Not available" : (outHigh ? "+" : (belowLow ? "-" : "")) + Math.abs(deviation).toFixed(1) + unitSuffix;
+    var limitText = min != null && max != null ? min + unitSuffix + " to " + max + unitSuffix : (max != null ? "≤ " + max + unitSuffix : (min != null ? "≥ " + min + unitSuffix : "Not configured"));
     var minutes = getSpoilage(shipment);
     var duration = shipment.excursionDurationMinutes || payload.durationMinutes || 0;
     var viability = shipment.estimatedViabilityPercent != null ? shipment.estimatedViabilityPercent : shipment.estimatedRemainingViabilityPercent;
     var idValue = id();
-    var titleMetric = temperature == null ? found.label.toLowerCase() : (outHigh ? "above limit" : (min != null && temperature < min ? "below limit" : "out of range")) + " (" + temperature.toFixed(1) + "°C)";
+    var titleMetric = metricValue == null ? found.label.toLowerCase() : (outHigh ? "above limit" : (belowLow ? "below limit" : found.label.toLowerCase())) + " (" + metricValue.toFixed(1) + valueUnit + ")";
     var title = found.severity + ": " + shipmentId + " " + product + " " + titleMetric;
+    if (found.type === "ROUTE_RISK") title = found.severity + ": " + shipmentId + " " + product + " route risk in " + where;
+    if (found.type === "SENSOR_FAULT") title = found.severity + ": " + shipmentId + " " + product + " sensor fault";
+    if (found.type === "DEVICE_OFFLINE") title = found.severity + ": " + shipmentId + " " + product + " device offline";
+    if (found.type === "GPS_LOSS") title = found.severity + ": " + shipmentId + " " + product + " GPS signal lost";
     var suspect = payload.suspectSensor || shipment.suspectSensor || (shipment.probe1ATemperature != null && shipment.probe1BTemperature != null ? (Math.abs(Number(shipment.probe1ATemperature) - Number(shipment.probe1BTemperature)) > 1.5 ? "Probe 1B (cross-check delta " + Math.abs(Number(shipment.probe1ATemperature) - Number(shipment.probe1BTemperature)).toFixed(1) + "°C)" : "Probe 1A/1B") : (shipment.sensorDeviceId || shipment.deviceId || "primary temperature probe"));
     var suggestedRoute = payload.suggestedRoute || shipment.recommendedRoute || shipment.suggestedRoute || (shipment.destinationFacility || shipment.destination ? where + " → " + (shipment.destinationFacility || shipment.destination) : "Review approved corridor");
     var when = payload.detectedAt || nowIso();
-    var msg = found.type === "SENSOR_FAULT"
-      ? "Suspect sensor: " + suspect + ". Delta: " + (payload.delta || deviationText) + "."
-      : found.type === "ROUTE_RISK"
-        ? "Region: " + where + ". Suggested route: " + suggestedRoute + "."
-        : found.type === "TEMP_EXCURSION"
-          ? "Current value " + valueText(temperature, "°C") + " vs permitted " + limitText + ". Deviation " + deviationText + "; out of range " + (duration ? duration + " min" : "duration unavailable") + "; estimated time to spoilage " + (minutes == null ? "unknown" : "~" + minutes + " min") + "; viability " + valueText(viability, "%") + "."
-          : found.label + ". " + (payload.details || "");
+    var currentLabel = metricValue == null ? "Not available" : valueText(metricValue, valueUnit);
+    var common = "Shipment: " + shipmentId + "; vaccine: " + product + "; current value: " + currentLabel +
+      " vs permitted range: " + limitText + "; deviation: " + deviationText +
+      "; time out of range: " + (duration ? duration + " min" : "not calculated") +
+      "; predicted time to spoilage: " + (minutes == null ? "not available" : "~" + minutes + " min") +
+      "; current viability: " + valueText(viability, "%") + "; location: " + where +
+      "; timestamp: " + localTime(when) + ". ";
+    var specific = found.type === "SENSOR_FAULT" ? "Suspect sensor: " + suspect + "; sensor delta: " + deviationText + ". " :
+      found.type === "ROUTE_RISK" ? "Region: " + where + "; suggested route: " + suggestedRoute + ". " :
+      found.type === "BATTERY_LOW" ? "Battery level: " + currentLabel + ". " :
+      found.type === "GPS_LOSS" ? "GPS status: signal unavailable; last verified place: " + where + ". " :
+      found.type === "DEVICE_OFFLINE" ? "Device status: offline; verify last reported telemetry before concluding hardware failure. " :
+      found.type === "HUMIDITY" ? "Humidity reading: " + currentLabel + ". " :
+      (payload.details ? String(payload.details) + " " : "");
+    var msg = common + specific + "Recommended action: " + actionFor(found.type);
     var shortBase = String(window.location.origin || "").replace(/^https?:\/\//, "");
     var shortLink = shortBase + "/#" + encodeURIComponent("details?id=" + shipmentId);
-    var sms = (found.severity + " " + shipmentId + " " + (temperature == null ? found.label : temperature.toFixed(1) + "C") + (max != null ? " (limit " + max + ")" : "") + ". " + (minutes == null ? "" : "~" + minutes + " min to spoilage. ") + "Open: " + shortLink);
+    var sms = (found.severity + " " + shipmentId + " " + (metricValue == null ? found.label : metricValue.toFixed(1) + valueUnit.replace(" ", "")) + (max != null ? " (limit " + max + ")" : "") + ". " + (minutes == null ? "" : "~" + minutes + " min to spoilage. ") + "Open: " + shortLink);
     if (sms.length > 159) sms = sms.slice(0, 156) + "...";
     var alert = {
       id: idValue, conditionKey: conditionKey || shipmentId + ":" + found.type,
       shipmentId: shipmentId, vaccine: product, batchNumber: payload.batchNumber || shipment.batchNumber || "",
       type: found.type, typeLabel: found.label, severity: found.severity, title: title,
-      body: msg, currentValue: temperature, permittedRange: limitText, minimum: min, maximum: max,
+      body: msg, currentValue: metricValue, valueUnit:valueUnit, permittedRange: limitText, minimum: min, maximum: max,
       deviation: deviation, deviationText: deviationText, durationMinutes: duration,
       timeToSpoilageMinutes: minutes, viabilityPercent: viability, location: where, mapLink: mapLink,
       suggestedRoute: suggestedRoute, suspectSensor: suspect, coordinates: point, detectedAt: when, detectedLocal: localTime(when),
@@ -268,6 +296,7 @@
     addTimeline(alert, "previewed", "No delivery provider is configured. Notifications are logged and previewed, not sent.");
   }
   function persistAndShow(alert) {
+    var currentUser = liveUser(); if (currentUser) alert.ownerUid = currentUser.uid;
     events.unshift(alert);
     events = events.slice(0, 300);
     persistAlert(alert);
@@ -541,6 +570,7 @@
       detectedAt:nowIso(), location:"Pune Cold-Chain Corridor", details:"Example critical test for channel preview."
     };
     var test = buildAlert(payload, "test:" + uid() + ":" + Date.now());
+    var currentUser = liveUser(); if (currentUser) test.ownerUid = currentUser.uid;
     test.title = "CRITICAL: CG-9021-PFZ Comirnaty above limit (-52.4°C)";
     test.severity = "CRITICAL"; test.type = "TEMP_EXCURSION"; test.typeLabel = "Test temperature excursion";
     test.shortText = "CRITICAL CG-9021-PFZ -52.4C (limit -60). ~25 min to spoilage. Open: " + String(window.location.origin || "").replace(/^https?:\/\//, "") + "/#details";
