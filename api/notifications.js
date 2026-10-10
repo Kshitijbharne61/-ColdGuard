@@ -14,6 +14,23 @@ function rateLimit(key, limit, windowMs) {
   entry.count++; rate.set(key,entry);
   return entry.count<=limit;
 }
+async function rateLimitAcknowledgement(req, uid) {
+  const ip=String(req.headers["x-forwarded-for"]||req.socket && req.socket.remoteAddress||"unknown").split(",")[0].trim();
+  // Fast per-instance limit protects invalid-token bursts even without Admin credentials.
+  if(!rateLimit("ack-ip:"+ip,60,15*60*1000)) return false;
+  const db=engine.adminDatabase();
+  if(!db) return rateLimit("ack-user:"+ip+":"+uid,20,15*60*1000);
+  const now=Date.now(), windowMs=15*60*1000, bucket=Math.floor(now/windowMs);
+  const key=crypto.createHash("sha256").update(ip+":"+uid+":"+bucket).digest("hex");
+  const result=await db.ref("notification_rate_limits/ack_"+key).transaction(function(current) {
+    if(current && current.bucket===bucket) {
+      if(Number(current.count||0)>=20) return;
+      return {bucket:bucket,count:Number(current.count||0)+1,expiresAt:(bucket+1)*windowMs};
+    }
+    return {bucket:bucket,count:1,expiresAt:(bucket+1)*windowMs};
+  });
+  return result.committed;
+}
 function safeSeverity(value) {
   return ["INFO","WARNING","CRITICAL"].includes(value) ? value : "WARNING";
 }
@@ -177,10 +194,11 @@ async function queueOrDeliver(uid, token, alert, channels, recipients, links, re
   return {mode:"live",channels:allStatuses,message:"Notification delivery attempted; check each channel status.",acknowledgeLink:links.acknowledge};
 }
 async function runAckLink(req,res) {
-  if(!rateLimit("ack:"+String(req.headers["x-forwarded-for"]||req.socket.remoteAddress||"unknown"),20,15*60*1000)) return res.status(429).send("Too many acknowledgement attempts. Try again later.");
   const q=req.query||{};
   const uid=String(q.uid||""),alertId=String(q.alertId||""),exp=String(q.exp||""),token=String(q.token||"");
   if(!uid || !alertId || !engine.verifyActionToken(uid,alertId,exp,token)) return res.status(400).send("<h1>Invalid or expired acknowledgement link</h1><p>Sign in to ColdGuard and acknowledge this alert from Alert Center.</p>");
+  const allowed=await rateLimitAcknowledgement(req,uid).catch(()=>false);
+  if(!allowed) return res.status(429).send("Too many acknowledgement attempts. Try again later.");
   const db=engine.adminDatabase();
   if(!db) return res.status(503).send("<h1>Acknowledgement service unavailable</h1><p>Secure email acknowledgement requires FIREBASE_SERVICE_ACCOUNT_JSON and NOTIFICATION_ACTION_SECRET. You can acknowledge from the dashboard.</p>");
   const tokenKey=crypto.createHash("sha256").update(token).digest("hex");
