@@ -263,7 +263,9 @@ class ColdGuardApp {
   onSimulationTick(shipments) {
     this.updateHeaderBadges();
 
-    // Simulation is display-only; only actual device/backend integrations may write live telemetry.\n\n    if (this.currentView === "dashboard") {
+    // Simulation is display-only; only actual device/backend integrations may write live telemetry.
+
+    if (this.currentView === "dashboard") {
       this.updateDashboardKpis();
     } else if (this.currentView === "shipments") {
       this.renderShipmentsTable();
@@ -2182,7 +2184,8 @@ class ColdGuardApp {
         details: `Rerouted shipment ${shipmentId} to certified cold-storage hub: ${checkpoint.name} (${checkpoint.city}). Distance: ${checkpoint.distanceKm}km.`,
         targetCheckpoint: checkpoint.name
       });
-      // Do not write simulated sensor values to the live telemetry path.\n    }
+      // Do not write simulated sensor values to the live telemetry path.
+    }
 
     if (this.currentView === "details") {
       this.renderDetailsView(document.getElementById("main-content-view"));
