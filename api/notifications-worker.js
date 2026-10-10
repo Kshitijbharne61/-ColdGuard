@@ -112,6 +112,7 @@ async function enqueueEscalation(db, ownerUid, alert, users) {
     recipientCopy.channelStatus=Object.assign({},recipientCopy.channelStatus||{});
     appendTimeline(recipientCopy,"escalated","Escalated to "+roleOf(record)+" by policy.");
     await db.ref("users/"+targetUid+"/notificationCenter/"+alert.id).set(recipientCopy);
+    await db.ref("notification_escalation_map/"+targetUid+"/"+alert.id).set({ownerUid:ownerUid,alertId:alert.id,recipientUid:targetUid,createdAt:new Date().toISOString()});
     for(const channel of channels) {
       if(channel==="in_app")continue;
       if(channel==="daily_digest"||channel==="weekly_digest") {
