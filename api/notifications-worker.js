@@ -250,7 +250,7 @@ module.exports = async function handler(req,res) {
       const alerts=profile.notificationCenter||{};
       for(const alertId of Object.keys(alerts)) {
         const alert=alerts[alertId];
-        if(!alert || alert.status!=="open" || alert.ownerUid && alert.ownerUid!==uid || !alert.escalation || !alert.escalation.nextAt)continue;
+        if(!alert || alert.status!=="open" || alert.ownerUid!==uid || !alert.escalation || !alert.escalation.nextAt)continue;
         if(Date.parse(alert.escalation.nextAt)>Date.now())continue;
         await enqueueEscalation(db,uid,alert,users);
       }
