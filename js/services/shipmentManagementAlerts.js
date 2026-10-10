@@ -11,8 +11,8 @@ function controls(){
  if(!app||app.currentView!=="shipments")return;
  var h=document.querySelector("#main-content-view h1"), header=h&&h.parentElement&&h.parentElement.parentElement;
  if(header){var a=$("cg-actions");if(!a){a=document.createElement("div");a.id="cg-actions";a.className="flex flex-wrap items-center gap-2";header.appendChild(a);}
- a.innerHTML='<button id="cg-test-email" class="px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-xl">Create test email</button><button id="cg-add" class="px-3.5 py-2 text-xs font-bold bg-emerald-600 text-white rounded-xl">+ Add shipment</button>';
- $("cg-add").onclick=addForm;$("cg-test-email").onclick=function(){send({type:"test",shipmentId:"EMAIL-TEST"});};}
+ a.innerHTML='<button id="cg-contact" class="px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-xl">Emergency contacts</button><button id="cg-test-email" class="px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-xl">Test alert</button><button id="cg-add" class="px-3.5 py-2 text-xs font-bold bg-emerald-600 text-white rounded-xl">+ Add shipment</button>';
+ $("cg-add").onclick=addForm;$("cg-contact").onclick=contactForm;$("cg-test-email").onclick=function(){send({type:"test",shipmentId:"ALERT-TEST"});};}
  document.querySelectorAll("#shipments-table-wrapper .shipment-row[data-id]").forEach(function(row){var id=row.getAttribute("data-id"),cell=row.lastElementChild;if(!id||!cell||cell.querySelector(".cg-remove"))return;var b=document.createElement("button");b.className="cg-remove ml-1 px-2.5 py-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-lg";b.textContent="Remove";b.onclick=function(e){e.preventDefault();e.stopPropagation();remove(id);};cell.appendChild(b);});
 }
 function addForm(){
