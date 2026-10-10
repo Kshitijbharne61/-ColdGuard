@@ -102,10 +102,13 @@
     catch (_) { return new Date(value || Date.now()).toLocaleString(); }
   }
   function valueText(n, suffix) { return n == null || !Number.isFinite(Number(n)) ? "Not available" : Number(n).toFixed(1) + (suffix || ""); }
-  function getSpoilage(shipment) {
-    var candidates = [shipment && shipment.estimatedTimeToSpoilageMinutes, shipment && shipment.predictedTimeToSpoilageMinutes, shipment && shipment.timeToSpoilageMinutes, shipment && shipment.viabilityMinutesRemaining];
+  function getSpoilage(shipment, payload) {
+    var candidates = [payload && payload.timeToSpoilageMinutes, payload && payload.estimatedTimeToSpoilageMinutes,
+      shipment && shipment.estimatedTimeToSpoilageMinutes, shipment && shipment.predictedTimeToSpoilageMinutes,
+      shipment && shipment.timeToSpoilageMinutes, shipment && shipment.viabilityMinutesRemaining];
     for (var i = 0; i < candidates.length; i++) if (Number.isFinite(Number(candidates[i])) && candidates[i] !== "" && Number(candidates[i]) >= 0) return Math.round(Number(candidates[i]));
-    if (shipment && Number.isFinite(Number(shipment.estimatedViabilityPercent))) return Math.max(1, Math.round((Number(shipment.estimatedViabilityPercent) - 70) * 2));
+    var viability = payload && payload.viabilityPercent != null ? Number(payload.viabilityPercent) : Number(shipment && shipment.estimatedViabilityPercent);
+    if (Number.isFinite(viability)) return Math.max(1, Math.round((viability - 70) * 2));
     return null;
   }
   function identify(payload) {
@@ -165,9 +168,9 @@
     var deviationText = found.type === "SENSOR_FAULT" ? String(payload.delta || "Cross-probe delta not available") :
       deviation == null ? "Not available" : (outHigh ? "+" : (belowLow ? "-" : "")) + Math.abs(deviation).toFixed(1) + unitSuffix;
     var limitText = min != null && max != null ? min + unitSuffix + " to " + max + unitSuffix : (max != null ? "≤ " + max + unitSuffix : (min != null ? "≥ " + min + unitSuffix : "Not configured"));
-    var minutes = getSpoilage(shipment);
+    var minutes = getSpoilage(shipment, payload);
     var duration = shipment.excursionDurationMinutes || payload.durationMinutes || 0;
-    var viability = shipment.estimatedViabilityPercent != null ? shipment.estimatedViabilityPercent : shipment.estimatedRemainingViabilityPercent;
+    var viability = payload.viabilityPercent != null ? payload.viabilityPercent : (shipment.estimatedViabilityPercent != null ? shipment.estimatedViabilityPercent : shipment.estimatedRemainingViabilityPercent);
     var idValue = id();
     var titleMetric = metricValue == null ? found.label.toLowerCase() : (outHigh ? "above limit" : (belowLow ? "below limit" : found.label.toLowerCase())) + " (" + metricValue.toFixed(1) + valueUnit + ")";
     var title = found.severity + ": " + shipmentId + " " + product + " " + titleMetric;
@@ -581,7 +584,7 @@
   function testAlert() {
     var payload = {
       type:"temperature_excursion", source:"manual_test", shipmentId:"CG-9021-PFZ",
-      vaccineName:"Comirnaty", temperature:-52.4, minTemp:-90, maxTemp:-60, durationMinutes:4,
+      vaccineName:"Comirnaty", temperature:-52.4, minTemp:-90, maxTemp:-60, durationMinutes:4, timeToSpoilageMinutes:25, viabilityPercent:87.2,
       detectedAt:nowIso(), location:"Pune Cold-Chain Corridor", details:"Example critical test for channel preview."
     };
     var test = buildAlert(payload, "test:" + uid() + ":" + Date.now());
@@ -746,7 +749,7 @@
         else if (action === "center") { closeBellDropdown(); buttonNavigate("alert_center"); }
         else if (action === "test") testAlert();
         else if (action === "preview") {
-          var p = buildAlert({ type:"temperature_excursion", shipmentId:"CG-9021-PFZ", vaccineName:"Comirnaty", temperature:-52.4, minTemp:-90, maxTemp:-60, location:"Pune Cold-Chain Corridor" }, "preview-only");
+          var p = buildAlert({ type:"temperature_excursion", shipmentId:"CG-9021-PFZ", vaccineName:"Comirnaty", temperature:-52.4, minTemp:-90, maxTemp:-60, timeToSpoilageMinutes:25, viabilityPercent:87.2, location:"Pune Cold-Chain Corridor" }, "preview-only");
           var box = document.getElementById("cg-settings-preview");
           if (box) box.innerHTML = '<div class="cg-email-preview"><div class="cg-email-preview__brand">❄ ColdGuard <span>PREVIEW ONLY</span></div><div class="cg-email-preview__severity">CRITICAL ALERT</div><div class="cg-email-preview__content"><strong>' + esc(p.title) + '</strong><p>' + esc(p.body) + '</p><p>Recommended action: ' + esc(p.recommendation) + '</p><p class="cg-field__hint">' + esc(p.shortText) + '</p></div></div>';
         }
