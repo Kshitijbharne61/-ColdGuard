@@ -4775,6 +4775,16 @@ class ColdGuardApp {
     const atRiskShipments = this.simulation.shipments.filter(
       s => s.riskClassification === "High Risk" || s.excursionSeverity === "Warning"
     );
+    const dashboardFlaggedShipments = [...this.simulation.shipments]
+      .filter(s => s.sensorHealth === "fault" || s.routeRiskActive || s.excursionSeverity === "Critical" || s.riskClassification === "Critical" || s.riskClassification === "High Risk" || s.excursionSeverity === "Warning")
+      .sort((a, b) => {
+        const rank = s => s.excursionSeverity === "Critical" || s.riskClassification === "Critical" ? 0
+          : s.sensorHealth === "fault" ? 1
+          : s.routeRiskActive ? 2
+          : s.riskClassification === "High Risk" || s.excursionSeverity === "Warning" ? 3 : 4;
+        return rank(a) - rank(b);
+      });
+    const dashboardPriorityShipments = (dashboardFlaggedShipments.length ? dashboardFlaggedShipments : this.simulation.shipments.filter(s => s.status !== "Delivered")).slice(0, 4);
 
     container.innerHTML = `
       <div class="space-y-6 animate-fade-in">
@@ -4833,12 +4843,12 @@ class ColdGuardApp {
                 <p class="text-xs text-slate-500">Live sorting by highest thermal deviation and spoilage risk.</p>
               </div>
               <span class="px-2.5 py-1 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-full">
-                ${criticalShipments.length + atRiskShipments.length} Flagged
+                ${dashboardFlaggedShipments.length} Flagged
               </span>
             </div>
 
             <div class="divide-y divide-slate-100 overflow-x-auto">
-              ${this.simulation.shipments.slice(0, 5).map(s => `
+              ${dashboardPriorityShipments.map(s => `
                 <div class="py-3 flex items-center justify-between gap-3 hover:bg-slate-50 px-2 rounded-xl transition cursor-pointer row-inspect-shipment" data-id="${s.id}">
                   <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
