@@ -197,6 +197,19 @@ async function runAckLink(req,res) {
       if(alert.escalation) alert.escalation.nextAt=null;
       appendTimeline(alert,"acknowledged","Acknowledged from a signed link.");
       await ref.set(alert);
+      // Escalated copies carry ownerUid; stop the original alert's escalation too.
+      if(alert.ownerUid && alert.ownerUid!==uid) {
+        const ownerRef=db.ref("users/"+alert.ownerUid+"/notificationCenter/"+alertId);
+        const ownerSnap=await ownerRef.once("value");
+        const ownerAlert=ownerSnap.val();
+        if(ownerAlert && ownerAlert.status==="open") {
+          ownerAlert.status="acknowledged"; ownerAlert.unread=false;
+          ownerAlert.acknowledgedBy="Signed email action"; ownerAlert.acknowledgedAt=alert.acknowledgedAt;
+          if(ownerAlert.escalation) ownerAlert.escalation.nextAt=null;
+          appendTimeline(ownerAlert,"acknowledged","Acknowledged by escalation recipient from a signed link.");
+          await ownerRef.set(ownerAlert);
+        }
+      }
       await db.ref("audit_logs").push({timestamp:new Date().toISOString(),actorUid:uid,event:"NOTIFICATION_ACKNOWLEDGED_SIGNED_LINK",shipmentId:alert.shipmentId,alertId:alertId,details:"Signed email acknowledgement"});
     }
     const url=engine.baseUrl(req)+"/index.html#alert_center";
