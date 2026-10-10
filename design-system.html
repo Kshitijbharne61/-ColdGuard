@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>ColdGuard Design System</title>
+  <meta name="description" content="ColdGuard design tokens, reusable UI components, interaction and accessibility preview.">
+  <script src="js/designSystem.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="cg-demo-page">
+    <div class="cg-demo-shell">
+      <header class="cg-demo-hero">
+        <div>
+          <div class="cg-demo-eyebrow"><span class="cg-demo-dot" aria-hidden="true"></span> ColdGuard / UI foundation</div>
+          <h1>Design system</h1>
+          <p>A practical component catalogue for the ColdGuard monitoring interface. Tokens, component classes and focus states are shared with the dashboard. Switch themes here to preview both palettes; your preference carries over to the app.</p>
+          <div class="cg-demo-row" style="margin-top:18px">
+            <a class="cg-btn cg-btn--primary cg-link" href="index.html">← Back to dashboard</a>
+            <span class="cg-badge cg-badge--success">Live telemetry UI</span>
+          </div>
+        </div>
+        <div class="cg-demo-row">
+          <button type="button" class="cg-theme-toggle" data-cg-theme-toggle aria-label="Switch theme" title="Toggle light and dark theme">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <g class="cg-icon-sun"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></g>
+              <g class="cg-icon-moon"><path d="M20.5 14.2A8.4 8.4 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path></g>
+            </svg>
+            <span>Theme</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="cg-demo-section" aria-labelledby="tokens-heading">
+        <div class="cg-demo-section-head">
+          <div><h2 id="tokens-heading">01 · Foundations</h2><p>Brand, status and surface tokens resolve from CSS variables.</p></div>
+          <span class="cg-demo-count">CSS TOKENS</span>
+        </div>
+        <div class="cg-demo-swatches" aria-label="Brand and status color swatches">
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-blue-600)"></div><label>Blue / 600</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-indigo-600)"></div><label>Indigo / 600</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-success-solid)"></div><label>Success / solid</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-warning-solid)"></div><label>Warning / solid</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-danger-solid)"></div><label>Danger / solid</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-info-solid)"></div><label>Info / solid</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-surface)"></div><label>Surface</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-surface-raised)"></div><label>Raised surface</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-slate-300)"></div><label>Slate / 300</label></div>
+          <div class="cg-demo-swatch"><div class="cg-demo-swatch-color" style="background:var(--cg-slate-700)"></div><label>Slate / 700</label></div>
+        </div>
+        <div class="cg-demo-grid cg-demo-grid--4" style="margin-top:16px">
+          <div class="cg-demo-example"><span class="cg-demo-eyebrow">Typography</span><h3 style="margin-top:14px;color:var(--cg-text)">Inter · UI labels</h3><p style="font-size:14px;line-height:1.7;color:var(--cg-text-secondary)">Readable interface text at 12, 14, 16, 20, 24 and 32px.</p></div>
+          <div class="cg-demo-example"><span class="cg-demo-eyebrow">Telemetry</span><h3 class="cg-telemetry" style="margin-top:14px;color:var(--cg-text);font-size:20px">4.8°C</h3><p class="cg-telemetry" style="color:var(--cg-text-muted);font-size:12px">CH-042 · 09:41:06Z</p></div>
+          <div class="cg-demo-example"><span class="cg-demo-eyebrow">Shape</span><div class="cg-demo-row" style="margin-top:14px"><span style="display:inline-block;width:30px;height:30px;border:1px solid var(--cg-border-strong);border-radius:var(--cg-radius-sm)"></span><span style="display:inline-block;width:36px;height:36px;border:1px solid var(--cg-border-strong);border-radius:var(--cg-radius-md)"></span><span style="display:inline-block;width:42px;height:42px;border:1px solid var(--cg-border-strong);border-radius:var(--cg-radius-lg)"></span></div><p style="margin-top:10px;font-size:12px;color:var(--cg-text-muted)">8 / 12 / 16px radius</p></div>
+          <div class="cg-demo-example"><span class="cg-demo-eyebrow">Depth</span><div style="display:flex;gap:12px;margin-top:20px"><span style="width:58px;height:42px;border-radius:10px;background:var(--cg-surface);box-shadow:var(--cg-shadow-sm);border:1px solid var(--cg-border)"></span><span style="width:58px;height:42px;border-radius:10px;background:var(--cg-surface);box-shadow:var(--cg-shadow-md);border:1px solid var(--cg-border)"></span><span style="width:58px;height:42px;border-radius:10px;background:var(--cg-surface);box-shadow:var(--cg-shadow-lg);border:1px solid var(--cg-border)"></span></div><p style="margin-top:10px;font-size:12px;color:var(--cg-text-muted)">Soft layered shadows</p></div>
+        </div>
+      </section>
+
+      <section class="cg-demo-section" aria-labelledby="buttons-heading">
+        <div class="cg-demo-section-head"><div><h2 id="buttons-heading">02 · Buttons</h2><p>Variant, size, loading, icon and disabled states. Hover or keyboard-focus a control to preview feedback.</p></div><span class="cg-demo-count">BUTTON / FOCUS</span></div>
+        <div class="cg-demo-grid cg-demo-grid--2">
+          <div class="cg-demo-example"><h3>Variants · medium</h3><div class="cg-demo-row">
+            <button class="cg-btn cg-btn--primary" type="button">Primary action <span aria-hidden="true">→</span></button>
+            <button class="cg-btn cg-btn--secondary" type="button">Secondary</button>
+            <button class="cg-btn cg-btn--ghost" type="button">Ghost</button>
+            <button class="cg-btn cg-btn--danger" type="button">Danger</button>
+            <button class="cg-btn cg-btn--dark" type="button">Dark</button>
+          </div></div>
+          <div class="cg-demo-example"><h3>Sizes and states</h3><div class="cg-demo-row">
+            <button class="cg-btn cg-btn--primary cg-btn--sm" type="button">Small</button>
+            <button class="cg-btn cg-btn--primary cg-btn--md" type="button">Medium</button>
+            <button class="cg-btn cg-btn--primary cg-btn--lg" type="button">Large</button>
+            <button class="cg-btn cg-btn--primary" type="button"><span class="cg-btn__spinner" aria-hidden="true"></span>Saving</button>
+            <button class="cg-btn cg-btn--secondary" type="button" disabled>Disabled</button>
+            <span class="cg-tooltip-wrap" data-tooltip="Inspect selected shipment"><button class="cg-btn cg-btn--ghost" type="button" aria-label="Inspect selected shipment"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16 16 4 4"></path></svg></button></span>
+          </div></div>
+        </div>
+      </section>
+
+      <section class="cg-demo-section" aria-labelledby="badges-heading">
+        <div class="cg-demo-section-head"><div><h2 id="badges-heading">03 · Status badges</h2><p>Each status has an icon and a text label; color is never the only signal.</p></div><span class="cg-demo-count">ICON + TEXT</span></div>
+        <div class="cg-demo-row">
+          <span class="cg-badge cg-badge--success">Stable · In range</span>
+          <span class="cg-badge cg-badge--warning">Warning · Review</span>
+          <span class="cg-badge cg-badge--danger">Critical · Excursion</span>
+          <span class="cg-badge cg-badge--info">Info · Route update</span>
+          <span class="cg-badge cg-badge--neutral">Simulated · Demo data</span>
+        </div>
+      </section>
+
+      <section class="cg-demo-section" aria-labelledby="cards-heading">
+        <div class="cg-demo-section-head"><div><h2 id="cards-heading">04 · Cards and alerts</h2><p>Default surfaces, an explicitly interactive card and a strong alert edge.</p></div><span class="cg-demo-count">SURFACE</span></div>
+        <div class="cg-demo-grid">
+          <article class="cg-card">
+            <div class="cg-demo-kpi"><div><span class="cg-card__eyebrow">Active shipments</span><strong>128</strong><small>↑ 8 since morning</small></div><span class="cg-demo-icon" aria-hidden="true">↗</span></div>
+            <h3 class="cg-card__title">Default KPI card</h3><p class="cg-card__copy">Stable white or navy surface, fine border and tabular telemetry values.</p>
+          </article>
+          <button type="button" class="cg-card cg-card--interactive" style="text-align:left;font:inherit">
+            <div class="cg-demo-kpi"><div><span class="cg-card__eyebrow">Average temperature</span><strong>4.8°C</strong><small>Target window 2–8°C</small></div><span class="cg-demo-icon cg-card__icon" aria-hidden="true">°C</span></div>
+            <h3 class="cg-card__title">Interactive card</h3><p class="cg-card__copy">Hover to preview the lift, border tint and icon scale. Only actionable cards use this behavior.</p>
+          </button>
+          <article class="cg-card cg-card--alert">
+            <span class="cg-badge cg-badge--danger">Critical · Action required</span>
+            <h3 class="cg-card__title">Thermal excursion</h3><p class="cg-card__copy">A strong left rail and soft tinted background help the alert stand out without flashing.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="cg-demo-section" aria-labelledby="inputs-heading">
+        <div class="cg-demo-section-head"><div><h2 id="inputs-heading">05 · Inputs and validation</h2><p>Consistent 44px control height, hover border, visible focus ring and error messaging.</p></div><span class="cg-demo-count">FORM STATES</span></div>
+        <div class="cg-demo-grid cg-demo-grid--2">
+          <div class="cg-demo-example"><div class="cg-field"><label class="cg-label" for="cg-demo-search">Shipment ID</label><input class="cg-input" id="cg-demo-search" type="text" value="CH-042" placeholder="Search by shipment ID"><span class="cg-field__hint">Enter a shipment code to filter the fleet.</span></div></div>
+          <div class="cg-demo-example"><div class="cg-field" data-error="true"><label class="cg-label" for="cg-demo-invalid">Temperature threshold</label><input class="cg-input" id="cg-demo-invalid" type="number" value="18" aria-invalid="true"><span class="cg-field__error">Outside the configured vaccine profile range.</span></div></div>
+          <div class="cg-demo-example"><div class="cg-field"><label class="cg-label" for="cg-demo-select">Telemetry freshness</label><select class="cg-select" id="cg-demo-select"><option>Last 15 minutes</option><option>Last hour</option><option>Last 24 hours</option></select></div></div>
+          <div class="cg-demo-example"><div class="cg-field"><label class="cg-label" for="cg-demo-disabled">Read-only operator</label><input class="cg-input" id="cg-demo-disabled" type="text" value="Control Tower Operator" disabled><span class="cg-field__hint">Disabled controls are visibly muted and non-interactive.</span></div></div>
+        </div>
+      </section>
+
+      <section class="cg-demo-section" aria-labelledby="controls-heading">
+        <div class="cg-demo-section-head"><div><h2 id="controls-heading">06 · Segmented controls and tabs</h2><p>Selected values stay obvious in both themes and support keyboard focus.</p></div><span class="cg-demo-count">SELECTION</span></div>
+        <div class="cg-demo-grid cg-demo-grid--2">
+          <div class="cg-demo-example"><h3>Segmented control</h3><div class="cg-segmented" role="group" aria-label="Telemetry range" data-cg-demo-segment-group>
+            <button class="cg-segment" type="button" aria-pressed="true" data-cg-demo-segment>15 min</button>
+            <button class="cg-segment" type="button" aria-pressed="false" data-cg-demo-segment>1 hour</button>
+            <button class="cg-segment" type="button" aria-pressed="false" data-cg-demo-segment>24 hours</button>
+          </div></div>
+          <div class="cg-demo-example" data-cg-demo-tabgroup><h3>Tabs</h3><div class="cg-tablist" role="tablist" aria-label="Shipment panels">
+            <button class="cg-tab" type="button" role="tab" aria-selected="true" tabindex="0" data-cg-demo-tab="telemetry">Telemetry</button>
+            <button class="cg-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-cg-demo-tab="route">Route</button>
+            <button class="cg-tab" type="button" role="tab" aria-selected="false" tabindex="-1" data-cg-demo-tab="audit">Audit</button>
+          </div>
+          <div data-cg-demo-panel="telemetry" role="tabpanel" style="padding-top:14px;color:var(--cg-text-secondary);font-size:13px">Temperature 4.8°C · Humidity 52% RH</div>
+          <div data-cg-demo-panel="route" role="tabpanel" style="padding-top:14px;color:var(--cg-text-secondary);font-size:13px" hidden>Route clear · Next checkpoint 22 km</div>
+          <div data-cg-demo-panel="audit" role="tabpanel" style="padding-top:14px;color:var(--cg-text-secondary);font-size:13px" hidden>Last verification 09:41:06Z</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="cg-demo-section" aria-labelledby="table-heading">
+        <div class="cg-demo-section-head"><div><h2 id="table-heading">07 · Table, tooltip and feedback</h2><p>Table container scrolls horizontally on smaller screens; interactive targets use accessible labels.</p></div><span class="cg-demo-count">DATA DISPLAY</span></div>
+        <div class="cg-table-wrap"><table class="cg-table"><thead><tr><th>Shipment</th><th>Temperature</th><th>Viability</th><th>Status</th><th>Last update</th></tr></thead><tbody>
+          <tr><td class="cg-id">CH-042</td><td class="cg-telemetry">4.8°C</td><td class="cg-telemetry">98.6%</td><td><span class="cg-demo-table-status">In range</span></td><td class="cg-timestamp">09:41:06Z</td></tr>
+          <tr><td class="cg-id">CH-017</td><td class="cg-telemetry">8.7°C</td><td class="cg-telemetry">92.1%</td><td><span class="cg-badge cg-badge--warning">Review needed</span></td><td class="cg-timestamp">09:40:44Z</td></tr>
+        </tbody></table></div>
+        <div class="cg-demo-row" style="margin-top:18px">
+          <span class="cg-tooltip-wrap" data-tooltip="Last verified from two independent probes"><button class="cg-btn cg-btn--secondary" type="button">Probe verification <span aria-hidden="true">ⓘ</span></button></span>
+          <button class="cg-btn cg-btn--primary" type="button" data-cg-demo-modal-open="#cg-demo-modal">Open modal preview</button>
+          <button class="cg-btn cg-btn--secondary" type="button" data-cg-demo-toast>Show toast</button>
+        </div>
+        <div id="cg-demo-toast" class="cg-toast" role="status" aria-live="polite" style="margin-top:16px" hidden><span class="cg-toast__icon" aria-hidden="true">✓</span><div><strong>Preferences saved</strong><div style="margin-top:3px">This is an example toast with icon, text and semantic status.</div></div></div>
+      </section>
+
+      <section class="cg-demo-section" aria-labelledby="loading-heading">
+        <div class="cg-demo-section-head"><div><h2 id="loading-heading">08 · Empty and loading states</h2><p>Calm shimmer, muted supporting copy and reduced-motion fallback.</p></div><span class="cg-demo-count">FEEDBACK</span></div>
+        <div class="cg-demo-grid cg-demo-grid--2">
+          <div class="cg-demo-example"><h3>Loading skeleton</h3><div class="cg-shimmer" style="height:14px;width:62%;margin:10px 0"></div><div class="cg-shimmer" style="height:10px;width:88%;margin:10px 0"></div><div class="cg-shimmer" style="height:10px;width:76%;margin:10px 0"></div></div>
+          <div class="cg-demo-example" style="text-align:center;padding:26px"><div class="cg-demo-icon" style="margin:0 auto 12px">⌕</div><h3 style="color:var(--cg-text)">No shipments match</h3><p style="font-size:13px;line-height:1.5;color:var(--cg-text-muted)">Try widening the time range or clearing the current filters.</p><button class="cg-btn cg-btn--secondary cg-btn--sm" type="button" style="margin-top:12px">Clear example filters</button></div>
+        </div>
+      </section>
+
+      <footer class="cg-demo-footer">
+        <span>ColdGuard · Protect Every Dose. Predict Every Excursion.</span>
+        <span>Inter · JetBrains Mono · 8px spacing grid · 200ms interactions</span>
+      </footer>
+    </div>
+  </main>
+
+  <div id="cg-demo-modal" class="cg-modal-backdrop" data-cg-demo-modal role="dialog" aria-modal="true" aria-labelledby="cg-demo-modal-title" aria-hidden="true" hidden>
+    <div class="cg-modal">
+      <div class="cg-demo-section-head"><div><span class="cg-card__eyebrow">Component preview</span><h2 id="cg-demo-modal-title" style="font-size:22px;font-weight:850;margin-top:6px">Confirm route review</h2></div><span class="cg-badge cg-badge--info">Preview</span></div>
+      <p style="font-size:14px;line-height:1.7;color:var(--cg-text-muted)">This is a visual modal sample only. It does not approve or change any real shipment route.</p>
+      <div class="cg-demo-row" style="justify-content:flex-end;margin-top:22px"><button class="cg-btn cg-btn--secondary" type="button" data-cg-demo-modal-close>Cancel</button><button class="cg-btn cg-btn--primary" type="button" data-cg-demo-modal-close>Close preview</button></div>
+    </div>
+  </div>
+</body>
+</html>
