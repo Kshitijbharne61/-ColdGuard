@@ -2027,7 +2027,7 @@ class SimulationEngine {
     const stale=Number(s.sensorDataAgeSeconds)>30||(s.lastSensorUpdate&&now-new Date(s.lastSensorUpdate).getTime()>30000);
     const invalid=!va||!vb;
     const reason=invalid?"Missing or out-of-range probe reading":stale?"Telemetry stale for more than 30 seconds":stuckA?"Probe 1A flat-line detected":stuckB?"Probe 1B flat-line detected":delta>1?"Probe disagreement exceeds 1.0°C":delta>.7?"Probe disagreement exceeds 0.7°C":"";
-    const old=s.sensorHealth,fault=invalid||stale||stuckA||stuckB||(delta!==null&&delta>1);
+    const old=s.sensorHealth,fault=invalid||stale||stuckA||stuckB;
     c.warningCount=delta!==null&&delta>.7?c.warningCount+1:0;c.faultCount=delta!==null&&delta>1?c.faultCount+1:0;
     if(fault||c.faultCount>=3){s.sensorHealth="fault";c.clearCount=0;}
     else if(old==="fault"){
@@ -2098,7 +2098,8 @@ class SimulationEngine {
       s.currentTemperature = parseFloat((s.currentTemperature + tempJitter).toFixed(2));
       s.currentHumidity = parseFloat(Math.min(99, Math.max(10, s.currentHumidity + humJitter)).toFixed(1));
       if (s.sensorScenario !== "stuck1A" && s.probe1ATemperature !== null) s.probe1ATemperature = +(s.currentTemperature + (Math.random()-.5)*.08).toFixed(2);
-      if (s.sensorScenario !== "stuck1B" && s.probe1BTemperature !== null) s.probe1BTemperature = +(s.currentTemperature + (Math.random()-.5)*.08).toFixed(2);
+      if (s.sensorScenario === "drift1B") s.probe1BTemperature = +(s.currentTemperature + 2.4).toFixed(2);
+      else if (s.sensorScenario !== "stuck1B" && s.sensorScenario !== "disconnect" && s.probe1BTemperature !== null) s.probe1BTemperature = +(s.currentTemperature + (Math.random()-.5)*.08).toFixed(2);
       s.lastSensorUpdate = nowIso;
       s.sensorDataAgeSeconds = Math.max(2, Math.round(Math.random() * 8));
 
