@@ -72,6 +72,10 @@
       ".read": false,
       ".write": false
     },
+    "notification_escalation_map": {
+      ".read": false,
+      ".write": false
+    },
     "facilities": {
       ".read": "auth != null",
       ".write": "auth != null"
