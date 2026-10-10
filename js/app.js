@@ -51,6 +51,7 @@ class ColdGuardApp {
     this.remoteAlerts = [];
     this.authUi = new AuthUiManager(this.authService, (user) => this.onAuthSuccess(user));
     this.currentUser = null;
+    this.logoutInProgress = false;
 
     this.init();
   }
@@ -90,6 +91,7 @@ class ColdGuardApp {
   }
 
   handleAuthStateChanged(user) {
+    const hadAuthenticatedUser = !!this.currentUser && !this.currentUser.isDemo;
     // Only a real, currently signed-in Firebase user may reveal protected views.
     const verifiedUser = this.authService?.auth?.currentUser || null;
     if (user && (user.isDemo || !verifiedUser || verifiedUser.uid !== user.uid)) {
@@ -102,6 +104,7 @@ class ColdGuardApp {
     const dashboardContainer = document.getElementById("dashboard-app-container");
 
     if (user) {
+      this.logoutInProgress = false;
       if (authContainer) {
         authContainer.classList.add("hidden");
         authContainer.style.display = "none";
@@ -128,6 +131,9 @@ class ColdGuardApp {
         this.authUi.renderAuthView(authContainer);
       }
       this.simulation.pause();
+      if (hadAuthenticatedUser && !this.logoutInProgress && authContainer && this.authUi) {
+        this.authUi.showError(authContainer, "Your authentication session has expired. Please sign in again.");
+      }
     }
   }
 
@@ -141,6 +147,7 @@ class ColdGuardApp {
   }
 
   async handleLogout() {
+    this.logoutInProgress = true;
     try {
       await this.authService.logout();
       this.currentUser = null;
@@ -148,6 +155,7 @@ class ColdGuardApp {
       if (window.location.hash !== "#auth") window.location.hash = "#auth";
       this.modals.showToast("Operator session ended. Signed out securely.", "info");
     } catch (err) {
+      this.logoutInProgress = false;
       this.modals.showToast("Unable to sign out. Please retry.", "warning");
     }
   }
