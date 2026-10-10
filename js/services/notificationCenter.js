@@ -792,10 +792,12 @@
       seen[hKey] = true;
       observe(hKey, { type:"humidity_excursion", shipmentId:sid, vaccineName:s.vaccineName || s.productName, humidity:h, minTemp:hMin, maxTemp:hMax, location:s.currentLocation, detectedAt:nowIso() }, hBad);
       var status = String(s.hardwareStatus || s.deviceStatus || s.sensorStatus || "").toLowerCase();
-      var badSensor = s.isSensorFaulty === true || s.sensorHealth === "fault" || ["fault","error","failed","malfunction"].indexOf(status) >= 0;
+      var sensorScenario = String(s.sensorScenario || "").toLowerCase();
+      var suspect = s.suspectSensor || (sensorScenario === "drift1b" ? "Probe 1B" : sensorScenario === "stuck1a" ? "Probe 1A" : sensorScenario === "disconnect" ? "Probe 1B" : s.sensorDeviceId || "primary temperature probe");
+      var badSensor = s.isSensorFaulty === true || s.sensorHealth === "fault" || ["fault","error","failed","malfunction"].indexOf(status) >= 0 || ["drift1b","stuck1a","disconnect"].indexOf(sensorScenario) >= 0;
       var delta = s.probe1ATemperature != null && s.probe1BTemperature != null ? Math.abs(Number(s.probe1ATemperature)-Number(s.probe1BTemperature)) : null;
       var sensorKey = sid + ":SENSOR_FAULT"; seen[sensorKey] = true;
-      observe(sensorKey, { type:"hardware_problem", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation, hardwareStatus:status || "fault", suspectSensor:s.suspectSensor || s.sensorDeviceId || "primary sensor", delta:delta == null ? "probe data unavailable" : delta.toFixed(1)+"°C cross-probe difference", detectedAt:nowIso() }, badSensor || Number.isFinite(delta) && delta > 1.5);
+      observe(sensorKey, { type:"hardware_problem", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation, hardwareStatus:status || sensorScenario || "fault", suspectSensor:suspect, delta:delta == null ? "probe data unavailable" : delta.toFixed(1)+"°C cross-probe difference", detectedAt:nowIso() }, badSensor || Number.isFinite(delta) && delta > 1.5);
       var battery = Number(s.batteryLevel), batteryLow = Number.isFinite(battery) && battery <= 20 || String(s.sensorConnectivity || "").toLowerCase() === "low battery" || s.batteryLow === true;
       var batteryKey = sid + ":BATTERY_LOW"; seen[batteryKey] = true;
       observe(batteryKey, { type:"battery_low", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation, batteryLevel:battery, detectedAt:nowIso() }, batteryLow);
@@ -807,7 +809,7 @@
       var stampMs = stamp ? Date.parse(stamp) : NaN;
       if (!Number.isFinite(stampMs) && typeof stamp === "number") stampMs = stamp < 1000000000000 ? stamp * 1000 : stamp;
       var stale = Number.isFinite(stampMs) && Date.now() - stampMs > 5 * 60 * 1000;
-      var offline = String(s.sensorConnectivity || "").toLowerCase() === "offline" || s.isDeviceOffline === true || ["offline","disconnected"].indexOf(status) >= 0 || stale;
+      var offline = String(s.sensorConnectivity || "").toLowerCase() === "offline" || s.isDeviceOffline === true || ["offline","disconnected"].indexOf(status) >= 0 || sensorScenario === "disconnect" || stale;
       var offKey = sid + ":DEVICE_OFFLINE"; seen[offKey] = true;
       observe(offKey, { type:"sensor_offline", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation, detectedAt:nowIso(), lastSensorUpdate:stamp || null, details:stale ? "No update for more than five minutes" : "" }, offline);
       var route = s.routeRiskActive === true || s.routeDeviationDetected === true;
