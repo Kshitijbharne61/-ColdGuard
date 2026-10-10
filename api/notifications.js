@@ -62,7 +62,7 @@ function recipientsFor(settings, contact) {
 function safeAlert(input) {
   const a=input && typeof input==="object" ? input : {};
   const allowed={};
-  ["id","conditionKey","shipmentId","vaccine","batchNumber","type","typeLabel","severity","title","body","currentValue","permittedRange","minimum","maximum","deviation","deviationText","durationMinutes","timeToSpoilageMinutes","viabilityPercent","location","mapLink","coordinates","suggestedRoute","suspectSensor","detectedAt","detectedLocal","status","unread","recommendation","shortText","deepLink","acknowledgeLink","rerouteLink","channelStatus","deliveryMode","escalation","acknowledgedBy","acknowledgedAt","resolvedAt","timeline","source","region","payloadType","resolution"].forEach(k=>{ if(a[k]!==undefined) allowed[k]=a[k]; });
+  ["id","ownerUid","conditionKey","shipmentId","vaccine","batchNumber","type","typeLabel","severity","title","body","currentValue","permittedRange","minimum","maximum","deviation","deviationText","durationMinutes","timeToSpoilageMinutes","viabilityPercent","location","mapLink","coordinates","suggestedRoute","suspectSensor","detectedAt","detectedLocal","status","unread","recommendation","shortText","deepLink","acknowledgeLink","rerouteLink","channelStatus","deliveryMode","escalation","acknowledgedBy","acknowledgedAt","resolvedAt","timeline","source","region","payloadType","resolution"].forEach(k=>{ if(a[k]!==undefined) allowed[k]=a[k]; });
   allowed.id=String(allowed.id || "CGAL-"+crypto.randomBytes(6).toString("hex")).slice(0,80);
   allowed.shipmentId=String(allowed.shipmentId || "UNKNOWN").slice(0,100);
   allowed.severity=safeSeverity(allowed.severity);
@@ -133,6 +133,7 @@ async function queueOrDeliver(uid, token, alert, channels, recipients, links, re
     for(const channel of channels) {
       if(channel==="in_app") { statuses[channel]={status:"delivered",updatedAt:new Date().toISOString(),note:"Available in Alert Center"}; continue; }
       if(channel==="daily_digest" || channel==="weekly_digest") {
+        if(config.providers.email) await queueTask(uid,alert,channel,recipients,links,reminder);
         statuses[channel]=deliveryQueuedStatus(channel,"Queued for digest summarization");
         continue;
       }
@@ -242,6 +243,22 @@ module.exports = async function handler(req,res) {
           appendTimeline(a,"resolved",a.resolution.reason||"Condition cleared");
         }
       });
+      // If this is an escalation copy, also stop the owner's escalation chain.
+      if(alert.ownerUid && alert.ownerUid!==user.uid && engine.adminDatabase()) {
+        const ownerAlert=await engine.dbRead("users/"+alert.ownerUid+"/notificationCenter/"+alertId,null).catch(()=>null);
+        if(ownerAlert) {
+          if(action==="acknowledge" && ownerAlert.status==="open") {
+            ownerAlert.status="acknowledged";ownerAlert.unread=false;ownerAlert.acknowledgedAt=alert.acknowledgedAt||new Date().toISOString();ownerAlert.acknowledgedBy=user.email||user.uid;
+            if(ownerAlert.escalation)ownerAlert.escalation.nextAt=null;
+            appendTimeline(ownerAlert,"acknowledged","Acknowledged by escalation recipient "+(user.email||user.uid));
+          } else if(action==="resolve" && ownerAlert.status!=="resolved") {
+            ownerAlert.status="resolved";ownerAlert.unread=false;ownerAlert.resolvedAt=alert.resolvedAt||new Date().toISOString();ownerAlert.resolution=body.resolution||{reason:"Condition cleared"};
+            if(ownerAlert.escalation)ownerAlert.escalation.nextAt=null;
+            appendTimeline(ownerAlert,"resolved","Resolved by escalation recipient");
+          }
+          await engine.dbWrite("users/"+alert.ownerUid+"/notificationCenter/"+alertId,ownerAlert,null);
+        }
+      }
       await audit(user.uid,action==="acknowledge"?"NOTIFICATION_ACKNOWLEDGED":"NOTIFICATION_RESOLVED",alert,token,action==="acknowledge"?"Dashboard acknowledgement":"Condition resolved");
       return response(res,200,{ok:true,alert:alert});
     }
@@ -263,7 +280,7 @@ module.exports = async function handler(req,res) {
     }
     if(action!=="send") return response(res,400,{error:"Unsupported notification action."});
     const alert=safeAlert(body.alert);
-    const severity=safeSeverity(alert.severity); alert.severity=severity;
+    const severity=safeSeverity(alert.severity); alert.severity=severity; alert.ownerUid=user.uid;
     const previous=await engine.dbRead("users/"+user.uid+"/notificationCenter/"+alert.id,token).catch(()=>null);
     if(previous && previous.status==="acknowledged") return response(res,200,{ok:true,mode:"live",channels:previous.channelStatus||{},message:"This alert is already acknowledged."});
     const settings=await getSettings(user.uid,token,body.preferences);
