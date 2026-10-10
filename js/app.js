@@ -109,6 +109,7 @@ class ColdGuardApp {
       if (dashboardContainer) {
         dashboardContainer.classList.remove("hidden");
         dashboardContainer.style.display = "flex";
+        dashboardContainer.setAttribute("aria-hidden", "false");
       }
 
       this.updateUserBadge(user);
@@ -119,6 +120,7 @@ class ColdGuardApp {
       if (dashboardContainer) {
         dashboardContainer.classList.add("hidden");
         dashboardContainer.style.display = "none";
+        dashboardContainer.setAttribute("aria-hidden", "true");
       }
       if (authContainer) {
         authContainer.classList.remove("hidden");
