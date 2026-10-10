@@ -110,8 +110,8 @@
   }
   function identify(payload) {
     var raw = String(payload.type || payload.alertType || "test").toLowerCase();
-    if (raw.indexOf("temperature") >= 0 || raw.indexOf("excursion") >= 0) return { type:"TEMP_EXCURSION", severity:"CRITICAL", label:"Temperature excursion" };
     if (raw.indexOf("humidity") >= 0) return { type:"HUMIDITY", severity:"WARNING", label:"Humidity outside range" };
+    if (raw.indexOf("temperature") >= 0 || raw.indexOf("excursion") >= 0) return { type:"TEMP_EXCURSION", severity:"CRITICAL", label:"Temperature excursion" };
     if (raw.indexOf("hardware") >= 0 || raw.indexOf("sensor_fault") >= 0 || raw.indexOf("sensor") >= 0 && raw.indexOf("offline") < 0) return { type:"SENSOR_FAULT", severity:"CRITICAL", label:"Sensor fault" };
     if (raw.indexOf("route") >= 0 || payload.routeRiskActive) return { type:"ROUTE_RISK", severity:"WARNING", label:"Route risk" };
     if (raw.indexOf("battery") >= 0) return { type:"BATTERY_LOW", severity:"WARNING", label:"Sensor battery low" };
@@ -194,7 +194,7 @@
       (payload.details ? String(payload.details) + " " : "");
     var msg = common + specific + "Recommended action: " + actionFor(found.type);
     var shortBase = String(window.location.origin || "").replace(/^https?:\/\//, "");
-    var shortLink = shortBase + "/#" + encodeURIComponent("details?id=" + shipmentId);
+    var shortLink = shortBase + "/#details?id=" + encodeURIComponent(shipmentId);
     var sms = (found.severity + " " + shipmentId + " " + (metricValue == null ? found.label : metricValue.toFixed(1) + valueUnit.replace(" ", "")) + (max != null ? " (limit " + max + ")" : "") + ". " + (minutes == null ? "" : "~" + minutes + " min to spoilage. ") + "Open: " + shortLink);
     if (sms.length > 159) sms = sms.slice(0, 156) + "...";
     var alert = {
@@ -285,7 +285,7 @@
     }
   }
   function makeExistingOpen(alert) {
-    return events.find(function (old) { return old.status === "open" && old.shipmentId === alert.shipmentId && old.type === alert.type; });
+    return events.find(function (old) { return old.status !== "resolved" && old.shipmentId === alert.shipmentId && old.type === alert.type; });
   }
   function previewStatusFor(alert, channels, note) {
     channels.forEach(function (ch) {
@@ -310,7 +310,7 @@
     if (!active) {
       delete candidates[key];
       var oldId = latestByCondition[key];
-      var old = oldId && events.find(function (a) { return a.id === oldId && a.status === "open"; });
+      var old = oldId && events.find(function (a) { return a.id === oldId && a.status !== "resolved"; });
       if (old) resolve(old.id, "Condition cleared", payload);
       return;
     }
@@ -321,6 +321,7 @@
     var alert = buildAlert(candidates[key].payload, key);
     var existing = makeExistingOpen(alert);
     if (existing) {
+      if (existing.status === "acknowledged") return;
       var since = Date.now() - Date.parse(existing.lastNotifiedAt || existing.detectedAt);
       if (since > Math.max(1, Number(prefs.reminderCooldownMinutes || 15)) * 60000) {
         existing.lastNotifiedAt = nowIso();
@@ -626,6 +627,7 @@
     if (action === "ack") return acknowledge(alertId);
     if (action === "dismiss") { if (button && button.closest(".cg-alert-toast")) button.closest(".cg-alert-toast").remove(); return; }
     if (action === "view" || action === "shipment") {
+      closeBellDropdown();
       if (alert) { alert.unread = false; persistAlert(alert); storeEvents(); updateHeader(); buttonNavigate("details", alert.shipmentId); }
       return;
     }
@@ -676,8 +678,8 @@
       if (navAction) {
         e.preventDefault();
         var action = navAction.getAttribute("data-cg-notification-action");
-        if (action === "settings") buttonNavigate("notification_settings");
-        else if (action === "center") buttonNavigate("alert_center");
+        if (action === "settings") { closeBellDropdown(); buttonNavigate("notification_settings"); }
+        else if (action === "center") { closeBellDropdown(); buttonNavigate("alert_center"); }
         else if (action === "test") testAlert();
         else if (action === "preview") {
           var p = buildAlert({ type:"temperature_excursion", shipmentId:"CG-9021-PFZ", vaccineName:"Comirnaty", temperature:-52.4, minTemp:-90, maxTemp:-60, location:"Pune Cold-Chain Corridor" }, "preview-only");
@@ -751,7 +753,7 @@
       seen[hKey] = true;
       observe(hKey, { type:"humidity_excursion", shipmentId:sid, vaccineName:s.vaccineName || s.productName, humidity:h, minTemp:hMin, maxTemp:hMax, location:s.currentLocation, detectedAt:nowIso() }, hBad);
       var status = String(s.hardwareStatus || s.deviceStatus || s.sensorStatus || "").toLowerCase();
-      var badSensor = s.isSensorFaulty === true || ["fault","error","failed","malfunction"].indexOf(status) >= 0;
+      var badSensor = s.isSensorFaulty === true || s.sensorHealth === "fault" || ["fault","error","failed","malfunction"].indexOf(status) >= 0;
       var delta = s.probe1ATemperature != null && s.probe1BTemperature != null ? Math.abs(Number(s.probe1ATemperature)-Number(s.probe1BTemperature)) : null;
       var sensorKey = sid + ":SENSOR_FAULT"; seen[sensorKey] = true;
       observe(sensorKey, { type:"hardware_problem", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation, hardwareStatus:status || "fault", suspectSensor:s.suspectSensor || s.sensorDeviceId || "primary sensor", delta:delta == null ? "probe data unavailable" : delta.toFixed(1)+"°C cross-probe difference", detectedAt:nowIso() }, badSensor || Number.isFinite(delta) && delta > 1.5);
@@ -761,9 +763,14 @@
       var gps = s.gpsFixStatus === "NO_FIX" || s.gpsStatus === "NO_FIX" || s.isGpsUnavailable === true || s.location && s.location.hasFix === false;
       var gpsKey = sid + ":GPS_LOSS"; seen[gpsKey] = true;
       observe(gpsKey, { type:"gps_loss", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation || s.location && s.location.name, detectedAt:nowIso() }, gps);
-      var offline = s.sensorConnectivity === "Offline" || s.isDeviceOffline === true;
+      var live = s.telemetry && s.telemetry.live || {};
+      var stamp = live.lastSensorUpdate || live.timestamp || live.updatedAt || s.lastSensorUpdate;
+      var stampMs = stamp ? Date.parse(stamp) : NaN;
+      if (!Number.isFinite(stampMs) && typeof stamp === "number") stampMs = stamp < 1000000000000 ? stamp * 1000 : stamp;
+      var stale = Number.isFinite(stampMs) && Date.now() - stampMs > 5 * 60 * 1000;
+      var offline = String(s.sensorConnectivity || "").toLowerCase() === "offline" || s.isDeviceOffline === true || ["offline","disconnected"].indexOf(status) >= 0 || stale;
       var offKey = sid + ":DEVICE_OFFLINE"; seen[offKey] = true;
-      observe(offKey, { type:"sensor_offline", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation, detectedAt:nowIso() }, offline);
+      observe(offKey, { type:"sensor_offline", shipmentId:sid, vaccineName:s.vaccineName || s.productName, location:s.currentLocation, detectedAt:nowIso(), lastSensorUpdate:stamp || null, details:stale ? "No update for more than five minutes" : "" }, offline);
       var route = s.routeRiskActive === true || s.routeDeviationDetected === true;
       var routeKey = sid + ":ROUTE_RISK"; seen[routeKey] = true;
       observe(routeKey, { type:"route_risk", shipmentId:sid, vaccineName:s.vaccineName || s.productName, region:s.currentLocation || s.region || "Transit corridor", suggestedRoute:s.recommendedRoute || s.suggestedRoute, location:s.currentLocation, detectedAt:nowIso() }, route);
