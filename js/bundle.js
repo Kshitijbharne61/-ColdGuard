@@ -5438,7 +5438,7 @@ class ColdGuardApp {
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${this.simulation.isRunning ? 'M8 5v14m8-14v14' : 'm7 4 12 8-12 8V4'}"/></svg>
                 <span>${this.simulation.isRunning ? 'Pause Telemetry' : 'Resume Telemetry'}</span>
               </button>
-            </div>            </div>
+            </div>
           </div>
         </div>
 
@@ -5465,7 +5465,7 @@ class ColdGuardApp {
                 SHA-256 Authenticated
                 <span class="security-tooltip" role="tooltip">Telemetry integrity is verified using a SHA-256 digest.</span>
               </span>
-            </div>            </div>
+            </div>
           </div>
 
           <!-- Dual Probe Live Metrics Grid -->
