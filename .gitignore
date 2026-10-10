@@ -15,3 +15,6 @@ functions/.env.*
 !functions/.env.example
 service-account*.json
 *-service-account*.json
+
+# ESP32 local credentials (keep secrets.example.h tracked)
+arduino/ColdGuard_ESP32_DualDHT22/secrets.h
