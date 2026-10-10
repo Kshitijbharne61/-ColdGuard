@@ -4422,7 +4422,6 @@ class ColdGuardApp {
   onAuthSuccess(user) {
     this.currentUser = user;
     this.handleAuthStateChanged(user);
-    this.modals.showToast(`Welcome back, ${user.displayName || user.email}!`, "safe");
   }
 
   async handleLogout() {
