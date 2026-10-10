@@ -44,6 +44,18 @@
       ".read": "auth != null",
       ".write": "auth != null"
     },
+    "notification_queue": {
+      ".read": false,
+      ".write": false
+    },
+    "notification_action_tokens": {
+      ".read": false,
+      ".write": false
+    },
+    "notification_rate_limits": {
+      ".read": false,
+      ".write": false
+    },
     "facilities": {
       ".read": "auth != null",
       ".write": "auth != null"
