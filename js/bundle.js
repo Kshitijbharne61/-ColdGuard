@@ -1952,6 +1952,16 @@ class SimulationEngine {
   constructor(initialShipments, vaccineProfiles, onUpdateCallback) {
     // Clone shipments so we maintain state
     this.shipments = JSON.parse(JSON.stringify(initialShipments));
+    this.shipments.forEach(s => {
+      const t = Number(s.currentTemperature);
+      s.probe1ATemperature = Number.isFinite(Number(s.probe1ATemperature)) ? Number(s.probe1ATemperature) : t;
+      s.probe1BTemperature = Number.isFinite(Number(s.probe1BTemperature)) ? Number(s.probe1BTemperature) : +(t + (Math.random() - .5) * .12).toFixed(2);
+      s.sensorDelta = Math.abs(s.probe1ATemperature - s.probe1BTemperature);
+      s.sensorHealth = s.sensorHealth || "healthy"; s.suspectSensor = s.suspectSensor || null;
+      s.faultReason = s.faultReason || ""; s.faultSince = s.faultSince || null;
+      s.sensorFaultHistory = Array.isArray(s.sensorFaultHistory) ? s.sensorFaultHistory : [];
+      s.sensorCrossCheck = s.sensorCrossCheck || {warningCount:0,faultCount:0,clearCount:0,previous1A:null,previous1B:null,lastChanged1A:Date.now(),lastChanged1B:Date.now()};
+    });
     this.vaccineProfiles = vaccineProfiles;
     this.excursionEngine = new ExcursionDetectionEngine(vaccineProfiles);
     this.onUpdateCallback = onUpdateCallback;
@@ -2003,9 +2013,54 @@ class SimulationEngine {
     });
   }
 
+  evaluateSensorHealth(s, now = Date.now()) {
+    const c=s.sensorCrossCheck||(s.sensorCrossCheck={warningCount:0,faultCount:0,clearCount:0,previous1A:null,previous1B:null,lastChanged1A:now,lastChanged1B:now});
+    const a=s.probe1ATemperature,b=s.probe1BTemperature;
+    const valid=v=>v!==null&&v!==undefined&&Number.isFinite(Number(v))&&Number(v)>=-40&&Number(v)<=80;
+    const va=valid(a),vb=valid(b),delta=va&&vb?Math.abs(Number(a)-Number(b)):null;
+    const jumpA=va&&c.previous1A!==null&&Math.abs(Number(a)-c.previous1A)>2;
+    const jumpB=vb&&c.previous1B!==null&&Math.abs(Number(b)-c.previous1B)>2;
+    if(va&&Number(a)!==c.previous1A)c.lastChanged1A=now;
+    if(vb&&Number(b)!==c.previous1B)c.lastChanged1B=now;
+    const stuckA=s.sensorScenario==="stuck1A"||now-c.lastChanged1A>=600000;
+    const stuckB=s.sensorScenario==="stuck1B"||now-c.lastChanged1B>=600000;
+    const stale=Number(s.sensorDataAgeSeconds)>30||(s.lastSensorUpdate&&now-new Date(s.lastSensorUpdate).getTime()>30000);
+    const invalid=!va||!vb;
+    const reason=invalid?"Missing or out-of-range probe reading":stale?"Telemetry stale for more than 30 seconds":stuckA?"Probe 1A flat-line detected":stuckB?"Probe 1B flat-line detected":delta>1?"Probe disagreement exceeds 1.0°C":delta>.7?"Probe disagreement exceeds 0.7°C":"";
+    const old=s.sensorHealth,fault=invalid||stale||stuckA||stuckB;
+    c.warningCount=delta!==null&&delta>.7?c.warningCount+1:0;c.faultCount=delta!==null&&delta>1?c.faultCount+1:0;
+    if(fault||c.faultCount>=3){s.sensorHealth="fault";c.clearCount=0;}
+    else if(old==="fault"){
+      c.clearCount=delta!==null&&delta<.5&&!stale&&!invalid&&!stuckA&&!stuckB?c.clearCount+1:0;
+      if(c.clearCount>=5){s.sensorHealth="healthy";s.faultReason="";s.faultSince=null;s.suspectSensor=null;
+        s.sensorFaultHistory.unshift({type:"cleared",timestamp:new Date(now).toISOString(),delta:delta,suspectSensor:c.lastSuspect||"unknown"});
+        s.timeline=s.timeline||[];s.timeline.unshift({time:new Date(now).toLocaleTimeString(),severity:"safe",desc:"SENSOR_FAULT CLEARED: Dual probes re-aligned."});
+      }
+    } else s.sensorHealth=c.warningCount>=2?"warning":"healthy";
+    if(s.sensorHealth==="fault"&&old!=="fault"){
+      s.faultSince=new Date(now).toISOString();s.faultReason=reason||"Sensor problem detected";
+      s.suspectSensor=jumpA||stuckA?"1A":jumpB||stuckB?"1B":"unknown";c.lastSuspect=s.suspectSensor;
+      s.sensorFaultHistory.unshift({type:"raised",timestamp:s.faultSince,delta:delta,suspectSensor:s.suspectSensor,reason:s.faultReason});
+      s.timeline=s.timeline||[];s.timeline.unshift({time:new Date(now).toLocaleTimeString(),severity:"warning",desc:"SENSOR_FAULT: Probe 1A and 1B differ by "+(delta===null?"N/A":delta.toFixed(1))+"°C (suspect: "+s.suspectSensor+")."});
+      if(typeof app!=="undefined"&&app.soundAlertsEnabled&&app.playAlertTone)app.playAlertTone("warning");
+    } else if(s.sensorHealth==="warning"&&old==="healthy")s.faultReason=reason;
+    s.sensorDelta=delta;if(va)c.previous1A=Number(a);if(vb)c.previous1B=Number(b);
+    return s.sensorHealth;
+  }
+
+  getConservativeTemperature(s) {
+    const a=Number(s.probe1ATemperature),b=Number(s.probe1BTemperature);
+    if(s.sensorHealth!=="fault"||!Number.isFinite(a)||!Number.isFinite(b))return Number(s.currentTemperature);
+    const min=Number(s.minAllowedTemperature),max=Number(s.maxAllowedTemperature);
+    const score=v=>v<min?min-v:v>max?v-max:0;
+    return score(a)>=score(b)?a:b;
+  }
+
   evaluateShipment(s) {
+    this.evaluateSensorHealth(s);
     const profile = this.vaccineProfiles[s.vaccineCategory];
-    const detection = this.excursionEngine.evaluate(s);
+    const evaluationInput = s.sensorHealth === 'fault' ? { ...s, currentTemperature: this.getConservativeTemperature(s) } : s;
+    const detection = this.excursionEngine.evaluate(evaluationInput);
     const viability = ViabilityModel.estimateViability(s, profile);
 
     // Update risk & prediction fields
@@ -2042,6 +2097,9 @@ class SimulationEngine {
 
       s.currentTemperature = parseFloat((s.currentTemperature + tempJitter).toFixed(2));
       s.currentHumidity = parseFloat(Math.min(99, Math.max(10, s.currentHumidity + humJitter)).toFixed(1));
+      if (s.sensorScenario !== "stuck1A" && s.probe1ATemperature !== null) s.probe1ATemperature = +(s.currentTemperature + (Math.random()-.5)*.08).toFixed(2);
+      if (s.sensorScenario === "drift1B") s.probe1BTemperature = +(s.currentTemperature + 2.4).toFixed(2);
+      else if (s.sensorScenario !== "stuck1B" && s.sensorScenario !== "disconnect" && s.probe1BTemperature !== null) s.probe1BTemperature = +(s.currentTemperature + (Math.random()-.5)*.08).toFixed(2);
       s.lastSensorUpdate = nowIso;
       s.sensorDataAgeSeconds = Math.max(2, Math.round(Math.random() * 8));
 
@@ -2075,6 +2133,23 @@ class SimulationEngine {
   }
 
   // --- Manual Scenario Injections ---
+
+  injectSensorDrift(shipmentId) {
+    const s=this.shipments.find(x=>x.id===shipmentId)||this.shipments[0];if(!s)return;
+    const previousA=Number(s.probe1ATemperature),previousB=Number(s.probe1BTemperature);
+    s.sensorScenario="drift1B";s.probe1BTemperature=+(Number(s.probe1ATemperature)+2.4).toFixed(2);
+    s.sensorCrossCheck={warningCount:0,faultCount:0,clearCount:0,previous1A:previousA,previous1B:previousB,lastChanged1A:Date.now(),lastChanged1B:Date.now()};
+    this.evaluateShipment(s);if(this.onUpdateCallback)this.onUpdateCallback(this.shipments);return s;
+  }
+  injectSensorStuck(shipmentId) {
+    const s=this.shipments.find(x=>x.id===shipmentId)||this.shipments[0];if(!s)return;
+    s.sensorScenario="stuck1A";s.sensorCrossCheck={warningCount:0,faultCount:0,clearCount:0,previous1A:Number(s.probe1ATemperature),previous1B:Number(s.probe1BTemperature),lastChanged1A:Date.now()-601000,lastChanged1B:Date.now()};
+    this.evaluateShipment(s);if(this.onUpdateCallback)this.onUpdateCallback(this.shipments);return s;
+  }
+  injectSensorDisconnect(shipmentId) {
+    const s=this.shipments.find(x=>x.id===shipmentId)||this.shipments[0];if(!s)return;
+    s.sensorScenario="disconnect";s.probe1BTemperature=null;this.evaluateShipment(s);if(this.onUpdateCallback)this.onUpdateCallback(this.shipments);return s;
+  }
 
   injectRefrigerationFailure(shipmentId) {
     const s = this.shipments.find(item => item.id === shipmentId) || this.shipments[0];
@@ -2691,7 +2766,8 @@ class TelemetryCharts {
       return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     });
 
-    const tempData = displayPoints.map(p => p.temperature);
+    const tempData = displayPoints.map(p => p.probe1A ?? p.temperature);
+    const tempBData = displayPoints.map(p => p.probe1B ?? p.temperature);
     const humData = displayPoints.map(p => p.humidity);
 
     const minTemp = shipment.minAllowedTemperature;
@@ -2711,7 +2787,7 @@ class TelemetryCharts {
 
     if (this.activeMetric === "temperature" || this.activeMetric === "both") {
       datasets.push({
-        label: "Temperature (°C)",
+        label: "Probe 1A Temperature (°C)",
         data: tempData,
         borderColor: "#2563EB",
         backgroundColor: "rgba(37, 99, 235, 0.08)",
@@ -2726,7 +2802,21 @@ class TelemetryCharts {
         yAxisID: "yTemp"
       });
 
-      // Max allowed threshold line
+      datasets.push({
+        label: "Probe 1B Temperature (°C)",
+        data: tempBData,
+        borderColor: "#D97706",
+        backgroundColor: "rgba(217,119,6,0.04)",
+        borderWidth: 2,
+        pointRadius: 2.5,
+        pointHoverRadius: 6,
+        pointBackgroundColor: "#D97706",
+        fill: false,
+        tension: 0.35,
+        yAxisID: "yTemp"
+      });
+
+            // Max allowed threshold line
       datasets.push({
         label: `Max Permitted (${maxTemp}°C)`,
         data: new Array(displayPoints.length).fill(maxTemp),
@@ -3257,6 +3347,7 @@ class ModalManager {
               </span>
             </div>
 
+            ${shipment.sensorFaultHistory && shipment.sensorFaultHistory.length ? '<section class="rounded-xl border border-amber-200 bg-amber-50 p-4"><h4 class="font-bold text-amber-900">Sensor Data-Integrity Note</h4><p class="mt-1 text-amber-800">Dual-sensor state: ' + (shipment.sensorHealth || 'healthy') + '. Current delta: ' + (shipment.sensorDelta == null ? 'N/A' : Number(shipment.sensorDelta).toFixed(2) + '°C') + '.</p><ul class="mt-2 space-y-1 text-amber-900">' + shipment.sensorFaultHistory.map(e => '<li>' + e.type.toUpperCase() + ' · ' + new Date(e.timestamp).toLocaleString() + ' · Δ ' + (e.delta == null ? 'N/A' : Number(e.delta).toFixed(2) + '°C') + ' · Suspect: ' + (e.suspectSensor || 'unknown') + (e.reason ? ' · ' + e.reason : '') + '</li>').join('') + '</ul></section>' : '<section class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-800">Dual-sensor cross-validation: no recorded sensor faults.</section>'}
             <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div>
                 <div class="text-[10px] text-slate-400 uppercase font-semibold">Vaccine Identification</div>
@@ -4598,6 +4689,8 @@ class ColdGuardApp {
         gpsLatitude: latitude, gpsLongitude: longitude,
         currentTemperature: remote.currentTemperature ?? live.temperature ?? local.currentTemperature,
         currentHumidity: remote.currentHumidity ?? live.humidity ?? local.currentHumidity,
+        probe1ATemperature: remote.probe1ATemperature ?? live.probe1ATemperature ?? remote.temperature1A ?? local.probe1ATemperature,
+        probe1BTemperature: remote.probe1BTemperature ?? live.probe1BTemperature ?? remote.temperature1B ?? local.probe1BTemperature,
         batteryLevel: remote.batteryLevel ?? live.batteryLevel ?? local.batteryLevel,
         isLiveGps: location.isLiveGps === true || remote.isLiveGps === true,
         gpsHasFix: location.hasFix !== false,
@@ -5243,6 +5336,7 @@ class ColdGuardApp {
                   </td>
 
                   <td class="p-3.5 text-center">
+                    ${s.sensorHealth==='fault' ? '<span class="sensor-table-badge" title="Data-integrity alert; separate from temperature excursion">⚠ Sensor Fault</span>' : s.sensorHealth==='warning' ? '<span class="sensor-table-warning">Sensor Warning</span>' : ''}
                     <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold ${
                       s.status === 'Delivered' ? 'bg-slate-100 text-slate-700' :
                       s.status === 'Emergency Rerouting' ? 'bg-purple-100 text-purple-800 font-bold' :
@@ -5424,6 +5518,7 @@ class ColdGuardApp {
             </div>
 
                         <!-- Quick Action Buttons -->
+            ${s.sensorHealth === "fault" ? '<div class="sensor-fault-banner" role="alert"><strong>⚠ Sensor problem detected.</strong><p>Readings are being verified. Using conservative value.</p><button type="button" class="sensor-ack-btn">Acknowledge</button> <button type="button" class="sensor-inspect-btn">Request Inspection</button></div>' : ""}
             <div class="shipment-header-actions flex flex-wrap items-center gap-2">
               <button id="btn-trigger-reroute-modal" class="shipment-action-danger ${isCritical ? 'is-critical' : ''}" type="button" aria-label="Open emergency reroute confirmation">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/></svg>
@@ -5768,15 +5863,11 @@ class ColdGuardApp {
     const isHumCrit = s.currentHumidity > s.maxAllowedHumidity || s.currentHumidity < s.minAllowedHumidity;
 
     return `
-      <!-- 1. Current Temp -->
-      <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-        <span class="text-[11px] font-semibold text-slate-500">Core Temperature</span>
-        <div class="mt-1">
-          <div class="font-mono text-xl font-extrabold ${isTempCrit ? 'text-red-600 animate-pulse' : 'text-slate-900'}">
-            ${s.currentTemperature}°C
-          </div>
-          <div class="text-[10px] text-slate-400 font-mono">Limit: ${s.minAllowedTemperature}° to ${s.maxAllowedTemperature}°</div>
-        </div>
+      <!-- 1. Dual-Sensor Cross-Check -->
+      <div class="sensor-crosscheck-card" id="sensor-crosscheck-card">
+        <div class="sensor-crosscheck-head"><span class="font-bold text-xs text-slate-800">Sensor Cross-Check</span><span class="sensor-health-pill sensor-health-${s.sensorHealth||'healthy'}"><span aria-hidden="true">${s.sensorHealth==='fault'?'⚠':s.sensorHealth==='warning'?'!':'✓'}</span>${({healthy:'Healthy',warning:'Warning',fault:'Fault'})[s.sensorHealth||'healthy']}</span></div>
+        <div class="sensor-crosscheck-values"><div><small>Probe 1A</small><strong>${s.probe1ATemperature==null?'—':Number(s.probe1ATemperature).toFixed(2)+'°C'}</strong></div><div><small>Probe 1B</small><strong>${s.probe1BTemperature==null?'—':Number(s.probe1BTemperature).toFixed(2)+'°C'}</strong></div><div><small>Delta</small><strong>${s.sensorDelta==null?'N/A':Number(s.sensorDelta).toFixed(2)+'°C'}</strong></div></div>
+        <div class="sensor-delta-gauge" role="img" aria-label="Sensor delta with warning threshold 0.7 degrees and fault threshold 1.0 degrees"><span class="sensor-delta-fill" style="width:${Math.max(0,Math.min(100,(Number(s.sensorDelta)||0)/1.5*100))}%"></span><i class="sensor-threshold sensor-threshold-warning"></i><i class="sensor-threshold sensor-threshold-fault"></i></div><div class="sensor-delta-labels"><span>0°C</span><span>Warning 0.7°C</span><span>Fault 1.0°C</span></div><p class="sensor-crosscheck-note">${s.faultReason||'Both probes independently measure the same compartment.'}</p>
       </div>
 
       <!-- 2. Current Humidity -->
@@ -5841,6 +5932,29 @@ class ColdGuardApp {
     const s = this.simulation.shipments.find(item => item.id === this.selectedShipmentId);
     if (!s) return;
 
+    const cross = document.getElementById("sensor-crosscheck-card");
+    if (cross) {
+      const values = cross.querySelectorAll(".sensor-crosscheck-values strong");
+      if (values[0]) values[0].textContent = s.probe1ATemperature == null ? "—" : Number(s.probe1ATemperature).toFixed(2) + "°C";
+      if (values[1]) values[1].textContent = s.probe1BTemperature == null ? "—" : Number(s.probe1BTemperature).toFixed(2) + "°C";
+      if (values[2]) values[2].textContent = s.sensorDelta == null ? "N/A" : Number(s.sensorDelta).toFixed(2) + "°C";
+      const pill = cross.querySelector(".sensor-health-pill");
+      if (pill) { const state = s.sensorHealth || "healthy"; pill.className = "sensor-health-pill sensor-health-" + state; pill.textContent = (state === "fault" ? "⚠ " : state === "warning" ? "! " : "✓ ") + ({healthy:"Healthy",warning:"Warning",fault:"Fault"}[state]); }
+      const fill = cross.querySelector(".sensor-delta-fill");
+      if (fill) fill.style.width = Math.max(0, Math.min(100, (Number(s.sensorDelta) || 0) / 1.5 * 100)) + "%";
+    }
+    const actions = document.querySelector(".shipment-header-actions");
+    let faultBanner = document.querySelector(".sensor-fault-banner");
+    if (s.sensorHealth === "fault" && !faultBanner && actions) {
+      actions.insertAdjacentHTML("beforebegin", '<div class="sensor-fault-banner" role="alert"><strong>⚠ Sensor problem detected.</strong><p>Readings are being verified. Using conservative value.</p><button type="button" class="sensor-ack-btn">Acknowledge</button><button type="button" class="sensor-inspect-btn">Request Inspection</button></div>');
+      faultBanner = document.querySelector(".sensor-fault-banner");
+    }
+    if (s.sensorHealth !== "fault" && faultBanner) faultBanner.remove();
+    if (faultBanner) {
+      const ack = faultBanner.querySelector(".sensor-ack-btn"), inspect = faultBanner.querySelector(".sensor-inspect-btn");
+      if (ack && !ack.dataset.bound) { ack.dataset.bound = "1"; ack.onclick = () => { s.sensorFaultAcknowledged = true; ack.textContent = "Acknowledged"; ack.disabled = true; }; }
+      if (inspect && !inspect.dataset.bound) { inspect.dataset.bound = "1"; inspect.onclick = () => { s.timeline = s.timeline || []; s.timeline.unshift({time:new Date().toLocaleTimeString(),severity:"warning",desc:"SENSOR_FAULT: Inspection requested by operator."}); inspect.textContent = "Inspection Requested"; inspect.disabled = true; }; }
+    }
     const cards = document.getElementById("telemetry-cards-container");
     if (cards) {
       cards.innerHTML = this.renderTelemetryCardsHtml(s);
@@ -6396,6 +6510,9 @@ class ColdGuardApp {
             this.playAlertTone("warning");
             this.modals.showToast("Injected Door Ajar Humidity Spike", "warning");
             break;
+          case "sensor_drift_1b": this.simulation.injectSensorDrift(this.selectedShipmentId); this.modals.showToast("Injected Sensor Drift (1B)", "warning"); break;
+          case "sensor_stuck_1a": this.simulation.injectSensorStuck(this.selectedShipmentId); this.modals.showToast("Injected Sensor Stuck (1A)", "warning"); break;
+          case "sensor_disconnect": this.simulation.injectSensorDisconnect(this.selectedShipmentId); this.modals.showToast("Injected Sensor Disconnect", "warning"); break;
           case "cold_recovery":
             this.simulation.injectColdRecovery(this.selectedShipmentId);
             this.modals.showToast("Restored Cold Chain parameters", "safe");
@@ -6446,6 +6563,9 @@ class ColdGuardApp {
 
   updateHeaderBadges() {
     const criticals = this.simulation.shipments.filter(s => s.excursionSeverity === "Critical");
+    const sensorCount = this.simulation.shipments.filter(s => s.sensorHealth === "fault").length;
+    const sensorBadge = document.getElementById("header-sensor-fault-count");
+    if (sensorBadge) sensorBadge.textContent = sensorCount;
     const badge = document.getElementById("header-critical-count");
     if (badge) {
       badge.textContent = criticals.length;
