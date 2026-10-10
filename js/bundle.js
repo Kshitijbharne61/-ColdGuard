@@ -2136,8 +2136,9 @@ class SimulationEngine {
 
   injectSensorDrift(shipmentId) {
     const s=this.shipments.find(x=>x.id===shipmentId)||this.shipments[0];if(!s)return;
+    const previousA=Number(s.probe1ATemperature),previousB=Number(s.probe1BTemperature);
     s.sensorScenario="drift1B";s.probe1BTemperature=+(Number(s.probe1ATemperature)+2.4).toFixed(2);
-    s.sensorCrossCheck={warningCount:0,faultCount:0,clearCount:0,previous1A:null,previous1B:null,lastChanged1A:Date.now(),lastChanged1B:Date.now()};
+    s.sensorCrossCheck={warningCount:0,faultCount:0,clearCount:0,previous1A:previousA,previous1B:previousB,lastChanged1A:Date.now(),lastChanged1B:Date.now()};
     this.evaluateShipment(s);if(this.onUpdateCallback)this.onUpdateCallback(this.shipments);return s;
   }
   injectSensorStuck(shipmentId) {
