@@ -13,7 +13,7 @@ function controls(){
  if(header){var a=$("cg-actions");if(!a){a=document.createElement("div");a.id="cg-actions";a.className="flex flex-wrap items-center gap-2";header.appendChild(a);}
  a.innerHTML='<button id="cg-test-email" class="px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-xl">Create test email</button><button id="cg-add" class="px-3.5 py-2 text-xs font-bold bg-emerald-600 text-white rounded-xl">+ Add shipment</button>';
  $("cg-add").onclick=addForm;$("cg-test-email").onclick=function(){send({type:"test",shipmentId:"EMAIL-TEST"});};}
- document.querySelectorAll("#shipments-table-wrapper tbody tr[data-id]").forEach(function(row){var id=row.getAttribute("data-id"),cell=row.lastElementChild;if(!id||!cell||cell.querySelector(".cg-remove"))return;var b=document.createElement("button");b.className="cg-remove ml-1 px-2.5 py-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-lg";b.textContent="Remove";b.onclick=function(e){e.preventDefault();e.stopPropagation();remove(id);};cell.appendChild(b);});
+ document.querySelectorAll("#shipments-table-wrapper .shipment-row[data-id]").forEach(function(row){var id=row.getAttribute("data-id"),cell=row.lastElementChild;if(!id||!cell||cell.querySelector(".cg-remove"))return;var b=document.createElement("button");b.className="cg-remove ml-1 px-2.5 py-1.5 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-lg";b.textContent="Remove";b.onclick=function(e){e.preventDefault();e.stopPropagation();remove(id);};cell.appendChild(b);});
 }
 function addForm(){
  var modal=$("modal-container"),profiles=app.vaccineProfiles||{};if(!modal)return;
