@@ -186,6 +186,33 @@
     }
     return card;
   }
+  function correctLegacyProbeCard(s, data, airCurrent, vialCurrent) {
+    var hardware = $("hardware-probe-card");
+    if (!hardware) return;
+    var heading = hardware.querySelector(".text-xs.font-bold.text-slate-900");
+    if (heading && /Hardware Telemetry Probe/.test(heading.textContent)) heading.textContent = "Sensor channel mapping";
+    var description = hardware.querySelector("p.text-\\[11px\\].text-slate-500");
+    if (description) description.textContent = "Temperature channels are shown as measured only when explicitly mapped in incoming telemetry; demo values are labelled simulated.";
+    var cells = hardware.querySelectorAll(":scope > div.grid > div");
+    if (!cells.length) return;
+    var live = !!data.live;
+    var airValue = live ? (data.airMapped && airCurrent ? airCurrent.y : null) : n(first(s, ["ambientTemperature","airTemperature"]));
+    var vialValue = live ? (data.vialMapped && vialCurrent ? vialCurrent.y : null) : n(first(s, ["coreTemperature","vialTemperature","liquidTemperature"]));
+    function setCell(cell, labelText, value) {
+      if (!cell) return;
+      var label = null;
+      Array.prototype.forEach.call(cell.querySelectorAll("div"), function(el) {
+        if (!label && el.className && String(el.className).indexOf("uppercase") >= 0 && String(el.className).indexOf("font-bold") >= 0) label = el;
+      });
+      if (label) label.textContent = labelText;
+      var valueEl = cell.querySelector(".text-xl");
+      if (valueEl) valueEl.textContent = value === null ? "Unavailable" : value.toFixed(2) + "°C";
+    }
+    setCell(cells[0], live ? "Mapped vial/liquid sensor" : "Simulated core temperature", vialValue);
+    setCell(cells[1], live ? "Mapped air/ambient sensor" : "Simulated ambient temperature", airValue);
+    setCell(cells[2], "Thermal difference (known values only)", airValue !== null && vialValue !== null ? (airValue-vialValue).toFixed(2)+"°C" : "Unavailable");
+  }
+
   function render() {
     if(!app || !app.simulation) return;
     var root=$("details-view-root");
@@ -199,6 +226,7 @@
     var status=thermalStatus(data,lim,airCurrent||genericCurrent,vialCurrent);
     var airTtb=airCurrent && data.airMapped ? ttb(data.air,airCurrent.y,lim,"air") : {text:"Unavailable",reason:"No explicitly mapped, fresh air-temperature series"};
     var vialTtb=vialCurrent && data.vialMapped ? ttb(data.vial,vialCurrent.y,lim,"vial") : {text:"Vial TTB Unavailable",reason:"No measured vial series or validated thermal-response model"};
+    correctLegacyProbeCard(s, data, airCurrent || genericCurrent, vialCurrent);
     var card=ensureCard(); if(!card) return;
     var sourceLabel=data.live?"LIVE SENSOR DATA":"SIMULATED DEMO DATA";
     var airLabel=data.airMapped?"Measured air temperature":(data.air.length?"Simulated ambient temperature":(data.genericDemo&&genericCurrent?"Simulated sensor temperature (role unspecified)":"Air temperature unavailable"));
