@@ -3613,11 +3613,15 @@ class FirebaseAuthService {
         return "Too many unsuccessful attempts. Access temporarily blocked. Please wait or reset password.";
       case "auth/network-request-failed":
         return "Network connection issue. Please check your internet connection.";
+      case "auth/user-token-expired":
+      case "auth/id-token-expired":
+      case "auth/requires-recent-login":
+        return "Your authentication session has expired. Please sign in again.";
       case "auth/api-key-not-valid.":
       case "auth/invalid-api-key":
         return "Firebase API Key is invalid or not yet configured. Click 'Firebase Settings' to enter your Project Web API Key.";
       default:
-        return error?.message || "An authentication error occurred. Please try again.";
+        return "Unable to authenticate right now. Please check your details and connection, then try again.";
     }
   }
 }
@@ -4038,7 +4042,11 @@ class AuthUiManager {
                     Forgot password?
                   </button>
                 </div>
-                <input id="input-auth-password" type="password" placeholder="••••••••••••" class="w-full px-3.5 py-2.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition font-mono" />
+                <div class="relative">
+                  <input id="input-auth-password" type="password" autocomplete="${this.currentMode === 'login' ? 'current-password' : 'new-password'}" placeholder="${this.currentMode === 'login' ? 'Enter 6-character password' : 'Enter password'}" aria-describedby="auth-password-help" class="w-full px-3.5 py-2.5 pr-16 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition font-mono" />
+                  <button type="button" id="toggle-auth-password" aria-label="Show password" aria-pressed="false" class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-[11px] font-semibold text-blue-600 hover:text-blue-800">Show</button>
+                </div>
+                <p id="auth-password-help" class="mt-1 text-[10px] text-slate-500">${this.currentMode === 'login' ? 'Password must contain exactly 6 characters.' : 'Use exactly 6 characters for this demo account policy.'}</p>
               </div>
 
               <!-- Confirm Password (Register mode only) -->
@@ -4054,16 +4062,6 @@ class AuthUiManager {
                 <span id="btn-auth-submit-text">${this.currentMode === 'login' ? 'Sign In to ColdGuard Dashboard' : this.currentMode === 'register' ? 'Create Verified Operator Account' : 'Send Password Reset Link'}</span>
               </button>
 
-              <!-- Instant Demo Access Shortcut -->
-              <div class="relative flex py-1 items-center">
-                <div class="flex-grow border-t border-slate-200"></div>
-                <span class="flex-shrink mx-2 text-[10px] uppercase font-bold text-slate-400">or preview</span>
-                <div class="flex-grow border-t border-slate-200"></div>
-              </div>
-
-              <button type="button" id="btn-auth-demo-login" class="w-full py-2.5 px-4 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition flex items-center justify-center gap-1.5 border border-slate-200">
-                <span>⚡ Instant Demo Operator Access</span>
-              </button>
             </form>
 
             <!-- Bottom Disclaimer -->
@@ -4089,25 +4087,23 @@ class AuthUiManager {
     const tabForgot = container.querySelector("#tab-forgot");
     const linkForgot = container.querySelector("#link-forgot-pw");
     const btnConfig = container.querySelector("#btn-open-firebase-config");
-    const btnDemo = container.querySelector("#btn-auth-demo-login");
+    const passwordInput = container.querySelector("#input-auth-password");
+    const togglePassword = container.querySelector("#toggle-auth-password");
+    if (togglePassword && passwordInput) {
+      togglePassword.onclick = () => {
+        const show = passwordInput.type === "password";
+        passwordInput.type = show ? "text" : "password";
+        togglePassword.textContent = show ? "Hide" : "Show";
+        togglePassword.setAttribute("aria-label", show ? "Hide password" : "Show password");
+        togglePassword.setAttribute("aria-pressed", show ? "true" : "false");
+      };
+    }
 
     if (tabLogin) tabLogin.onclick = () => this.setMode("login", container);
     if (tabRegister) tabRegister.onclick = () => this.setMode("register", container);
     if (tabForgot) tabForgot.onclick = () => this.setMode("forgot_password", container);
     if (linkForgot) linkForgot.onclick = () => this.setMode("forgot_password", container);
     if (btnConfig) btnConfig.onclick = () => this.openFirebaseConfigModal();
-    if (btnDemo) {
-      btnDemo.onclick = () => {
-        const demoUser = {
-          uid: "demo-operator-mv",
-          displayName: "Dr. Marcus Vance",
-          email: "marcus.vance@coldguard.org",
-          isDemo: true
-        };
-        if (this.onAuthSuccess) this.onAuthSuccess(demoUser);
-      };
-    }
-
     const form = container.querySelector("#auth-main-form");
     if (form) {
       form.onsubmit = async (e) => {
@@ -4169,6 +4165,12 @@ class AuthUiManager {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       this.showError(container, "Please enter a valid email address (e.g. name@hospital.org).");
+      return;
+    }
+
+    // Validate length before contacting Firebase. Length alone never grants access.
+    if ((this.currentMode === "login" || this.currentMode === "register") && password.length !== 6) {
+      this.showError(container, "Password must be exactly 6 characters.");
       return;
     }
 
@@ -4406,8 +4408,12 @@ class ColdGuardApp {
   }
 
   handleAuthStateChanged(user) {
-    if (!user && this.currentUser && this.currentUser.isDemo) {
-      return; // Preserve active demo session
+    // Only a real, currently signed-in Firebase user may reveal protected views.
+    const verifiedUser = this.authService?.auth?.currentUser || null;
+    if (user && (user.isDemo || !verifiedUser || verifiedUser.uid !== user.uid)) {
+      user = null;
+    } else if (user) {
+      user = verifiedUser;
     }
     this.currentUser = user;
     const authContainer = document.getElementById("auth-view-container");
@@ -4442,20 +4448,23 @@ class ColdGuardApp {
   }
 
   onAuthSuccess(user) {
-    this.currentUser = user;
-    this.handleAuthStateChanged(user);
+    const verifiedUser = this.authService?.auth?.currentUser || null;
+    if (!user || user.isDemo || !verifiedUser || verifiedUser.uid !== user.uid) {
+      this.handleAuthStateChanged(null);
+      return;
+    }
+    this.handleAuthStateChanged(verifiedUser);
   }
 
   async handleLogout() {
     try {
-      if (this.currentUser && !this.currentUser.isDemo) {
-        await this.authService.logout();
-      }
+      await this.authService.logout();
       this.currentUser = null;
       this.handleAuthStateChanged(null);
+      if (window.location.hash !== "#auth") window.location.hash = "#auth";
       this.modals.showToast("Operator session ended. Signed out securely.", "info");
     } catch (err) {
-      this.modals.showToast("Failed to sign out: " + (err.message || err), "warning");
+      this.modals.showToast("Unable to sign out. Please retry.", "warning");
     }
   }
 
@@ -4507,17 +4516,6 @@ class ColdGuardApp {
           setTimeout(() => this.authUi.openFirebaseConfigModal(), 100);
         }
       }
-    }
-
-    if (params.get("demo") === "true" && !this.currentUser) {
-      setTimeout(() => {
-        this.onAuthSuccess({
-          uid: "demo-operator-mv",
-          displayName: "Dr. Marcus Vance",
-          email: "marcus.vance@coldguard.org",
-          isDemo: true
-        });
-      }, 50);
     }
 
     if (modal) {
