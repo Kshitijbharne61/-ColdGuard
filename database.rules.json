@@ -52,6 +52,12 @@
       ".read": "auth != null",
       ".write": "auth != null"
     },
+    "emergency_contacts": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
     "checkpoints": {
       ".read": "auth != null",
       ".write": "auth != null"
