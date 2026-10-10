@@ -123,8 +123,18 @@
       </button>
 
       <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="checkpoints">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
         <span>Checkpoint Hubs</span>
+      </button>
+
+      <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Notifications & Safety</div>
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="alert_center" aria-label="Open Alert Center">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg>
+        <span>Alert Center</span><span id="cg-sidebar-alert-count" class="ml-auto hidden rounded-full bg-red-600 px-2 py-0.5 text-[10px] font-bold text-white">0</span>
+      </button>
+      <button class="nav-link w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs text-slate-300 hover:bg-slate-800 transition" data-view="notification_settings">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.4 15a7.9 7.9 0 000-6l2-1.2-2-3.4-2.2.8a7.6 7.6 0 00-5.2-1.9l-.7-2.3H7.4l-.7 2.3a7.6 7.6 0 00-2.3 1.3l-2.2-.8-2 3.4 2 1.2a7.9 7.9 0 000 6l-2 1.2 2 3.4 2.2-.8a7.6 7.6 0 005.2 1.9l.7 2.3h3.9l.7-2.3a7.6 7.6 0 002.3-1.3l2.2.8 2-3.4z"></path></svg>
+        <span>Notification Settings</span>
       </button>
     </nav>
 
@@ -238,10 +248,12 @@
           <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
           <span class="hidden md:inline font-medium">Alert Audio: Off</span>
         </button>
-        <div class="coldguard-critical-indicator" aria-label="Critical excursions">
-          <span class="coldguard-critical-label">Criticals</span>
-          <span id="header-critical-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white animate-pulse" aria-live="polite">1</span>
-        </div>
+        <button type="button" id="btn-open-alert-center" class="coldguard-critical-indicator cg-header-alert-button" data-cg-open-alert-center aria-label="Open Alert Center" title="Open Alert Center">
+          <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path></svg>
+          <span class="coldguard-critical-label">Alert Center</span>
+          <span id="header-critical-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white" aria-live="polite">0</span>
+          <span id="cg-alert-unread-count" class="cg-alert-unread-count" aria-label="Unread alerts" hidden>0</span>
+        </button>
         <div class="coldguard-critical-indicator" aria-label="Sensor faults"><span class="coldguard-critical-label">Sensor Faults</span><span id="header-sensor-fault-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800" aria-live="polite">0</span></div>
         <div id="header-user-profile" class="coldguard-profile">
           <button type="button" id="btn-user-dropdown-toggle" class="coldguard-profile-toggle" aria-label="Open operator profile">
@@ -271,6 +283,7 @@
 
   <!-- APPLICATION BOOTSTRAP SCRIPT (Universal: runs on file:// and http://) -->
   <script src="js/bundle.js"></script>
+  <script src="js/services/notificationCenter.js"></script>
   <script src="js/services/shipmentManagementAlerts.js"></script>
   <script src="js/services/weatherRouteDashboard.js"></script>
   <script src="js/services/networkEmergencyDashboard.js"></script>
