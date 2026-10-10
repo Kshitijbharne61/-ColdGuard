@@ -77,8 +77,10 @@ export class FirebaseAuthService {
       this.auth.onAuthStateChanged((user) => {
         this.currentUser = user;
         this.notifyListeners(user);
-      }, (err) => {
-        console.error("Firebase onAuthStateChanged error:", err);
+      }, () => {
+        // Fail closed if Firebase can no longer resolve the session.
+        this.currentUser = null;
+        this.notifyListeners(null);
       });
 
       return true;
