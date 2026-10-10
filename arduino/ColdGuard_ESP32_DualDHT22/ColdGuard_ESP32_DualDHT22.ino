@@ -30,12 +30,8 @@
 HardwareSerial GPSSerial(2);
 TinyGPSPlus gps;
 
-// Set this to the deployed Vercel URL for this repository's /api/ingest-gps endpoint.
-// Example format: https://YOUR-PROJECT.vercel.app/api/ingest-gps
-const char* GPS_INGEST_URL = "https://YOUR-VERCEL-DOMAIN.vercel.app/api/ingest-gps";
-
 // Include isolated device secrets & WiFi configuration
-// NOTE: secrets.h is protected by .gitignore and never committed
+// Create secrets.h locally from secrets.example.h; never commit secrets.h
 #include "secrets.h"
 
 // --- Hardware Pin Definitions ---
@@ -299,6 +295,52 @@ bool sendViaFirebaseRest(float tCore, float hCore, float tAmbient, float hAmbien
     https.end();
     return true;
   } else {
+    Serial.printf("[RTDB REST] Error code: %d, Response: %s\  Serial.println("[RTDB REST] Disabled: direct writes omit device authentication.");
+  return false;
+
+  WiFiClientSecure client;
+  client.setInsecure();
+
+  HTTPClient https;
+  String rtdbUrl = String(FIREBASE_RTDB_URL) + "/shipments/" + String(ASSIGNED_SHIPMENT_ID) + "/telemetry/live.json";
+  Serial.print("[RTDB REST] Sending PATCH to: ");
+  Serial.println(rtdbUrl);
+
+  if (!https.begin(client, rtdbUrl)) {
+    Serial.println("[RTDB REST] Failed to initialize connection.");
+    return false;
+  }
+
+  https.addHeader("Content-Type", "application/json");
+
+  float deltaT = tAmbient - tCore;
+  int batteryPercent = constrain(map(batteryMv, 3300, 4200, 0, 100), 0, 100);
+
+  StaticJsonDocument<512> doc;
+  doc["source"] = "ESP32_HARDWARE";
+  doc["deviceId"] = DEVICE_ID;
+  doc["coreTemperature"] = serialized(String(tCore, 2));
+  doc["coreHumidity"] = serialized(String(hCore, 1));
+  doc["ambientTemperature"] = serialized(String(tAmbient, 2));
+  doc["ambientHumidity"] = serialized(String(hAmbient, 1));
+  doc["deltaTemperature"] = serialized(String(deltaT, 1));
+  doc["temperature"] = serialized(String(tCore, 2));
+  doc["humidity"] = serialized(String(hCore, 1));
+  doc["batteryMv"] = batteryMv;
+  doc["batteryLevel"] = batteryPercent;
+  doc["rssi"] = rssi;
+  doc["timestamp"] = (uint64_t)millis();
+
+  String requestBody;
+  serializeJson(doc, requestBody);
+
+  int httpCode = https.PATCH(requestBody);
+
+  if (httpCode == 200) {
+    Serial.println("[SUCCESS] Direct Firebase Realtime Database write succeeded!");
+    https.end();
+    return true;
+  } else {
     Serial.printf("[RTDB REST] Error code: %d, Response: %s\n", httpCode, https.getString().c_str());
   }
 
@@ -338,24 +380,16 @@ void loop() {
     Serial.println("\n--------------------------------------------------------");
     Serial.printf("[Telemetry Sample #%u]\n", transmissionCounter);
 
-    if (!coreValid) {
-      Serial.println("[ERROR] Failed to read from Sensor 1 (Core Probe) on GPIO 4! Check wiring/pull-up.");
-      // Fallback demo reading if physical probe is not yet plugged in during breadboard testing
-      tCore = 4.8;
-      hCore = 46.5;
-      Serial.println("[INFO] Using bounded test values for Sensor 1.");
-    } else {
-      Serial.printf(" [Probe 1 - CORE]    Temp: %.2f °C | Humidity: %.1f %% RH\n", tCore, hCore);
+    if (!coreValid || !ambientValid) {
+      Serial.println("[ERROR] Invalid DHT22 reading. Check power, common GND, DATA wiring and pull-up resistor.");
+      Serial.println("[ColdGuard] Skipping temperature upload rather than sending fabricated values.");
+      sendGpsUpdate();
+      digitalWrite(PIN_STATUS_LED, HIGH);
+      return;
     }
 
-    if (!ambientValid) {
-      Serial.println("[ERROR] Failed to read from Sensor 2 (Ambient Probe) on GPIO 5! Check wiring/pull-up.");
-      tAmbient = 23.4;
-      hAmbient = 58.2;
-      Serial.println("[INFO] Using bounded test values for Sensor 2.");
-    } else {
-      Serial.printf(" [Probe 2 - AMBIENT] Temp: %.2f °C | Humidity: %.1f %% RH\n", tAmbient, hAmbient);
-    }
+    Serial.printf(" [Probe 1 - CORE]    Temp: %.2f °C | Humidity: %.1f %% RH\\n", tCore, hCore);
+    Serial.printf(" [Probe 2 - AMBIENT] Temp: %.2f °C | Humidity: %.1f %% RH\\n", tAmbient, hAmbient);
 
     float deltaT = tAmbient - tCore;
     Serial.printf(" [Thermal Barrier]   Delta T: %.2f °C (Insulation differential)\n", deltaT);
