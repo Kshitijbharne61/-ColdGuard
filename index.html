@@ -158,26 +158,37 @@
   <!-- ========================================================================= -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-    <!-- TOP HEADER BAR -->
-    <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between gap-4 flex-shrink-0 z-20">
-      <!-- Search Box with '/' key shortcut -->
-      <div class="flex items-center gap-3 max-w-md w-full">
-        <div class="relative w-full">
-          <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- TOP HEADER BAR: separated live-monitoring and simulation controls -->
+    <header class="coldguard-topbar flex-shrink-0 z-20" aria-label="Dashboard controls">
+      <section class="coldguard-toolbar coldguard-toolbar-live" aria-label="Live monitoring">
+        <div class="coldguard-toolbar-heading">
+          <span class="coldguard-toolbar-eyebrow">Live monitoring</span>
+        </div>
+        <div class="coldguard-search-wrap">
+          <svg class="coldguard-search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
-          <input id="header-quick-search" type="text" placeholder="Quick search shipments, lots, vaccines... (Press '/')" class="w-full pl-9 pr-8 py-2 text-xs border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 transition" />
-          <span class="absolute right-2.5 top-2 px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-slate-200 rounded">/</span>
+          <input id="header-quick-search" type="text" aria-label="Search shipments, lots, and vaccines" placeholder="Search shipments, lots, vaccines…" />
+          <span class="coldguard-key-hint" aria-hidden="true">/</span>
         </div>
-      </div>
+        <div id="firebase-rtdb-status-pill" class="coldguard-live-pill hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700" role="status" aria-live="polite">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="font-mono text-[10px] font-semibold">RTDB Live</span>
+        </div>
+      </section>
 
-      <!-- Simulation Sandbox Controller Bar -->
-      <div class="flex items-center gap-3 flex-shrink-0">
-        <!-- Scenario Injector Dropdown -->
-        <div class="hidden lg:flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs">
-          <span class="text-[10px] font-bold text-slate-500 uppercase px-1.5">Scenario:</span>
-          <select id="select-header-scenario" class="text-xs bg-white border border-slate-300 rounded-lg px-2 py-1 font-medium focus:ring-2 focus:ring-blue-500">
-            <option value="">⚡ Trigger Stress Test...</option>
+      <section class="coldguard-toolbar coldguard-toolbar-simulation" aria-label="Simulation lab controls">
+        <div class="coldguard-sim-title">
+          <span class="coldguard-sim-mark" aria-hidden="true">⌁</span>
+          <span>
+            <strong>Simulation Lab</strong>
+            <small>Test scenarios safely</small>
+          </span>
+        </div>
+        <label class="coldguard-scenario-control" for="select-header-scenario">
+          <span>Scenario</span>
+          <select id="select-header-scenario">
+            <option value="">⚡ Trigger Stress Test…</option>
             <option value="reefer_failure">🔥 Reefer Compressor Failure</option>
             <option value="dryice_depletion">❄️ Cryo Dry-Ice Depletion</option>
             <option value="route_deviation">📍 Highway Route Detour</option>
@@ -186,57 +197,40 @@
             <option value="cold_recovery">✅ Restore Cold Chain (Nominal)</option>
             <option value="reset_all">🔄 Reset Entire Fleet</option>
           </select>
+        </label>
+        <div class="coldguard-speed-control" role="group" aria-label="Simulation speed">
+          <button class="sim-speed-btn is-active" type="button" data-speed="1" aria-pressed="true">1x</button>
+          <button class="sim-speed-btn" type="button" data-speed="5" aria-pressed="false">5x</button>
+          <button class="sim-speed-btn" type="button" data-speed="10" aria-pressed="false">10x</button>
         </div>
-
-        <!-- Simulation Speed Multipliers -->
-        <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold text-slate-600">
-          <button class="sim-speed-btn px-2.5 py-1 rounded-lg bg-blue-600 text-white transition" data-speed="1">1x</button>
-          <button class="sim-speed-btn px-2.5 py-1 rounded-lg hover:text-slate-900 transition" data-speed="5">5x</button>
-          <button class="sim-speed-btn px-2.5 py-1 rounded-lg hover:text-slate-900 transition" data-speed="10">10x</button>
-        </div>
-
-        <!-- Play / Pause Simulation -->
-        <button id="btn-sim-play-pause" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl shadow-sm transition flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <button id="btn-sim-play-pause" class="coldguard-pause-btn" type="button" aria-label="Pause simulation">
+          <svg class="coldguard-pause-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span class="hidden sm:inline">Pause</span>
         </button>
+      </section>
 
-        <!-- Sound Alert Toggle -->
-        <button id="btn-toggle-sound" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl transition flex items-center gap-1 text-xs" title="Toggle Audio Chimes">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+      <section class="coldguard-toolbar coldguard-toolbar-utilities" aria-label="Alerts and account">
+        <button id="btn-toggle-sound" class="coldguard-audio-btn" type="button" title="Toggle Audio Chimes" aria-label="Toggle alert audio" aria-pressed="false">
+          <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
           <span class="hidden md:inline font-medium">Alert Audio: Off</span>
         </button>
-
-        <!-- Firebase RTDB Live Sync Pill -->
-        <div id="firebase-rtdb-status-pill" class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="font-mono text-[10px] font-semibold">RTDB Live</span>
+        <div class="coldguard-critical-indicator" aria-label="Critical excursions">
+          <span class="coldguard-critical-label">Criticals</span>
+          <span id="header-critical-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white animate-pulse" aria-live="polite">1</span>
         </div>
-
-        <!-- Critical Excursion Badge -->
-        <div class="flex items-center gap-1.5 pl-2 border-l border-slate-200">
-          <span class="text-xs text-slate-500 font-medium hidden sm:inline">Criticals:</span>
-          <span id="header-critical-count" class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white animate-pulse">
-            1
-          </span>
-        </div>
-
-        <!-- Authenticated Operator Header Pill -->
-        <div id="header-user-profile" class="flex items-center gap-2 pl-3 border-l border-slate-200">
-          <div class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 p-1 pr-2.5 rounded-xl transition cursor-pointer" id="btn-user-dropdown-toggle">
-            <div id="header-user-avatar" class="w-7 h-7 rounded-lg bg-blue-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-              OP
-            </div>
-            <div class="text-left hidden md:block">
-              <div id="header-user-name" class="text-xs font-bold text-slate-800 leading-tight">Operator</div>
-              <div id="header-user-role" class="text-[10px] text-slate-500 leading-tight">Logistics</div>
-            </div>
-          </div>
-          <button id="btn-logout-header" class="p-1.5 hover:bg-red-50 hover:text-red-600 text-slate-500 rounded-lg transition text-xs font-semibold" title="Sign Out">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        <div id="header-user-profile" class="coldguard-profile">
+          <button type="button" id="btn-user-dropdown-toggle" class="coldguard-profile-toggle" aria-label="Open operator profile">
+            <span id="header-user-avatar" class="coldguard-profile-avatar">OP</span>
+            <span class="coldguard-profile-copy">
+              <span id="header-user-name">Operator</span>
+              <small id="header-user-role">Logistics</small>
+            </span>
+          </button>
+          <button id="btn-logout-header" class="coldguard-logout-btn" type="button" title="Sign Out" aria-label="Sign out">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
           </button>
         </div>
-      </div>
+      </section>
     </header>
 
     <!-- MAIN SCROLLABLE VIEW CONTAINER -->
