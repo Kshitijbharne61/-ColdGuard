@@ -5846,7 +5846,7 @@ class ColdGuardApp {
 
     return `
       <!-- 1. Dual-Sensor Cross-Check -->
-      <div class="sensor-crosscheck-card">
+      <div class="sensor-crosscheck-card" id="sensor-crosscheck-card">
         <div class="sensor-crosscheck-head"><span class="font-bold text-xs text-slate-800">Sensor Cross-Check</span><span class="sensor-health-pill sensor-health-${s.sensorHealth||'healthy'}"><span aria-hidden="true">${s.sensorHealth==='fault'?'⚠':s.sensorHealth==='warning'?'!':'✓'}</span>${({healthy:'Healthy',warning:'Warning',fault:'Fault'})[s.sensorHealth||'healthy']}</span></div>
         <div class="sensor-crosscheck-values"><div><small>Probe 1A</small><strong>${s.probe1ATemperature==null?'—':Number(s.probe1ATemperature).toFixed(2)+'°C'}</strong></div><div><small>Probe 1B</small><strong>${s.probe1BTemperature==null?'—':Number(s.probe1BTemperature).toFixed(2)+'°C'}</strong></div><div><small>Delta</small><strong>${s.sensorDelta==null?'N/A':Number(s.sensorDelta).toFixed(2)+'°C'}</strong></div></div>
         <div class="sensor-delta-gauge" role="img" aria-label="Sensor delta with warning threshold 0.7 degrees and fault threshold 1.0 degrees"><span class="sensor-delta-fill" style="width:${Math.max(0,Math.min(100,(Number(s.sensorDelta)||0)/1.5*100))}%"></span><i class="sensor-threshold sensor-threshold-warning"></i><i class="sensor-threshold sensor-threshold-fault"></i></div><div class="sensor-delta-labels"><span>0°C</span><span>Warning 0.7°C</span><span>Fault 1.0°C</span></div><p class="sensor-crosscheck-note">${s.faultReason||'Both probes independently measure the same compartment.'}</p>
@@ -5914,6 +5914,29 @@ class ColdGuardApp {
     const s = this.simulation.shipments.find(item => item.id === this.selectedShipmentId);
     if (!s) return;
 
+    const cross = document.getElementById("sensor-crosscheck-card");
+    if (cross) {
+      const values = cross.querySelectorAll(".sensor-crosscheck-values strong");
+      if (values[0]) values[0].textContent = s.probe1ATemperature == null ? "—" : Number(s.probe1ATemperature).toFixed(2) + "°C";
+      if (values[1]) values[1].textContent = s.probe1BTemperature == null ? "—" : Number(s.probe1BTemperature).toFixed(2) + "°C";
+      if (values[2]) values[2].textContent = s.sensorDelta == null ? "N/A" : Number(s.sensorDelta).toFixed(2) + "°C";
+      const pill = cross.querySelector(".sensor-health-pill");
+      if (pill) { const state = s.sensorHealth || "healthy"; pill.className = "sensor-health-pill sensor-health-" + state; pill.textContent = (state === "fault" ? "⚠ " : state === "warning" ? "! " : "✓ ") + ({healthy:"Healthy",warning:"Warning",fault:"Fault"}[state]); }
+      const fill = cross.querySelector(".sensor-delta-fill");
+      if (fill) fill.style.width = Math.max(0, Math.min(100, (Number(s.sensorDelta) || 0) / 1.5 * 100)) + "%";
+    }
+    const actions = document.querySelector(".shipment-header-actions");
+    let faultBanner = document.querySelector(".sensor-fault-banner");
+    if (s.sensorHealth === "fault" && !faultBanner && actions) {
+      actions.insertAdjacentHTML("beforebegin", '<div class="sensor-fault-banner" role="alert"><strong>⚠ Sensor problem detected.</strong><p>Readings are being verified. Using conservative value.</p><button type="button" class="sensor-ack-btn">Acknowledge</button><button type="button" class="sensor-inspect-btn">Request Inspection</button></div>');
+      faultBanner = document.querySelector(".sensor-fault-banner");
+    }
+    if (s.sensorHealth !== "fault" && faultBanner) faultBanner.remove();
+    if (faultBanner) {
+      const ack = faultBanner.querySelector(".sensor-ack-btn"), inspect = faultBanner.querySelector(".sensor-inspect-btn");
+      if (ack && !ack.dataset.bound) { ack.dataset.bound = "1"; ack.onclick = () => { s.sensorFaultAcknowledged = true; ack.textContent = "Acknowledged"; ack.disabled = true; }; }
+      if (inspect && !inspect.dataset.bound) { inspect.dataset.bound = "1"; inspect.onclick = () => { s.timeline = s.timeline || []; s.timeline.unshift({time:new Date().toLocaleTimeString(),severity:"warning",desc:"SENSOR_FAULT: Inspection requested by operator."}); inspect.textContent = "Inspection Requested"; inspect.disabled = true; }; }
+    }
     const cards = document.getElementById("telemetry-cards-container");
     if (cards) {
       cards.innerHTML = this.renderTelemetryCardsHtml(s);
