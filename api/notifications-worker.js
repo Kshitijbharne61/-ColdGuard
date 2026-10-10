@@ -164,7 +164,12 @@ module.exports = async function handler(req,res) {
         const originSnap=await originRef.once("value");
         const origin=originSnap.val();
         if(origin && (origin.status==="acknowledged" || origin.status==="resolved")) {
-          task.status="cancelled";task.cancelledAt=new Date().toISOString();task.cancelReason="Alert already acknowledged or resolved.";
+          task.status="cancelled";task.cancelledAt=new Date().toISOString();task.cancelReason="Alert already acknowledged or resolved.";task.leaseUntil=null;
+          await db.ref("notification_queue/"+uid+"/"+item.key).set(task); skipped++; continue;
+        }
+        if(origin && origin.severity!=="CRITICAL" && Number(origin.mutedUntil||0)>Date.now()) {
+          task.status="queued";task.nextAttemptAt=Number(origin.mutedUntil);task.leaseUntil=null;
+          task.lastError="Reminder paused by signed mute action until "+new Date(Number(origin.mutedUntil)).toISOString();
           await db.ref("notification_queue/"+uid+"/"+item.key).set(task); skipped++; continue;
         }
         let result;
