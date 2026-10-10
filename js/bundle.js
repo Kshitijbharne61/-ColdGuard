@@ -4564,7 +4564,7 @@ class ColdGuardApp {
     const id = params.get("id");
     const modal = params.get("modal");
 
-    if (["dashboard", "shipments", "details", "excursion_engine", "viability_lab", "checkpoints"].includes(view)) {
+    if (["dashboard", "shipments", "details", "excursion_engine", "viability_lab", "checkpoints", "alert_center", "notification_settings"].includes(view)) {
       this.currentView = view;
       if (id) this.selectedShipmentId = id;
       this.updateNavActiveState(view);
@@ -4758,6 +4758,14 @@ class ColdGuardApp {
         break;
       case "checkpoints":
         this.renderCheckpointsView(mainContent);
+        break;
+      case "alert_center":
+        if (window.ColdGuardNotifications) window.ColdGuardNotifications.renderCenter(mainContent);
+        else mainContent.innerHTML = '<div class="cg-card"><h1>Alert Center</h1><p>Notification service is loading.</p></div>';
+        break;
+      case "notification_settings":
+        if (window.ColdGuardNotifications) window.ColdGuardNotifications.renderSettings(mainContent);
+        else mainContent.innerHTML = '<div class="cg-card"><h1>Notification settings</h1><p>Notification service is loading.</p></div>';
         break;
       default:
         this.renderDashboardView(mainContent);
