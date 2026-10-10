@@ -540,6 +540,23 @@
     prefs.quietHours = Object.assign(base.quietHours, prefs.quietHours || {});
     prefs.digest = Object.assign(base.digest, prefs.digest || {});
   }
+  function mergeLegacyEmergencyContacts() {
+    var u=liveUser(), db=database();
+    if(!u || !db) return;
+    db.ref("users/"+u.uid+"/emergencyContact").once("value").then(function(snap) {
+      var saved=snap.val()||{}, changed=false;
+      ["email","phone"].forEach(function(key) {
+        if(!String((prefs.contacts||{})[key]||"").trim() && String(saved[key]||"").trim()) {
+          prefs.contacts[key]=String(saved[key]).trim();
+          changed=true;
+        }
+      });
+      if(changed) {
+        saveLocal(SETTINGS_KEY+":"+uid(),prefs);
+        if(app && app.currentView==="notification_settings") renderSettings(document.getElementById("main-content-view"));
+      }
+    }).catch(function(){});
+  }
   function loadEvents() {
     // Keep one operator's history private; never fall back to a cross-user local key.
     events = loadLocal(KEY + ":" + uid(), []);
@@ -660,6 +677,7 @@
     syncedNotificationUid = u.uid;
     loadEvents();
     loadSettings();
+    mergeLegacyEmergencyContacts();
     var ref = db.ref("users/" + u.uid + "/notificationCenter");
     syncedNotificationRef = ref;
     function mergeRemote(item) {
