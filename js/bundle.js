@@ -3331,6 +3331,7 @@ class ModalManager {
               </span>
             </div>
 
+            ${shipment.sensorFaultHistory && shipment.sensorFaultHistory.length ? '<section class="rounded-xl border border-amber-200 bg-amber-50 p-4"><h4 class="font-bold text-amber-900">Sensor Data-Integrity Note</h4><p class="mt-1 text-amber-800">Dual-sensor state: ' + (shipment.sensorHealth || 'healthy') + '. Current delta: ' + (shipment.sensorDelta == null ? 'N/A' : Number(shipment.sensorDelta).toFixed(2) + '°C') + '.</p><ul class="mt-2 space-y-1 text-amber-900">' + shipment.sensorFaultHistory.map(e => '<li>' + e.type.toUpperCase() + ' · ' + new Date(e.timestamp).toLocaleString() + ' · Δ ' + (e.delta == null ? 'N/A' : Number(e.delta).toFixed(2) + '°C') + ' · Suspect: ' + (e.suspectSensor || 'unknown') + (e.reason ? ' · ' + e.reason : '') + '</li>').join('') + '</ul></section>' : '<section class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-800">Dual-sensor cross-validation: no recorded sensor faults.</section>'}
             <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div>
                 <div class="text-[10px] text-slate-400 uppercase font-semibold">Vaccine Identification</div>
