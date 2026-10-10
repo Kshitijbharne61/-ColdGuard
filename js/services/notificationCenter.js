@@ -176,7 +176,7 @@
       body: msg, currentValue: temperature, permittedRange: limitText, minimum: min, maximum: max,
       deviation: deviation, deviationText: deviationText, durationMinutes: duration,
       timeToSpoilageMinutes: minutes, viabilityPercent: viability, location: where, mapLink: mapLink,
-      suggestedRoute: suggestedRoute, suspectSensor: suspect, detectedAt: when, detectedLocal: localTime(when),
+      suggestedRoute: suggestedRoute, suspectSensor: suspect, coordinates: point, detectedAt: when, detectedLocal: localTime(when),
       status: "open", unread: true, recommendation: actionFor(found.type), shortText: sms,
       deepLink: window.location.origin + "/#" + "details?id=" + encodeURIComponent(shipmentId),
       acknowledgeLink: null, rerouteLink: window.location.origin + "/#" + "details?id=" + encodeURIComponent(shipmentId) + "&modal=reroute",
@@ -237,7 +237,7 @@
     storeEvents();
     var u = liveUser(), db = database();
     if (u && db) {
-      db.ref("alerts/notificationCenter/" + u.uid + "/" + alert.id).set(alert).catch(function (e) { console.warn("Notification event sync failed", e && e.message); });
+      db.ref("users/" + u.uid + "/notificationCenter/" + alert.id).set(alert).catch(function (e) { console.warn("Notification event sync failed", e && e.message); });
       if (app && app.dbService && app.dbService.logAuditEntry) {
         app.dbService.logAuditEntry({ event:"NOTIFICATION_" + (alert.status || "OPEN").toUpperCase(), shipmentId:alert.shipmentId, details:alert.id + " · " + alert.type + " · " + alert.severity });
       }
@@ -318,6 +318,8 @@
   async function deliver(alert, reminder) {
     if (alert.status !== "open" || alert.acknowledgedAt || alert.status === "resolved") return;
     var channels = routeChannels(alert.severity);
+    var severityOrder = ["INFO","WARNING","CRITICAL"];
+    if (severityOrder.indexOf(alert.severity) < severityOrder.indexOf(prefs.minimumSeverity || "INFO")) channels = channels.filter(function (c) { return c === "in_app"; });
     if (!channels.length) return;
     var healthDemo = providerHealth.demoMode || !liveUser();
     if (healthDemo) {
@@ -533,7 +535,7 @@
   function testAlert() {
     var payload = {
       type:"temperature_excursion", source:"manual_test", shipmentId:"CG-9021-PFZ",
-      vaccineName:"Comirnaty", temperature:-52.4, minTemp:-60, maxTemp:-50, durationMinutes:4,
+      vaccineName:"Comirnaty", temperature:-52.4, minTemp:-90, maxTemp:-60, durationMinutes:4,
       detectedAt:nowIso(), location:"Pune Cold-Chain Corridor", details:"Example critical test for channel preview."
     };
     var test = buildAlert(payload, "test:" + uid() + ":" + Date.now());
@@ -606,7 +608,7 @@
         else if (action === "center") buttonNavigate("alert_center");
         else if (action === "test") testAlert();
         else if (action === "preview") {
-          var p = buildAlert({ type:"temperature_excursion", shipmentId:"CG-9021-PFZ", vaccineName:"Comirnaty", temperature:-52.4, minTemp:-60, maxTemp:-50, location:"Pune Cold-Chain Corridor" }, "preview-only");
+          var p = buildAlert({ type:"temperature_excursion", shipmentId:"CG-9021-PFZ", vaccineName:"Comirnaty", temperature:-52.4, minTemp:-90, maxTemp:-60, location:"Pune Cold-Chain Corridor" }, "preview-only");
           var box = document.getElementById("cg-settings-preview");
           if (box) box.innerHTML = '<div class="cg-email-preview"><div class="cg-email-preview__brand">❄ ColdGuard <span>PREVIEW ONLY</span></div><div class="cg-email-preview__severity">CRITICAL ALERT</div><div class="cg-email-preview__content"><strong>' + esc(p.title) + '</strong><p>' + esc(p.body) + '</p><p>Recommended action: ' + esc(p.recommendation) + '</p><p class="cg-field__hint">' + esc(p.shortText) + '</p></div></div>';
         }
@@ -618,7 +620,7 @@
     document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") updateHeader(); });
     var db = database(), u = liveUser();
     if (db && u) {
-      db.ref("alerts/notificationCenter/" + u.uid).once("value").then(function (snap) {
+      db.ref("users/" + u.uid + "/notificationCenter").once("value").then(function (snap) {
         var remote = snap.val() || {};
         Object.keys(remote).forEach(function (k) {
           var item = remote[k];
@@ -627,7 +629,7 @@
         events.sort(function (a,b) { return Date.parse(b.detectedAt || 0) - Date.parse(a.detectedAt || 0); });
         storeEvents(); updateHeader(); renderIfOpen();
       }).catch(function () {});
-      db.ref("alerts/notificationCenter/" + u.uid).on("child_changed", function (snap) {
+      db.ref("users/" + u.uid + "/notificationCenter").on("child_changed", function (snap) {
         var item=snap.val(), at=events.findIndex(function(e){return e.id===item.id;});
         if(at>=0) events[at]=item; else events.unshift(item);
         storeEvents(); updateHeader(); renderIfOpen();
