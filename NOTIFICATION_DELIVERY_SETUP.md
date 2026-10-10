@@ -24,7 +24,7 @@ Generate separate long random values for CRON_SECRET and NOTIFICATION_ACTION_SEC
 
 ## Queue and worker
 
-vercel.json schedules /api/notifications-worker every five minutes. The worker requires a Firebase Admin service account so queue records, retry state and single-use acknowledgement tokens remain server-only. Confirm the hosting plan supports this cron frequency; if the platform rejects the schedule, use a plan/scheduler that supports five-minute jobs or invoke the endpoint from an external scheduler with Authorization: Bearer <CRON_SECRET>.
+vercel.json includes a daily 08:00 UTC catch-up run so the repository does not require high-frequency cron support to deploy. That daily run is **not sufficient for the 5-minute CRITICAL / 15-minute WARNING escalation policy**. For live-time delivery and escalation, configure an external scheduler to call /api/notifications-worker every five minutes with Authorization: Bearer <CRON_SECRET>, or change the Vercel schedule to */5 * * * * on a plan that supports per-minute/per-five-minute cron execution. Vercel documents that Hobby cron jobs run only once per day; higher-frequency schedules fail deployment. See https://vercel.com/docs/cron-jobs/manage-cron-jobs. The worker requires a Firebase Admin service account so queue records, retry state and single-use acknowledgement tokens remain server-only.
 
 The worker retries failed sends with exponential backoff, stores per-recipient/channel delivery states, uses configured fallback channels after repeated failure, and advances acknowledgement escalation. It cancels queued jobs when an alert is acknowledged or resolved.
 
