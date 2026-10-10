@@ -90,8 +90,12 @@ class ColdGuardApp {
   }
 
   handleAuthStateChanged(user) {
-    if (!user && this.currentUser && this.currentUser.isDemo) {
-      return; // Preserve active demo session
+    // Only a real, currently signed-in Firebase user may reveal protected views.
+    const verifiedUser = this.authService?.auth?.currentUser || null;
+    if (user && (user.isDemo || !verifiedUser || verifiedUser.uid !== user.uid)) {
+      user = null;
+    } else if (user) {
+      user = verifiedUser;
     }
     this.currentUser = user;
     const authContainer = document.getElementById("auth-view-container");
@@ -126,20 +130,23 @@ class ColdGuardApp {
   }
 
   onAuthSuccess(user) {
-    this.currentUser = user;
-    this.handleAuthStateChanged(user);
+    const verifiedUser = this.authService?.auth?.currentUser || null;
+    if (!user || user.isDemo || !verifiedUser || verifiedUser.uid !== user.uid) {
+      this.handleAuthStateChanged(null);
+      return;
+    }
+    this.handleAuthStateChanged(verifiedUser);
   }
 
   async handleLogout() {
     try {
-      if (this.currentUser && !this.currentUser.isDemo) {
-        await this.authService.logout();
-      }
+      await this.authService.logout();
       this.currentUser = null;
       this.handleAuthStateChanged(null);
+      if (window.location.hash !== "#auth") window.location.hash = "#auth";
       this.modals.showToast("Operator session ended. Signed out securely.", "info");
     } catch (err) {
-      this.modals.showToast("Failed to sign out: " + (err.message || err), "warning");
+      this.modals.showToast("Unable to sign out. Please retry.", "warning");
     }
   }
 
@@ -191,17 +198,6 @@ class ColdGuardApp {
           setTimeout(() => this.authUi.openFirebaseConfigModal(), 100);
         }
       }
-    }
-
-    if (params.get("demo") === "true" && !this.currentUser) {
-      setTimeout(() => {
-        this.onAuthSuccess({
-          uid: "demo-operator-mv",
-          displayName: "Dr. Marcus Vance",
-          email: "marcus.vance@coldguard.org",
-          isDemo: true
-        });
-      }, 50);
     }
 
     if (modal) {
