@@ -58,8 +58,10 @@
     if (explicitAirHistory) air = normalizeHistory(explicitAirHistory, "air", source);
     if (explicitVialHistory) vial = normalizeHistory(explicitVialHistory, "vial", source);
 
-    var airMapped = liveFlag && explicitConfig(remote, live, "air");
-    var vialMapped = liveFlag && explicitConfig(remote, live, "vial");
+    var airMapped = liveFlag && (explicitConfig(remote, live, "air") || air.length > 0 ||
+      n(first(live, ["airTemperature","ambientTemperature","air_temperature_c","ambient_temperature_c"])) !== null);
+    var vialMapped = liveFlag && (explicitConfig(remote, live, "vial") || vial.length > 0 ||
+      n(first(live, ["liquidTemperature","vialTemperature","coreTemperature","liquid_temperature_c","vial_temperature_c","core_temperature_c"])) !== null);
     if (liveFlag) {
       var nowTs = ts(first(live, ["timestamp","ts","time"])) || ts(remote.lastSensorUpdate);
       var av = airMapped ? n(first(live, ["airTemperature","ambientTemperature","air_temperature_c","ambient_temperature_c"])) : null;
@@ -81,9 +83,11 @@
       var explicitDemoVial = normalizeHistory(s.history, "vial", "SIMULATED DEMO");
       air = explicitDemoAir;
       vial = explicitDemoVial;
-      if (!air.length && !vial.length) {
-        air = genericDemo;
-      }
+      var demoStamp = ts(s.lastSensorUpdate) || Date.now();
+      var demoAirCurrent = n(first(s, ["ambientTemperature","airTemperature"]));
+      var demoVialCurrent = n(first(s, ["coreTemperature","vialTemperature","liquidTemperature"]));
+      if (demoAirCurrent !== null && !air.length) air.push({x:demoStamp,y:demoAirCurrent,source:"SIMULATED DEMO",mode:"simulated"});
+      if (demoVialCurrent !== null && !vial.length) vial.push({x:demoStamp,y:demoVialCurrent,source:"SIMULATED DEMO",mode:"simulated"});
       // The generic demo curve is rendered as unclassified sensor data, never as air or vial.
       airMapped = false; vialMapped = false;
       return { air:air, vial:vial, generic:genericDemo, source:source, live:false, airMapped:false, vialMapped:false, remote:null, genericDemo:true };
@@ -157,7 +161,7 @@
     var datasets=[];
     if(data.airMapped || data.air.length) datasets.push({label:data.airMapped?"Air temperature":"Explicit air/ambient (demo)",data:vals("air"),borderColor:COLORS.air,backgroundColor:COLORS.air,tension:0.18,spanGaps:false,pointRadius:2,parsing:false});
     if(data.vialMapped || data.vial.length) datasets.push({label:data.vialMapped?"Measured vial/liquid temperature":"Explicit vial/core (demo)",data:vals("vial"),borderColor:COLORS.vial,backgroundColor:COLORS.vial,tension:0.18,spanGaps:false,pointRadius:3,parsing:false});
-    if(data.genericDemo && data.generic.length && !data.air.length && !data.vial.length) datasets.push({label:"Simulated sensor temperature (role unspecified)",data:vals("generic"),borderColor:"#64748b",backgroundColor:"#64748b",borderDash:[4,4],tension:0.18,spanGaps:false,pointRadius:2,parsing:false});
+    if(data.genericDemo && data.generic.length) datasets.push({label:"Simulated sensor history (role unspecified)",data:vals("generic"),borderColor:"#64748b",backgroundColor:"#64748b",borderDash:[4,4],tension:0.18,spanGaps:false,pointRadius:2,parsing:false});
     if(lim.max!==null) datasets.push({label:"Upper safe limit",data:all.map(function(x){return{x:x,y:lim.max};}),borderColor:COLORS.max,borderDash:[6,4],pointRadius:0,borderWidth:1.5,spanGaps:false,parsing:false});
     if(lim.min!==null) datasets.push({label:"Lower safe limit",data:all.map(function(x){return{x:x,y:lim.min};}),borderColor:COLORS.min,borderDash:[6,4],pointRadius:0,borderWidth:1.5,spanGaps:false,parsing:false});
     // Prediction is added only from a supported, measured vial trend and is drawn through the limit crossing.
@@ -197,8 +201,8 @@
     var vialTtb=vialCurrent && data.vialMapped ? ttb(data.vial,vialCurrent.y,lim,"vial") : {text:"Vial TTB Unavailable",reason:"No measured vial series or validated thermal-response model"};
     var card=ensureCard(); if(!card) return;
     var sourceLabel=data.live?"LIVE SENSOR DATA":"SIMULATED DEMO DATA";
-    var airLabel=data.airMapped?"Measured air temperature":(data.genericDemo&&genericCurrent?"Simulated sensor temperature (role unspecified)": "Air temperature unavailable");
-    var vialLabel=data.vialMapped?"Measured vial/liquid temperature":(data.vial.length?"Simulated vial/core data":"Vial temperature unavailable");
+    var airLabel=data.airMapped?"Measured air temperature":(data.air.length?"Simulated ambient temperature":(data.genericDemo&&genericCurrent?"Simulated sensor temperature (role unspecified)":"Air temperature unavailable"));
+    var vialLabel=data.vialMapped?"Measured vial/liquid temperature":(data.vial.length?"Simulated vial/core temperature":"Vial temperature unavailable");
     var spike=detectSpike(data.airMapped?data.air:data.generic,lim);
     var eventHtml=spike?'<div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><strong>Air excursion candidate</strong> · '+new Date(spike.start).toLocaleString()+' · duration '+spike.duration+' min · peak '+spike.peak.toFixed(2)+'°C. Do not dismiss; follow the configured cold-chain protocol.</div>':'<div class="text-xs text-slate-500">No short-duration air spike detected in this window, or insufficient typed air samples.</div>';
     card.innerHTML='<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3"><div><div class="text-sm font-bold text-slate-900">Dual Thermal Curve · Air vs. Vial</div><p class="text-xs text-slate-500 mt-1">Only explicitly mapped sensor channels are labelled as measured. No unvalidated vial-temperature estimate is generated.</p></div><div class="flex flex-wrap items-center gap-2"><span class="text-[10px] font-bold rounded-full px-2 py-1 bg-slate-100 text-slate-700">'+sourceLabel+'</span><label class="text-xs text-slate-600">Window <select id="dual-thermal-window" class="ml-1 border border-slate-200 rounded-lg px-2 py-1 bg-white">'+WINDOWS.map(function(m){return '<option value="'+m+'" '+(m===windowMinutes?'selected':'')+'>'+({30:"30 min",60:"1 hour",120:"2 hours",360:"6 hours",1440:"24 hours"}[m])+'</option>';}).join("")+'</select></label></div></div>'+
