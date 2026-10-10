@@ -6,6 +6,15 @@ function appendTimeline(alert, event, details) {
   alert.timeline.push({event:event,at:new Date().toISOString(),details:details||""});
   if(alert.timeline.length>100) alert.timeline=alert.timeline.slice(-100);
 }
+async function auditEvent(db, uid, event, alert, details) {
+  const record={
+    timestamp:new Date().toISOString(), actorUid:uid||"notification-worker", event:event,
+    alertId:alert && alert.id || null, shipmentId:alert && alert.shipmentId || null,
+    severity:alert && alert.severity || null, details:details||""
+  };
+  try { await db.ref("audit_logs").push(record); }
+  catch(error) { console.warn("Notification audit event could not be written",error.message); }
+}
 function roleOf(record) {
   const pref=record && record.notificationPreferences || {};
   return String(record && (record.role || record.userRole) || pref.role || "").toLowerCase();
@@ -120,6 +129,7 @@ async function enqueueEscalation(db, ownerUid, alert, users) {
   alert.escalation.nextAt=new Date(Date.now()+Math.max(1,delay)*60000).toISOString();
   appendTimeline(alert,"escalated",details.length?"Notified "+details.length+" recipient(s) at "+nextRole+" level.":"No recipient matched escalation level "+nextRole+"; escalation timer advanced.");
   await db.ref("users/"+ownerUid+"/notificationCenter/"+alert.id).set(alert);
+  await auditEvent(db,ownerUid,"NOTIFICATION_ESCALATED",alert,details.length?"Escalation targeted "+details.length+" user(s).":"No user matched the next escalation role.");
 }
 module.exports = async function handler(req,res) {
   res.setHeader("Cache-Control","no-store");
@@ -165,12 +175,16 @@ module.exports = async function handler(req,res) {
         const origin=originSnap.val();
         if(origin && (origin.status==="acknowledged" || origin.status==="resolved")) {
           task.status="cancelled";task.cancelledAt=new Date().toISOString();task.cancelReason="Alert already acknowledged or resolved.";task.leaseUntil=null;
-          await db.ref("notification_queue/"+uid+"/"+item.key).set(task); skipped++; continue;
+          await db.ref("notification_queue/"+uid+"/"+item.key).set(task);
+          await auditEvent(db,uid,"NOTIFICATION_DELIVERY_CANCELLED",alert,"Queued "+channel+" delivery cancelled because the alert was acknowledged or resolved.");
+          skipped++; continue;
         }
         if(origin && origin.severity!=="CRITICAL" && Number(origin.mutedUntil||0)>Date.now()) {
           task.status="queued";task.nextAttemptAt=Number(origin.mutedUntil);task.leaseUntil=null;
           task.lastError="Reminder paused by signed mute action until "+new Date(Number(origin.mutedUntil)).toISOString();
-          await db.ref("notification_queue/"+uid+"/"+item.key).set(task); skipped++; continue;
+          await db.ref("notification_queue/"+uid+"/"+item.key).set(task);
+          await auditEvent(db,uid,"NOTIFICATION_REMINDER_MUTED",alert,task.lastError);
+          skipped++; continue;
         }
         let result;
         if(channel==="daily_digest"||channel==="weekly_digest") result=await sendDigest(db,task);
@@ -193,6 +207,7 @@ module.exports = async function handler(req,res) {
             appendTimeline(origin,"notified",(uid===originUid?"":("Escalation recipient "+uid+": "))+channel+" accepted by provider.");
             await originRef.set(origin);
           }
+          await auditEvent(db,uid,channel==="daily_digest"||channel==="weekly_digest"?"NOTIFICATION_DIGEST_SENT":"NOTIFICATION_CHANNEL_SENT",alert,channel+" accepted by the provider.");
           sent++;
         } else {
           task.attempts=Number(task.attempts||0)+1;task.lastError=result.note||"Provider failed.";task.lastAttemptAt=new Date().toISOString();
@@ -204,6 +219,7 @@ module.exports = async function handler(req,res) {
           }
           task.result=result;
           await db.ref("notification_queue/"+uid+"/"+item.key).set(task);
+          await auditEvent(db,uid,task.status==="failed"?"NOTIFICATION_CHANNEL_FAILED":"NOTIFICATION_RETRY_SCHEDULED",alert,channel+": "+String(task.lastError||"Provider failure"));
           const targetRef=db.ref("users/"+uid+"/notificationCenter/"+task.alertId);
           const targetSnap=await targetRef.once("value");const copy=targetSnap.val();
           if(copy) {copy.channelStatus=copy.channelStatus||{};copy.channelStatus[channel]={status:task.status==="failed"?"failed":"queued",updatedAt:new Date().toISOString(),attempts:task.attempts,note:task.lastError};appendTimeline(copy,task.status==="failed"?"delivery_failed":"retry_scheduled",channel+": "+task.lastError);await targetRef.set(copy);}
@@ -223,6 +239,7 @@ module.exports = async function handler(req,res) {
         if(task.attempts>=6){task.status="failed";task.nextAttemptAt=null;failed++;}
         else{task.status="queued";task.nextAttemptAt=Date.now()+Math.min(3600000,30000*Math.pow(2,task.attempts-1));retried++;}
         await db.ref("notification_queue/"+item.uid+"/"+item.key).set(task);
+        await auditEvent(db,item.uid,task.status==="failed"?"NOTIFICATION_CHANNEL_FAILED":"NOTIFICATION_RETRY_SCHEDULED",task.alert||null,task.channel+": "+task.lastError);
       }
     }
     const usersSnap=await db.ref("users").once("value");
