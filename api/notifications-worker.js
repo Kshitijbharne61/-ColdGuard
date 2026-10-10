@@ -32,7 +32,11 @@ function channelList(alert,prefs) {
   return Array.from(new Set(channels)).filter(c=>c==="in_app" || !prefs.channels || prefs.channels[c]!==false || c==="daily_digest" || c==="weekly_digest");
 }
 function recipients(settings, contact) {
-  const c=Object.assign({},contact||{},settings && settings.contacts || {});
+  const c=Object.assign({},contact||{});
+  const preferred=settings && settings.contacts || {};
+  ["email","phone","telegramChatId","whatsappPhone","pushToken"].forEach(key => {
+    if (String(preferred[key] || "").trim()) c[key]=String(preferred[key]).trim();
+  });
   return {
     email:String(c.email || "").trim(),
     phone:String(c.phone || "").trim(),
