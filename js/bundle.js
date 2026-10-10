@@ -2765,7 +2765,8 @@ class TelemetryCharts {
       return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
     });
 
-    const tempData = displayPoints.map(p => p.temperature);
+    const tempData = displayPoints.map(p => p.probe1A ?? p.temperature);
+    const tempBData = displayPoints.map(p => p.probe1B ?? p.temperature);
     const humData = displayPoints.map(p => p.humidity);
 
     const minTemp = shipment.minAllowedTemperature;
@@ -2785,7 +2786,7 @@ class TelemetryCharts {
 
     if (this.activeMetric === "temperature" || this.activeMetric === "both") {
       datasets.push({
-        label: "Temperature (°C)",
+        label: "Probe 1A Temperature (°C)",
         data: tempData,
         borderColor: "#2563EB",
         backgroundColor: "rgba(37, 99, 235, 0.08)",
@@ -2800,7 +2801,21 @@ class TelemetryCharts {
         yAxisID: "yTemp"
       });
 
-      // Max allowed threshold line
+      datasets.push({
+        label: "Probe 1B Temperature (°C)",
+        data: tempBData,
+        borderColor: "#D97706",
+        backgroundColor: "rgba(217,119,6,0.04)",
+        borderWidth: 2,
+        pointRadius: 2.5,
+        pointHoverRadius: 6,
+        pointBackgroundColor: "#D97706",
+        fill: false,
+        tension: 0.35,
+        yAxisID: "yTemp"
+      });
+
+            // Max allowed threshold line
       datasets.push({
         label: `Max Permitted (${maxTemp}°C)`,
         data: new Array(displayPoints.length).fill(maxTemp),
