@@ -127,9 +127,9 @@
     if(!Number.isFinite(mins)||mins<=0) return {text:"Unavailable",at:null,reason:"Trend does not support a valid crossing estimate"};
     return {text:mins<60?Math.round(mins)+" min":(mins<1440?(mins/60).toFixed(1)+" h":(mins/1440).toFixed(1)+" d"),at:Date.now()+mins*60000,reason:"Linear trend; R² "+model.r2.toFixed(2)+" (not a validated product model)"};
   }
-  function thermalStatus(data, lim, airNow, vialNow) {
+  function thermalStatus(data, lim, airNow, vialNow, spikeDetected) {
     if(vialNow && (vialNow.y<lim.min || vialNow.y>lim.max)) return "Vial Temperature Breach";
-    if(vialNow && airNow && (airNow.y<lim.min || airNow.y>lim.max) && vialNow.y>=lim.min && vialNow.y<=lim.max) return "Air Spike — Liquid Temperature Within Range";
+    if(vialNow && airNow && spikeDetected && vialNow.y>=lim.min && vialNow.y<=lim.max) return "Air Spike — Liquid Temperature Within Range";
     if(vialNow && (vialNow.y<=lim.min+0.5 || vialNow.y>=lim.max-0.5)) return "Potential Product Temperature Risk";
     if(airNow && (airNow.y<lim.min || airNow.y>lim.max)) return "Potential Product Temperature Risk";
     if(!vialNow) return "Liquid Thermal Status Unknown";
@@ -137,16 +137,15 @@
   }
   function detectSpike(points, lim) {
     var now=Date.now(), pts=(points||[]).filter(function(p){return now-p.x<=windowMinutes*60000;});
-    if(pts.length<2) return null;
-    var peak=pts[0], start=null, end=null;
-    for(var i=1;i<pts.length;i++){
-      var dt=(pts[i].x-pts[i-1].x)/60000, delta=pts[i].y-pts[i-1].y;
-      if(dt>0 && dt<=5 && delta>=1.0 && (pts[i].y>lim.max || pts[i-1].y>lim.max || pts[i].y-lim.max>=0.5)){start=pts[i-1].x;end=pts[i].x;}
-      if(pts[i].y>peak.y) peak=pts[i];
+    if(pts.length<3) return null;
+    for(var i=1;i<pts.length-1;i++){
+      var upMins=(pts[i].x-pts[i-1].x)/60000, downMins=(pts[i+1].x-pts[i].x)/60000;
+      var rise=pts[i].y-pts[i-1].y, fall=pts[i].y-pts[i+1].y;
+      if(upMins>0 && upMins<=5 && downMins>0 && downMins<=5 && rise>=1.0 && fall>=0.8) {
+        return {start:pts[i-1].x,end:pts[i+1].x,peak:pts[i].y,duration:Math.max(1,Math.round((pts[i+1].x-pts[i-1].x)/60000)),count:3};
+      }
     }
-    if(start===null) return null;
-    var related=pts.filter(function(p){return p.x>=start && p.x<=end;});
-    return {start:start,end:end,peak:peak.y,duration:Math.max(1,Math.round((end-start)/60000)),count:related.length};
+    return null;
   }
   function tooltip(context) {
     var p=context.raw || {};
@@ -223,7 +222,8 @@
     var data=collect(s), lim=limits(s), an=newest(data.air), vn=newest(data.vial), gn=newest(data.generic);
     var airCurrent=an && fresh(an) ? an : null, vialCurrent=vn && fresh(vn) ? vn : null;
     var genericCurrent=gn && fresh(gn) ? gn : null;
-    var status=thermalStatus(data,lim,airCurrent||genericCurrent,vialCurrent);
+    var spike=detectSpike(data.airMapped?data.air:data.generic,lim);
+    var status=thermalStatus(data,lim,airCurrent||genericCurrent,vialCurrent,!!spike);
     var airTtb=airCurrent && data.airMapped ? ttb(data.air,airCurrent.y,lim,"air") : {text:"Unavailable",reason:"No explicitly mapped, fresh air-temperature series"};
     var vialTtb=vialCurrent && data.vialMapped ? ttb(data.vial,vialCurrent.y,lim,"vial") : {text:"Vial TTB Unavailable",reason:"No measured vial series or validated thermal-response model"};
     correctLegacyProbeCard(s, data, airCurrent || genericCurrent, vialCurrent);
@@ -231,7 +231,6 @@
     var sourceLabel=data.live?"LIVE SENSOR DATA":"SIMULATED DEMO DATA";
     var airLabel=data.airMapped?"Measured air temperature":(data.air.length?"Simulated ambient temperature":(data.genericDemo&&genericCurrent?"Simulated sensor temperature (role unspecified)":"Air temperature unavailable"));
     var vialLabel=data.vialMapped?"Measured vial/liquid temperature":(data.vial.length?"Simulated vial/core temperature":"Vial temperature unavailable");
-    var spike=detectSpike(data.airMapped?data.air:data.generic,lim);
     var eventHtml=spike?'<div class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"><strong>Air excursion candidate</strong> · '+new Date(spike.start).toLocaleString()+' · duration '+spike.duration+' min · peak '+spike.peak.toFixed(2)+'°C. Do not dismiss; follow the configured cold-chain protocol.</div>':'<div class="text-xs text-slate-500">No short-duration air spike detected in this window, or insufficient typed air samples.</div>';
     card.innerHTML='<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3"><div><div class="text-sm font-bold text-slate-900">Dual Thermal Curve · Air vs. Vial</div><p class="text-xs text-slate-500 mt-1">Only explicitly mapped sensor channels are labelled as measured. No unvalidated vial-temperature estimate is generated.</p></div><div class="flex flex-wrap items-center gap-2"><span class="text-[10px] font-bold rounded-full px-2 py-1 bg-slate-100 text-slate-700">'+sourceLabel+'</span><label class="text-xs text-slate-600">Window <select id="dual-thermal-window" class="ml-1 border border-slate-200 rounded-lg px-2 py-1 bg-white">'+WINDOWS.map(function(m){return '<option value="'+m+'" '+(m===windowMinutes?'selected':'')+'>'+({30:"30 min",60:"1 hour",120:"2 hours",360:"6 hours",1440:"24 hours"}[m])+'</option>';}).join("")+'</select></label></div></div>'+
       '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3"><div class="rounded-xl bg-blue-50 border border-blue-100 p-3"><div class="text-[10px] uppercase font-bold text-blue-700">'+esc(airLabel)+'</div><div class="text-xl font-extrabold font-mono text-blue-950 mt-1">'+(airCurrent?airCurrent.y.toFixed(2)+"°C":genericCurrent?genericCurrent.y.toFixed(2)+"°C":"Unavailable")+'</div><div class="text-[10px] text-slate-500 mt-1">'+(airCurrent?new Date(airCurrent.x).toLocaleString():genericCurrent?new Date(genericCurrent.x).toLocaleString():"No fresh timestamped reading")+'</div><div class="text-xs font-semibold mt-2">Air TTB: '+esc(airTtb.text)+'</div></div>'+
@@ -265,5 +264,5 @@
     render(); window.setInterval(render,15000);
   }
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",function(){window.setTimeout(boot,0);}); else boot();
-  window.ColdGuardDualThermal = { collect:collect, fit:fit, ttb:ttb, thermalStatus:thermalStatus };
+  window.ColdGuardDualThermal = { collect:collect, fit:fit, ttb:ttb, thermalStatus:thermalStatus, detectSpike:detectSpike };
 })();
