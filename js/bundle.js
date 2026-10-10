@@ -4689,6 +4689,8 @@ class ColdGuardApp {
         gpsLatitude: latitude, gpsLongitude: longitude,
         currentTemperature: remote.currentTemperature ?? live.temperature ?? local.currentTemperature,
         currentHumidity: remote.currentHumidity ?? live.humidity ?? local.currentHumidity,
+        probe1ATemperature: remote.probe1ATemperature ?? live.probe1ATemperature ?? remote.temperature1A ?? local.probe1ATemperature,
+        probe1BTemperature: remote.probe1BTemperature ?? live.probe1BTemperature ?? remote.temperature1B ?? local.probe1BTemperature,
         batteryLevel: remote.batteryLevel ?? live.batteryLevel ?? local.batteryLevel,
         isLiveGps: location.isLiveGps === true || remote.isLiveGps === true,
         gpsHasFix: location.hasFix !== false,
