@@ -239,6 +239,41 @@ async function runAckLink(req,res) {
   } catch(error) { console.error("Signed acknowledgement failed",error.message); return res.status(500).send("Could not acknowledge this alert. Please use the dashboard."); }
 }
 
+async function runMuteLink(req,res) {
+  const q=req.query||{};
+  const uid=String(q.uid||""), alertId=String(q.alertId||""), exp=String(q.exp||""), token=String(q.token||"");
+  if(!uid || !alertId || !engine.verifyActionToken(uid,"mute:"+alertId,exp,token))
+    return res.status(400).send("<h1>Invalid or expired mute link</h1><p>Sign in to ColdGuard to manage notification preferences.</p>");
+  const allowed=await rateLimitAcknowledgement(req,uid).catch(()=>false);
+  if(!allowed) return res.status(429).send("Too many mute attempts. Try again later.");
+  const db=engine.adminDatabase();
+  if(!db) return res.status(503).send("<h1>Notification settings unavailable</h1><p>Open Alert Center and manage notification preferences.</p>");
+  const tokenKey=crypto.createHash("sha256").update("mute:"+token).digest("hex");
+  const tokenRef=db.ref("notification_action_tokens/mute_"+tokenKey);
+  const reserve=await tokenRef.transaction(function(current){return current?undefined:{uid:uid,alertId:alertId,action:"mute",usedAt:new Date().toISOString(),expiresAt:Number(exp)};});
+  if(!reserve.committed) return res.status(409).send("<h1>This mute link has already been used</h1><p>Open ColdGuard notification settings to manage alert preferences.</p>");
+  try {
+    const ref=db.ref("users/"+uid+"/notificationCenter/"+alertId);
+    const snap=await ref.once("value");
+    const alert=snap.val();
+    if(!alert) return res.status(404).send("<h1>Alert not found</h1><p>The requested alert is no longer available.</p>");
+    if(alert.severity==="CRITICAL") return res.status(409).send("<!doctype html><html><body style=\"font:15px Arial,sans-serif;color:#0f172a;padding:28px\"><h1>Critical alerts cannot be muted</h1><p>Critical ColdGuard notifications continue to route through configured channels for safety.</p><a href=\""+esc(engine.baseUrl(req)+"/index.html#alert_center")+"\">Open Alert Center</a></body></html>");
+    if(alert.status!=="open") return res.status(409).send("<h1>This alert is no longer open</h1><p>No reminders are scheduled for resolved or acknowledged alerts.</p>");
+    const mutedUntil=Date.now()+24*60*60*1000;
+    alert.mutedAt=new Date().toISOString();
+    alert.mutedUntil=mutedUntil;
+    if(alert.escalation) alert.escalation.nextAt=new Date(mutedUntil).toISOString();
+    appendTimeline(alert,"muted","Reminder/escalation channels muted for 24 hours from a signed email action. In-app monitoring remains active.");
+    await ref.set(alert);
+    await db.ref("audit_logs").push({timestamp:new Date().toISOString(),actorUid:uid,event:"NOTIFICATION_MUTED",shipmentId:alert.shipmentId,alertId:alertId,details:"Muted non-critical reminder notifications for 24 hours"});
+    const url=engine.baseUrl(req)+"/index.html#alert_center";
+    return res.status(200).send('<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>ColdGuard reminders muted</title></head><body style="margin:0;background:#f4f7fb;font:15px Arial,sans-serif;color:#0f172a"><main style="max-width:520px;margin:10vh auto;padding:28px;background:#fff;border:1px solid #dbe4ef;border-radius:16px"><div style="color:#1d4ed8;font-size:12px;font-weight:bold;letter-spacing:.1em">COLDGUARD · NOTIFICATION PREFERENCES</div><h1 style="font-size:24px">Reminders muted for 24 hours</h1><p>'+esc(alert.title)+'</p><p>Critical alerts are never muted. New in-app state changes remain visible in Alert Center.</p><a href="'+esc(url)+'" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;border-radius:8px;padding:12px 15px;font-weight:bold">Open Alert Center</a></main></body></html>');
+  } catch(error) {
+    console.error("Signed mute action failed",error.message);
+    return res.status(500).send("Could not update mute preferences. Please use ColdGuard notification settings.");
+  }
+}
+
 module.exports = async function handler(req,res) {
   res.setHeader("Cache-Control","no-store");
   const action=String((req.query||{}).action || (req.body||{}).action || "");
@@ -248,6 +283,7 @@ module.exports = async function handler(req,res) {
       message:config.demoMode ? "No external provider credentials configured. Events are preview-only." : config.durableQueueReady ? "Provider credentials available; durable delivery queue enabled." : "Provider credentials available; direct delivery fallback enabled. Configure Firebase Admin service account for durable retries/escalation." });
   }
   if(req.method==="GET" && action==="ack") return runAckLink(req,res);
+  if(req.method==="GET" && action==="mute") return runMuteLink(req,res);
   if(req.method!=="POST") return response(res,405,{error:"Method not allowed"});
   const token=tokenFrom(req);
   if(!token) return response(res,401,{error:"Sign in is required for this notification action."});
