@@ -52,7 +52,7 @@ function contactForm(){
  catch(x){err.textContent="Could not save contacts: "+x.message;err.classList.remove("hidden");btn.disabled=false;btn.textContent="Save contacts";}
  };
 }
-\nasync function remove(id){if(!confirm("Remove shipment "+id+" from Firebase and the fleet? This cannot be undone."))return;try{var u=user(),database=db();if(!u||u.isDemo||!u.uid||!database)throw Error("Sign in with Firebase to remove database shipments.");await database.ref("shipments/"+id).remove();if(app.simulation)app.simulation.shipments=app.simulation.shipments.filter(function(s){return String(s.id)!==String(id);});breaches.delete(String(id));app.renderCurrentView();toast("Shipment "+id+" removed.","safe");}catch(e){toast("Could not remove shipment: "+e.message,"warning");}}
+\nasync function remove(id){if(!confirm("Remove shipment "+id+" from the visible fleet? If signed in, its Firebase record will also be deleted."))return;try{var u=user(),database=db(),remote=!!(u&&!u.isDemo&&u.uid&&database);if(remote)await database.ref("shipments/"+id).remove();if(app.simulation&&Array.isArray(app.simulation.shipments))app.simulation.shipments=app.simulation.shipments.filter(function(s){return String(s.id)!==String(id);});breaches.delete(String(id));app.renderCurrentView();toast(remote?"Shipment "+id+" removed from Firebase and fleet.":"Shipment "+id+" removed from this session only; sign in to delete its Firebase record.","safe");}catch(e){toast("Could not remove shipment: "+e.message,"warning");}}
 function send(payload){
  var u=user();if(!u||u.isDemo){toast("Sign in to create an email alert draft.","warning");return;}
  var test=payload.type==="test",subject=test?"ColdGuard email alert test":"ColdGuard temperature excursion: "+(payload.shipmentId||"Unknown shipment");
