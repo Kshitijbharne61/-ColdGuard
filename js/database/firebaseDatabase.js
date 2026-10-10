@@ -182,13 +182,13 @@ export class FirebaseDatabaseService {
       
       // Update environmental telemetry without fabricating GPS coordinates.
       const livePayload = {
-        temperature: reading.temperature,
-        humidity: reading.humidity,
-        batteryLevel: reading.batteryLevel,
         timestamp: now,
         severity: reading.severity || "SAFE",
         excursionStatus: reading.excursionStatus || "Nominal"
       };
+      ["temperature", "humidity", "batteryLevel"].forEach((key) => {
+        if (reading[key] !== undefined && reading[key] !== null) livePayload[key] = reading[key];
+      });
       // Optional typed channels: only write them when the ingestion layer supplies them.
       // Never infer vial/liquid temperature from a generic temperature field.
       ["airTemperature", "liquidTemperature", "vialTemperature", "ambientTemperature", "coreTemperature",
@@ -224,10 +224,10 @@ export class FirebaseDatabaseService {
       }
 
       // Update root summary fields for fast querying
-      updates[`shipments/${shipmentId}/currentTemperature`] = reading.temperature;
-      updates[`shipments/${shipmentId}/currentHumidity`] = reading.humidity;
+      if (reading.temperature !== undefined && reading.temperature !== null) updates[`shipments/${shipmentId}/currentTemperature`] = reading.temperature;
+      if (reading.humidity !== undefined && reading.humidity !== null) updates[`shipments/${shipmentId}/currentHumidity`] = reading.humidity;
       updates[`shipments/${shipmentId}/lastSensorUpdate`] = new Date(now).toISOString();
-      updates[`shipments/${shipmentId}/batteryLevel`] = reading.batteryLevel;
+      if (reading.batteryLevel !== undefined && reading.batteryLevel !== null) updates[`shipments/${shipmentId}/batteryLevel`] = reading.batteryLevel;
       if (reading.viability !== undefined) {
         updates[`shipments/${shipmentId}/estimatedViabilityPercent`] = reading.viability;
       }
