@@ -17,14 +17,16 @@
     return app.simulation.shipments.find(function (s) { return String(s.id) === String(app.selectedShipmentId); }) || app.simulation.shipments[0] || null;
   }
   function fmt(v) { return v == null || !Number.isFinite(v) ? "—" : Number(v).toFixed(1) + "°C"; }
-  function thermalSlope() {
+  function slopeFor(key) {
+    var field = key || "v";
     var p = state.points.slice(-20);
     if (p.length < 3) return 0;
     var x0 = p[0].t, sx = 0, sy = 0, sxx = 0, sxy = 0, count = p.length;
-    p.forEach(function (q) { var x = (q.t - x0) / 60000; sx += x; sy += q.v; sxx += x*x; sxy += x*q.v; });
+    p.forEach(function (q) { var x = (q.t - x0) / 60000, y = q[field]; sx += x; sy += y; sxx += x*x; sxy += x*y; });
     var den = count*sxx - sx*sx;
     return Math.abs(den) < 0.000001 ? 0 : (count*sxy - sx*sy)/den;
   }
+  function thermalSlope() { return slopeFor("v"); }
   function timeToBreach() {
     var slope = thermalSlope();
     if (state.vial < 0) return { text: "FREEZE BREACH", kind: "critical" };
@@ -187,8 +189,8 @@
   }
   function chartConfig() {
     var pts=state.points.slice(-30), labels=pts.map(function(p){return new Date(p.t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});});
-    var last=pts[pts.length-1], slope=thermalSlope(), forecastAir=[], forecastVial=[];
-    for(var i=1;i<=5;i++){labels.push("+"+(i*4)+"m");forecastAir.push(last?last.a+slope*i*4:null);forecastVial.push(last?last.v+slope*i*4:null);}
+    var last=pts[pts.length-1], slope=thermalSlope(), airSlope=slopeFor("a"), forecastAir=[], forecastVial=[];
+    for(var i=1;i<=5;i++){labels.push("+"+(i*4)+"m");forecastAir.push(last?last.a+airSlope*i*4:null);forecastVial.push(last?last.v+slope*i*4:null);}
     var air=pts.map(function(p){return p.a;}), vial=pts.map(function(p){return p.v;});
     var proj=new Array(pts.length).fill(null); if(last){proj[proj.length-1]=last.a;forecastAir.forEach(function(v){proj.push(v);});}else{proj=proj.concat(forecastAir);}
     var projV=new Array(pts.length).fill(null); if(last){projV[projV.length-1]=last.v;forecastVial.forEach(function(v){projV.push(v);});}else{projV=projV.concat(forecastVial);}
